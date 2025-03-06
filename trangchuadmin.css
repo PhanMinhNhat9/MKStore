@@ -232,7 +232,7 @@ body {
 /* Định dạng cho việc hiển thị bảng người dùng */
 .user-table-container {
     margin: 0 auto;
-    max-height: 350px;
+    max-height: 395px;
     overflow-y: auto;
     border: 1px solid #ddd;
 }
@@ -306,7 +306,7 @@ body {
     padding: 8px 12px;
     cursor: pointer;
     border-radius: 4px;
-    margin-left: 10px;
+    margin: 10px 10px;
     font-size: 14px;
 }
 

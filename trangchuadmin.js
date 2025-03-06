@@ -82,6 +82,26 @@ function loadDLDanhmuc()
     };
     xhr.send();
 }
+function loadDLDonhang() {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "hienthidonhang.php", true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            document.getElementById("main-content").innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send();
+}
+function loadDLMGG() {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "hienthimgg.php", true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            document.getElementById("main-content").innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send();
+}
 // Hàm xử lý khi nhấn nút "Thêm Người Dùng"
 function themnguoidung() {
     window.location.href = "themnguoidung.php";
@@ -116,4 +136,13 @@ function deleteUser(id) {
 
 function goBack() {
     window.location.replace("trangchuadmin.html?id=1");
+}
+
+function toggleDetails(orderId) {
+    var details = document.getElementById('details-' + orderId);
+    if (details.style.display === 'block') {
+        details.style.display = 'none';
+    } else {
+        details.style.display = 'block';
+    }
 }

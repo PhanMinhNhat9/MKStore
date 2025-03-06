@@ -28,45 +28,94 @@ foreach ($categories as $category) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh Mục Sản Phẩm</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        
-        .table-container {
-            max-height: 400px; /* Giới hạn chiều cao để có thanh cuộn */
-            overflow-y: auto; /* Thanh cuộn dọc */
-            overflow-x: auto; /* Thanh cuộn ngang nếu cần */
+        /* Định dạng cho việc hiển thị bảng danh mục */
+        .dm-table-container {
+            margin: 0 auto;
+            max-height: 390px;
+            overflow-y: auto;
             border: 1px solid #ddd;
         }
 
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; white-space: nowrap; }
-        th { background-color: #f4f4f4; position: sticky; top: 0; z-index: 2; }
-        .parent { background: #e0f7fa; font-weight: bold; }
-        .child { background: #f1f8e9; padding-left: 30px; }
-        .icon { width: 32px; height: 32px; }
+        .dm-table thead {
+            position: sticky;
+            top: 0;
+            background: #007bff;
+            color: white;
+            z-index: 10;
+        }
+
+        .dm-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .dm-table th, .dm-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 13px;
+        }
+
+        .dm-table th {
+            background: #007bff;
+            color: #fff;
+        }
+
+        .dm-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .dm-table img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+
+        .action-icons {
+            cursor: pointer;
+            margin: 0 5px;
+            transition: transform 0.2s, color 0.2s;
+        }
+
+        .action-icons:hover {
+            transform: scale(1.2);
+            color: #0056b3;
+        }
+
+        .add-dm-btn {
+            background: none;
+            border: 1px solid #007BFF;
+            color: #007BFF;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 10px 0px;
+            margin-left: 10px;
+            font-size: 14px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .add-dm-btn:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .dm-table-container { width: 90%; }
+            .dm-table th, .dm-table td { font-size: 12px; padding: 6px; }
+        }
+        .fa-plus-circle { color: #28a745; } /* Xanh lá - Thêm */
+        .fa-edit { color: #ffc107; } /* Vàng - Sửa */
+        .fa-trash-alt { color: #dc3545; } /* Đỏ - Xóa */
         
-/* Nút Thêm Người Dùng - Tối giản */
-.add-dm-btn {
-    background: none;
-    border: 1px solid #007BFF;
-    color: #007BFF;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    margin: 10px 0px;
-    margin-left: 10px;
-    font-size: 14px;
-    
-}
-.add-dm-btn:hover {
-    background-color: #007BFF;
-    color: white;
-}
     </style>
 </head>
 <body>
-<button class="add-dm-btn" onclick=""><i class="fas fa-plus"></i> Thêm danh mục</button>
-    <div class="table-container">
-        <table>
+    <button class="add-dm-btn" onclick=""><i class="fas fa-plus"></i> Thêm danh mục gốc</button>
+    <div class="dm-table-container">
+        <table class="dm-table">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -74,33 +123,36 @@ foreach ($categories as $category) {
                     <th>Icon</th>
                     <th>Mô Tả</th>
                     <th>Thời Gian</th>
+                    <th>Hành Động</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($categoryTree as $parent): ?>
-                    <!-- Hiển thị danh mục cha -->
                     <tr class="parent">
                         <td><?php echo $parent['iddm']; ?></td>
                         <td><?= $parent['tendm'] ?></td>
                         <td><img src="<?= $parent['icon'] ?>" class="icon" alt="Icon"></td>
                         <td><?= $parent['mota'] ?></td>
                         <td><?= $parent['thoigian'] ?></td>
+                        <td>
+                            <i class="fas fa-plus-circle action-icons" title="Thêm"></i>
+                            <i class="fas fa-edit action-icons" title="Sửa"></i>
+                            <i class="fas fa-trash-alt action-icons" title="Xóa"></i>
+                        </td>
                     </tr>
-
-                    <!-- Hiển thị danh mục con -->
                     <?php foreach ($parent['children'] as $child): ?>
                         <tr class="child">
                             <td><?= $child['iddm'] ?></td>
-                            <td> └── <?= $child['tendm'] ?></td>
+                            <td> 🌱 <?= $child['tendm'] ?></td>
                             <td><img src="<?= $child['icon'] ?>" class="icon" alt="Icon"></td>
                             <td><?= $child['mota'] ?></td>
                             <td><?= $child['thoigian'] ?></td>
+                            <td></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
-
 </body>
 </html>
