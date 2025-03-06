@@ -34,6 +34,16 @@ foreach ($categories as $category) {
             max-height: 390px;
             overflow-y: auto;
             border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+        }
+
+        .dm-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
         }
 
         .dm-table thead {
@@ -44,23 +54,17 @@ foreach ($categories as $category) {
             z-index: 10;
         }
 
-        .dm-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
         .dm-table th, .dm-table td {
-            padding: 8px;
+            padding: 10px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
-            font-size: 13px;
+            border: 1px solid #ddd;
+            font-size: 14px;
         }
 
         .dm-table th {
             background: #007bff;
             color: #fff;
+            border: 1px solid #ddd;
         }
 
         .dm-table tr:nth-child(even) {
@@ -106,10 +110,10 @@ foreach ($categories as $category) {
             .dm-table-container { width: 90%; }
             .dm-table th, .dm-table td { font-size: 12px; padding: 6px; }
         }
+
         .fa-plus-circle { color: #28a745; } /* Xanh lá - Thêm */
         .fa-edit { color: #ffc107; } /* Vàng - Sửa */
         .fa-trash-alt { color: #dc3545; } /* Đỏ - Xóa */
-        
     </style>
 </head>
 <body>
@@ -156,3 +160,4 @@ foreach ($categories as $category) {
     </div>
 </body>
 </html>
+

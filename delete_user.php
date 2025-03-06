@@ -1,14 +1,13 @@
 <?php
 require_once 'config.php';
-header('Content-Type: application/json'); 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    if (isset($_POST['id'])) {
-        $id = intval($_POST['id']);
+    if (isset($_GET['id'])) {
+        $id = intval($_GET['id']);
         if (xoaTK($id)) {
-            echo "Xóa tài khoản thành công!";
+            echo "<script> alert('Xóa thành công!');
+        window.location.replace('trangchuadmin.html?id=1');</script>";
         } else {
             echo "Lỗi khi xóa: ";
         }
     }
-}
+
 ?>
