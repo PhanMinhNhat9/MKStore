@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <button type="submit" name="reset_password"><i class="fa fa-save"></i> Đặt lại mật khẩu</button>
             </form>
         <?php endif; ?>
-        <a href="dangnhap.php" class="forgot-password">Quay lại đăng nhập</a>
+        <a href="GUI&dangnhap.php" class="forgot-password">Quay lại đăng nhập</a>
     </div>
 </body>
 </html>
