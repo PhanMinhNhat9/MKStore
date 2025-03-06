@@ -1,0 +1,316 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Thanh navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 0px 20px;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+}
+
+/* Logo trên thanh navbar */
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 80px;
+    margin-right: 10px;
+    animation: fadeInSlide 1s ease-in-out;
+}
+
+@keyframes fadeInSlide { /* Hiệu ứng khi load trang - fade + slide */
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse { /* Hiệu ứng rung nhẹ liên tục */
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.logo:hover {
+    animation: pulse 1s infinite;
+}
+
+@keyframes rotate { /* Hiệu ứng xoay nhẹ khi hover */
+    from { transform: rotate(0deg); }
+    to { transform: rotate(10deg); }
+}
+
+.logo:hover {
+    animation: rotate 0.3s ease-in-out;
+}
+
+/* Tên cửa hàng trên thanh navbar*/
+.store-name {
+    font-size: 32px;
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    position: relative;
+    animation: colorShift 5s infinite linear, glowEffect 3s infinite ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
+@keyframes colorShift {
+    0% { color: #007BFF; } 
+    25% { color: #00A6FF; }
+    50% { color: #ffffff; } 
+    75% { color: #00A6FF; } 
+    100% { color: #007BFF; } 
+}
+
+@keyframes glowEffect {
+    0% { text-shadow: 0 0 5px rgba(0, 123, 255, 0.3); }
+    50% { text-shadow: 0 0 15px rgba(0, 166, 255, 0.6); }
+    100% { text-shadow: 0 0 5px rgba(0, 123, 255, 0.3); }
+}
+
+/* Thanh tìm kiếm trên navbar */
+.search-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    background-color: #fff;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+}
+
+.search-bar {
+    border: none;
+    outline: none;
+    padding: 5px;
+    font-size: 14px;
+    color: #333;
+    flex-grow: 1;
+}
+
+.search-btn, .mic-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 5px;
+    color: #007BFF;
+}
+
+.search-btn:hover, .mic-btn:hover {
+    color: #0056b3;
+}
+
+/* 3 nút chức năng trên navbar */
+.nav-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.nav-buttons .btn {
+    background: none;
+    border: 1px solid #007BFF;
+    color: #007BFF;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.nav-buttons .btn:hover {
+    background-color: #007BFF;
+    color: white;
+}
+
+/* Thanh menu */
+.menu {
+    display: flex;
+    justify-content: center;
+    background-color: #ffffff;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+    text-decoration: none;
+}
+
+.menu-item {
+    padding: 10px 15px;
+    margin: 0 5px;
+    cursor: pointer;
+    color: #007BFF;
+    font-size: 14px;
+    position: relative;
+}
+
+.menu-item.active {
+    transform: translateY(-2px); /* Nâng lên */
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.5); /* Hiệu ứng đổ bóng */
+    border-radius: 10px;
+    background-color: #00A6FF;
+    color: #ffffff;
+}
+
+/* Loại bỏ icon trái tim */
+.menu-item.active::after {
+    content: '';
+}
+
+/* Nội dung */
+.main-content {
+    flex: 1; 
+}
+
+/* Chân web */
+.footer {
+    background-color: #007BFF;
+    color: white;
+    text-align: center;
+    font-size: 14px;
+    margin-top: auto;
+    width: 100%;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.contact-info {
+    display: flex;
+    gap: 15px; 
+    font-size: 14px;
+}
+
+.social-links {
+    display: flex;
+    gap: 10px; 
+}
+
+.social-icon {
+    font-size: 14px;
+    text-decoration: none;
+    color: white;
+    transition: color 0.3s ease-in-out;
+}
+
+.social-icon:hover {
+    color: #ffcc00;
+}
+
+.footer .copyright {
+    font-size: 14px;
+}
+
+/* Định dạng cho việc hiển thị bảng người dùng */
+.user-table-container {
+    margin: 0 auto;
+    max-height: 350px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+}
+
+.user-table thead {
+    position: sticky;
+    top: 0;
+    background: #007bff;
+    color: white;
+    z-index: 10;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.user-table th, .user-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: 13px;
+}
+
+.user-table th {
+    background: #007bff;
+    color: #fff;
+}
+
+.user-table tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+.user-table img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+    .user-table-container { width: 90%; }
+    .user-table th, .user-table td { font-size: 12px; padding: 6px; }
+}
+
+.action-btn-user {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 5px;
+}
+.action-btn-user:hover {
+    transform: scale(1.2);
+}
+
+.edit-btn-user { color: #28a745; } 
+.delete-btn-user { color: #dc3545; }
+
+
+.add-user-btn:hover {
+    background-color: #218838;
+}
+
+/* Nút Thêm Người Dùng - Tối giản */
+.add-user-btn {
+    background: none;
+    border: 1px solid #007BFF;
+    color: #007BFF;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.add-user-btn:hover {
+    background-color: #007BFF;
+    color: white;
+}
