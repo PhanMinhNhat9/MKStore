@@ -4,8 +4,8 @@ require_once 'config.php';
 function connectDatabase(): PDO {
     $host = "localhost";  
     $dbname = "quanlybanpk"; 
-    $username = "nhta";   
-    $password = "Nhta@22004335";    
+    $username = "root";   
+    $password = "";    
     try {
         $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
         $options = [
