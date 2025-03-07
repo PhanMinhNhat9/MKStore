@@ -1,15 +1,14 @@
 <?php
-session_start(); // Start the session
+require_once 'config.php'; // Kết nối cơ sở dữ liệu
 
-// Check if the user is logged in
-if (!isset($_SESSION['user'])) {
-    // If not logged in, redirect to the login page
-    header("Location: GUI&dangnhap.php");
-    exit();
+// Lấy danh sách sản phẩm từ cơ sở dữ liệu
+function getProducts() {
+    $pdo = connectDatabase();
+    $stmt = $pdo->query("SELECT * FROM sanpham");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Get the username from the session
-$username = $_SESSION['user']['tendn'];
+$products = getProducts();
 ?>
 
 <!DOCTYPE html>
@@ -17,38 +16,41 @@ $username = $_SESSION['user']['tendn'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Chủ Bán Phụ Kiện</title>
-    <link rel="stylesheet" href="style.css"> <!-- Link to your CSS file -->
+    <title>Cửa Hàng Phụ Kiện</title>
+    <link rel="stylesheet" href="style.css"> <!-- Liên kết đến tệp CSS -->
+    <link rel="stylesheet" href="fontawesome/css/all.min.css">
 </head>
 <body>
     <header>
-        <h1>Chào mừng đến với cửa hàng phụ kiện!</h1>
-        <p>Xin chào, <?php echo htmlspecialchars($username); ?>!</p> <!-- Display the username -->
-        <a href="logout.php">Đăng xuất</a> <!-- Link to logout -->
+        <div class="logo">
+            <h1>Cửa Hàng Phụ Kiện</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.php">Trang Chủ</a></li>
+                <li><a href="GUI&dangnhap.php">Đăng Nhập</a></li>
+                <li><a href="GUI&quenMK.php">Quên Mật Khẩu</a></li>
+            </ul>
+        </nav>
     </header>
-    
+
     <main>
-        <h2>Sản phẩm nổi bật</h2>
+        <h2>Sản Phẩm Nổi Bật</h2>
         <div class="product-list">
-            <!-- Example product items -->
-            <div class="product-item">
-                <img src="path/to/image1.jpg" alt="Product 1">
-                <h3>Tên sản phẩm 1</h3>
-                <p>Giá: 100.000 VNĐ</p>
-                <button>Mua ngay</button>
-            </div>
-            <div class="product-item">
-                <img src="path/to/image2.jpg" alt="Product 2">
-                <h3>Tên sản phẩm 2</h3>
-                <p>Giá: 200.000 VNĐ</p>
-                <button>Mua ngay</button>
-            </div>
-            <!-- Add more products as needed -->
+            <?php foreach ($products as $product): ?>
+                <div class="product-item">
+                    <img src="<?php echo $product['anh']; ?>" alt="<?php echo $product['tensp']; ?>">
+                    <h3><?php echo $product['tensp']; ?></h3>
+                    <p><?php echo $product['mota']; ?></p>
+                    <p class="price">Giá: <?php echo number_format($product['giaban'], 0, ',', '.'); ?> VNĐ</p>
+                    <button class="buy-button">Mua Ngay</button>
+                </div>
+            <?php endforeach; ?>
         </div>
     </main>
 
     <footer>
-        <p>&copy; 2025 Cửa hàng phụ kiện. Tất cả quyền được bảo lưu.</p>
+        <p>&copy; 2025 Cửa Hàng Phụ Kiện. Tất cả quyền được bảo lưu.</p>
     </footer>
 </body>
 </html>
