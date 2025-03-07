@@ -22,6 +22,38 @@ function connectDatabase(): PDO {
 }
 // Đăng nhâp
 function dangnhap($tendn, $matkhau) {
+    // if (empty($tendn) || empty($matkhau)) {
+    //     return "Vui lòng nhập đầy đủ thông tin";
+    // }
+
+    // $pdo = connectDatabase();
+    // $stmt = $pdo->prepare("SELECT * FROM user WHERE tendn = :tendn LIMIT 1");
+    // $stmt->bindParam(':tendn', $tendn, PDO::PARAM_STR);
+    // $stmt->execute();
+    // $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // if ($user && password_verify($matkhau, trim($user['matkhau']))) {
+    //     $_SESSION['user'] = [
+    //         'iduser' => $user['iduser'],
+    //         'tendn' => $user['tendn'],
+    //         'hoten' => $user['hoten'],
+    //         'anh' => $user['anh'],
+    //         'email' => $user['email'],
+    //         'sdt' => $user['sdt'],
+    //         'diachi' => $user['diachi'],
+    //         'quyen' => $user['quyen']
+    //     ];
+    //     if ($_SESSION['user']['quyen']==0) {
+    //         header("Location: trangchuadmin.html");
+    //         exit();
+    //     }
+    //     else {
+    //         header("Location: #");
+    //         exit();
+    //     }
+    // } else {
+    //     return "Sai tài khoản hoặc mật khẩu";
+    // }
     if (empty($tendn) || empty($matkhau)) {
         return "Vui lòng nhập đầy đủ thông tin";
     }
@@ -47,10 +79,11 @@ function dangnhap($tendn, $matkhau) {
             header("Location: trangchuadmin.html");
             exit();
         }
-        else {
-            header("Location: #");
+        else {           
+            header("Location: index.php"); // Chuyển hướng đến trang chủ
             exit();
         }
+        
     } else {
         return "Sai tài khoản hoặc mật khẩu";
     }

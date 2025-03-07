@@ -1,9 +1,12 @@
 <?php
-require_once 'config.php'; 
+require_once 'config.php'; // Sử dụng require_once
+
+$error = ""; // Khởi tạo biến lỗi
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tendn = trim($_POST['tendn'] ?? '');
     $matkhau = trim($_POST['matkhau'] ?? '');
-    $error = dangnhap($tendn, $matkhau);
+    $error = dangnhap($tendn, $matkhau); // Gọi hàm dangnhap
 }
 ?>
 <!DOCTYPE html>
