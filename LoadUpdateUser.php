@@ -23,7 +23,7 @@
                 <img src="<?= htmlspecialchars($user[0]['anh']) ?>" onerror="this.src='default.png'"><br>
 
                 <label>📸 Chọn ảnh mới:</label>
-                <input type="file" name="anh">
+                <input type="file" name="anh" accept="image/*">
 
                 <label>👤 Họ tên:</label>
                 <input type="text" name="hoten" value="<?php echo $user[0]['hoten']; ?>" required>
@@ -47,10 +47,13 @@
                     <label>🏡 Địa chỉ:</label>
                     <input type="text" name="diachi" value="<?php echo $user[0]['diachi']; ?>" required>
 
+                    <label>🔒 Mật khẩu mới:</label>
+                    <input type="password" name="matkhau" placeholder="Set lại mk mới!" required>
+
                     <label>🔰 Quyền:</label>
                     <select name="quyen">
-                        <option value="0" <?= $user[0]['diachi'] == 'admin' ? 'selected' : '' ?>>Admin</option>
-                        <option value="1" <?= $user[0]['diachi'] == 'user' ? 'selected' : '' ?>>User</option>
+                        <option value="0" <?= $user[0]['quyen'] == '0' ? 'selected' : '' ?>>Admin</option>
+                        <option value="1" <?= $user[0]['quyen'] == '1' ? 'selected' : '' ?>>User</option>
                     </select>
 
                     <div class="btn-container">

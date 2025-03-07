@@ -9,47 +9,6 @@ function activateMenu() {
 }
 
 function loadDLUser() {
-    // fetch('get_users.php')
-    //     .then(res => res.json())
-    //     .then(users => {
-    //         let table = `<button class="add-user-btn" onclick="themnguoidung()"><i class="fas fa-plus"></i> Thêm Người Dùng</button>
-    //                     <div class="user-table-container">
-    //                      <table class="user-table">
-    //                      <thead>
-    //                      <tr>
-    //                         <th>ID</th>
-    //                         <th>Họ Tên</th>
-    //                         <th>Tên ĐN</th>
-    //                         <th>Ảnh</th>
-    //                         <th>Email</th>
-    //                         <th>SĐT</th>
-    //                         <th>Địa Chỉ</th>
-    //                         <th>Quyền</th>
-    //                         <th>Thời Gian</th>
-    //                         <th>Hành động</th>
-    //                      </tr>
-    //                      </thead>`;
-    //         users.forEach(u => {
-    //             table += `<tr>
-    //                         <td>${u.iduser}</td>
-    //                         <td>${u.hoten}</td>
-    //                         <td>${u.tendn}</td>
-    //                         <td><img src="${u.anh}" style="width:50px;height:50px;"></td>
-    //                         <td>${u.email}</td>
-    //                         <td>${u.sdt}</td>
-    //                         <td>${u.diachi}</td>
-    //                         <td>${u.quyen}</td>
-    //                         <td>${u.thoigian}</td>
-    //                         <td>
-    //                           <button class="action-btn-user edit-btn-user" onclick="editUser(${u.iduser})"><i class="fas fa-edit"></i></button>
-    //                           <button class="action-btn-user delete-btn-user" onclick="deleteUser(${u.iduser})"><i class="fas fa-trash"></i></button>
-    //                         </td>
-    //                       </tr>`;
-    //         });
-
-    //         document.getElementById('main-content').innerHTML = table + "</table></div>";
-    //     })
-    //     .catch(error => console.error('Lỗi khi lấy danh sách người dùng:', error));
     let xhr = new XMLHttpRequest();
     xhr.open("GET", "hienthinguoidung.php", true);
     xhr.onreadystatechange = function () {
@@ -118,7 +77,14 @@ function loadDLMGG() {
 }
 // Hàm xử lý khi nhấn nút "Thêm Người Dùng"
 function themnguoidung() {
-    window.location.href = "themnguoidung.php";
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "themnguoidung.php", true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            document.getElementById("main-content").innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send();
 }
 
 function goBack() {
@@ -132,4 +98,26 @@ function toggleDetails(orderId) {
     } else {
         details.style.display = 'block';
     }
+}
+function themdanhmuc(id) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "themdmcon.php", true);
+
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            document.getElementById("main-content").innerHTML = xhr.responseText;
+        }
+    };
+
+    // Gửi dữ liệu `iddm` đến server
+    xhr.send("id=" + encodeURIComponent(id));
+}
+
+function capnhatdanhmuc() {
+    alert ("cập nhật danh mục");
+}
+function xoadanhmuc() {
+    alert ("xóa danh mục");
 }

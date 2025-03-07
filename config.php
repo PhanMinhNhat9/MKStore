@@ -214,5 +214,28 @@ function xoaTK($id) {
     }
 } 
 
-
+function themDMcon() {
+//     $pdo = connectDatabase(); 
+//         $tendm = $_POST['tendm'] ?? '';
+//         $mota = $_POST['mota'] ?? '';
+//         $loaidm = $_POST['loaidm'] ?? '';
+//         // Xử lý upload icon
+//         $icon = '';
+//         if (!empty($_FILES['icon']['name'])) {
+//             $target_dir = "uploads/";
+//             $target_file = $target_dir . basename($_FILES["icon"]["name"]);
+//             move_uploaded_file($_FILES["icon"]["tmp_name"], $target_file);
+//             $icon = $target_file;
+//         }
+    
+     
+//             $stmt = $pdo->prepare("INSERT INTO danhmucsp (tendm, loaidm, icon, mota) VALUES (:tendm, :loaidm, :icon, :mota)");
+//             $stmt->execute(['tendm' => $tendm, 'loaidm' => $loaidm, 'icon' => $icon, 'mota' => $mota]);
+//             echo "Danh mục con đã được thêm thành công!";
+        
+    
+// }
+echo "<script> alert('Thêm thành công!');
+        window.location.replace('trangchuadmin.php?id=1');</script>";
+}
 ?>

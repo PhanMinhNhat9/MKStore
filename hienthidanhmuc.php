@@ -27,6 +27,7 @@ foreach ($categories as $category) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh Mục Sản Phẩm</title>
+    <script src="trangchuadmin.js"></script>
     <style>
         /* Định dạng cho việc hiển thị bảng danh mục */
         .dm-table-container {
@@ -139,9 +140,9 @@ foreach ($categories as $category) {
                         <td><?= $parent['mota'] ?></td>
                         <td><?= $parent['thoigian'] ?></td>
                         <td>
-                            <i class="fas fa-plus-circle action-icons" title="Thêm"></i>
-                            <i class="fas fa-edit action-icons" title="Sửa"></i>
-                            <i class="fas fa-trash-alt action-icons" title="Xóa"></i>
+                            <i onclick="themdanhmuc(<?php echo $parent['iddm']; ?>)" class="fas fa-plus-circle action-icons" title="Thêm"></i>
+                            <i onclick="capnhatdanhmuc()" class="fas fa-edit action-icons" title="Sửa"></i>
+                            <i onclick="xoadanhmuc()" class="fas fa-trash-alt action-icons" title="Xóa"></i>
                         </td>
                     </tr>
                     <?php foreach ($parent['children'] as $child): ?>

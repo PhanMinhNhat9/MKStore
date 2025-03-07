@@ -1,92 +1,75 @@
-* {
+.nd-container {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-}
-body {
-    background: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-.container {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     width: 600px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    text-align: center;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 255, 0.2);
+    margin: auto;
+    margin-top: 50px;
 }
 h2 {
-    color: #007bff;
     text-align: center;
-    margin-bottom: 15px;
-    width: 100%;
+    color: #007BFF;
+    margin-bottom: 20px;
+    margin-top: 0px;
 }
-.form-container {
+.nd-form-container {
+    justify-content: space-between;
     display: flex;
-    flex-direction: row;
-    gap: 20px;
+    gap: 15px;
 }
-.left, .right {
-    width: 50%;
+.nd-column {
+    
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 48%;
 }
-.input-group {
+.nd-input-group {
+    display: flex;
+    align-items: center;
     position: relative;
-    margin-bottom: 15px;
+   
 }
-.input-group i {
+.nd-input-group input, .nd-input-group select {
+    width: 100%; /* Đảm bảo input không bị chồng */
+    padding: 10px;
+    padding-left: 40px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+.nd-input-group select {
+    padding: 9px;
+    padding-left: 40px;
+}
+.nd-input-group i {
     position: absolute;
     left: 10px;
     top: 50%;
     transform: translateY(-50%);
-    color: #007bff;
-    transition: color 0.3s ease-in-out;
+    color: #007BFF;
 }
-input, select {
-    width: 100%;
-    padding: 10px 10px 10px 35px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none;
-    transition: border-color 0.3s, box-shadow 0.3s;
+.nhomnut-nd {
+    display: flex;
+    justify-content: space-evenly;
 }
-select {
-    width: 100%;
-    height: 36px;
-    padding: 10px 10px 10px 35px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none;
-    transition: border-color 0.3s, box-shadow 0.3s;
-}
-input:focus, select:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-input:focus + i, select:focus + i {
-    color: rgb(11, 36, 177);
-}
-input[type="submit"] {
-    background: #007bff;
+#nd-trove, #nd-themnd {
+    background: #007BFF;
     color: white;
     border: none;
-    padding: 8px;
-    width: 200px;
+    padding: 10px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
-    transition: 0.3s;
+    width: 200px;
+    font-size: 16px;
+    margin-top: 15px;
 }
-input[type="submit"]:hover {
+#nd-themnd:hover, #nd-trove:hover {
     background: #0056b3;
 }
-input[type="file"] {
-   height: 37px;
-   padding: 7px 0 8px 30px;
+/* Định dạng riêng cho input file */
+.nd-input-group input[type="file"] {
+    padding: 7px 5px 7px 40px; 
 }

@@ -1,7 +1,6 @@
 <?php
 require_once 'config.php';
 $pdo = connectDatabase();
-
 $sql = "SELECT iduser, hoten, tendn, anh, email, matkhau, sdt, diachi, quyen, thoigian FROM user";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
@@ -12,9 +11,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh Sách Người Dùng</title>
-    <!-- Thêm thư viện Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title></title>
+    <link rel="stylesheet" href="fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="hienthinguoidung.css">
+    <script src="trangchuadmin.js"></script>
     <style>
         .table-container {
             max-height: 395px;
@@ -92,11 +92,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             background-color: #007BFF;
             color: white;
         }
-        
     </style>
 </head>
 <body>
-<button class="themnguoidung"><i class="fas fa-plus-circle"></i> Thêm người dùng</button>
+<button onclick="themnguoidung()" class="themnguoidung"><i class="fas fa-plus-circle"></i> Thêm người dùng</button>
     <div class="table-container">
         <table>
             <thead>
@@ -111,7 +110,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>Quyền</th>
                     <th>Thời Gian</th>
                     <th>Hành Động</th>
-                </tr>
+                </tr>  
             </thead>
             <tbody>
                 <?php foreach ($users as $user): ?>
