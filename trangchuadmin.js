@@ -1,11 +1,39 @@
 function activateMenu() {
     const menuItems = document.querySelectorAll(".menu-item");
+    const activeMenuId = localStorage.getItem("activeMenu");
+
+    // Nếu đã lưu trạng thái trước đó, đặt menu active
+    if (activeMenuId) {
+        document.getElementById(activeMenuId)?.classList.add("active");
+    }
+
     menuItems.forEach(item => {
         item.addEventListener("click", function () {
+            // Xóa lớp active khỏi tất cả menu items
             menuItems.forEach(i => i.classList.remove("active"));
+
+            // Thêm lớp active vào item được click
             this.classList.add("active");
+
+            // Lưu trạng thái menu vào localStorage
+            localStorage.setItem("activeMenu", this.id);
+            // Trả về ID menu active
+            return this.id; // Giá trị trả về
         });
     });
+}
+// Hàm để lấy ID menu đang active
+function getActiveMenu() {
+    return localStorage.getItem("activeMenu") || null;
+}
+// Gọi hàm để kích hoạt menu khi tải trang
+//document.addEventListener("DOMContentLoaded", activateMenu);
+
+function reloadCSS(file) {
+    let link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = file + "?v=" + new Date().getTime(); // Thêm timestamp để tránh cache
+    document.head.appendChild(link);
 }
 
 function loadDLUser() {
@@ -14,6 +42,7 @@ function loadDLUser() {
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             document.getElementById("main-content").innerHTML = xhr.responseText;
+            reloadCSS("hienthinguoidung.css"); // Nạp lại CSS
         }
     };
     xhr.send();
@@ -30,7 +59,7 @@ function xoasanpham(idsp) {
 }
 function loadDLSanpham() {
     let xhr = new XMLHttpRequest();
-    xhr.open("GET", "fetch_products.php", true);
+    xhr.open("GET", "hienthisanpham.php", true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             document.getElementById("main-content").innerHTML = xhr.responseText;
@@ -82,13 +111,15 @@ function themnguoidung() {
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             document.getElementById("main-content").innerHTML = xhr.responseText;
+            reloadCSS("themnguoidung.css");
         }
     };
     xhr.send();
 }
 
 function goBack() {
-    window.location.replace("trangchuadmin.html?id=1");
+    // window.location.replace("trangchuadmin.html?id=1");
+    window.location.href = "trangchuadmin.html";
 }
 
 function toggleDetails(orderId) {

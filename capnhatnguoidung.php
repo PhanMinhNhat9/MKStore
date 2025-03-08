@@ -10,7 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cập Nhật Người Dùng</title>
-    <link rel="stylesheet" href="update_user.css">
+    <link rel="stylesheet" href="capnhatnguoidung.css">
     <script src="trangchuadmin.js"></script>
 </head>
 <body>
@@ -48,7 +48,7 @@
                     <input type="text" name="diachi" value="<?php echo $user[0]['diachi']; ?>" required>
 
                     <label>🔒 Mật khẩu mới:</label>
-                    <input type="password" name="matkhau" placeholder="Set lại mk mới!" required>
+                    <input type="password" name="matkhau" placeholder="Set lại mk mới!" >
 
                     <label>🔰 Quyền:</label>
                     <select name="quyen">
@@ -68,13 +68,17 @@
                             $email   = $_POST['email'];
                             $sdt     = $_POST['sdt'];
                             $diachi  = $_POST['diachi'];
+                            $matkhau  = $_POST['matkhau'];
                             $quyen   = $_POST['quyen'];
                             $file    = $_FILES['anh'];
-                            $result = capnhatTK($iduser, $hoten, $tendn, $email, $sdt, $diachi, $quyen, $file);
+                            $result = capnhatTK($iduser, $hoten, $tendn, $email, $sdt, $diachi, $matkhau, $quyen, $file);
                             if ($result === true) {
-                                echo "<script>alert('Cập nhật thành công!');</script>";
+                                echo "<script> 
+                                        alert('Thêm thành công!');
+                                        window.location.href = 'trangchuadmin.html';
+                                      </script>";
                             } else {
-                                echo $result; // Hiển thị lỗi nếu có
+                                echo $result;
                             }
                         }
                     ?>

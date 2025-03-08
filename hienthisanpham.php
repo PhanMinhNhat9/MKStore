@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="fetch_products.css">
+    <title></title>
+    
+    <Script src="trangchuadmin.js"></Script>
 </head>
 <body>
 <div class="product-wrapper">
@@ -80,6 +81,5 @@
         ?>
     </div>
 </div>
-<Script src="trangchuadmin.js"></Script>
 </body>
 </html>

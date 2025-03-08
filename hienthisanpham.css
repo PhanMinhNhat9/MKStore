@@ -33,7 +33,7 @@
 }
 
 .sale-badge {
-    position: absolute;
+    position: relative;
     background: red;
     color: white;
     padding: 3px;

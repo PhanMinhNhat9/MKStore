@@ -1,26 +1,14 @@
-<?php
-require_once 'config.php';
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['themnd'])) {
-        themTK();
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thêm Người Dùng</title>
-    <link rel="stylesheet" href="fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="themnguoidung.css">
-    <script src="trangchuadmin.js"></script>
 </head>
 <body>
     <div class="nd-container">
         <h2>Thêm Người Dùng</h2>
-        <form action="#" method="POST" enctype="multipart/form-data">
+        <form action="config.php" method="POST" enctype="multipart/form-data">
             <div class="nd-form-container">
                 <div class="nd-column">
                     <div class="nd-input-group">
