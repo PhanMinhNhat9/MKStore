@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once '../config.php';
 $pdo = connectDatabase();
 $sql = "SELECT iduser, hoten, tendn, anh, email, matkhau, sdt, diachi, quyen, thoigian FROM user";
 $stmt = $pdo->prepare($sql);
@@ -44,10 +44,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td><?= $user['quyen'] ?></td>
                         <td><?= $user['thoigian'] ?></td>
                         <td>
-                            <a href="capnhatnguoidung.php?id=<?= $user['iduser'] ?>" class="action-icon edit">
+                            <a href="nguoidung/capnhatnguoidung.php?id=<?= $user['iduser'] ?>" class="action-icon edit">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="xoanguoidung.php?id=<?= $user['iduser'] ?>" class="action-icon delete" onclick="return confirm('Bạn có chắc muốn xóa?');">
+                            <a href="nguoidung/xoanguoidung.php?id=<?= $user['iduser'] ?>" class="action-icon delete" onclick="return confirm('Bạn có chắc muốn xóa?');">
                                 <i class="fas fa-trash-alt"></i>
                             </a>
                         </td>

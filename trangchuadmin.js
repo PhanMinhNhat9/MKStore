@@ -1,12 +1,10 @@
 function activateMenu() {
     const menuItems = document.querySelectorAll(".menu-item");
     const activeMenuId = localStorage.getItem("activeMenu");
-
     // Nếu đã lưu trạng thái trước đó, đặt menu active
     if (activeMenuId) {
         document.getElementById(activeMenuId)?.classList.add("active");
     }
-
     menuItems.forEach(item => {
         item.addEventListener("click", function () {
             // Xóa lớp active khỏi tất cả menu items
@@ -38,15 +36,28 @@ function reloadCSS(file) {
 
 function loadDLUser() {
     let xhr = new XMLHttpRequest();
-    xhr.open("GET", "hienthinguoidung.php", true);
+    xhr.open("GET", "nguoidung/hienthinguoidung.php", true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             document.getElementById("main-content").innerHTML = xhr.responseText;
-            reloadCSS("hienthinguoidung.css"); // Nạp lại CSS
+            reloadCSS("nguoidung/hienthinguoidung.css"); // Nạp lại CSS
         }
     };
     xhr.send();
 }
+
+function themnguoidung() {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "nguoidung/themnguoidung.php", true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            document.getElementById("main-content").innerHTML = xhr.responseText;
+            reloadCSS("nguoidung/themnguoidung.css");
+        }
+    };
+    xhr.send();
+}
+
 function capnhatsanpham(idsp) {
     let encodedId = btoa(idsp); // Mã hóa Base64
     window.location.href = "update_product_form.php?id=" + encodeURIComponent(encodedId);
@@ -104,21 +115,22 @@ function loadDLMGG() {
     };
     xhr.send();
 }
-// Hàm xử lý khi nhấn nút "Thêm Người Dùng"
-function themnguoidung() {
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "themnguoidung.php", true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("main-content").innerHTML = xhr.responseText;
-            reloadCSS("themnguoidung.css");
-        }
-    };
-    xhr.send();
-}
+
 
 function goBack() {
     // window.location.replace("trangchuadmin.html?id=1");
+    window.location.href = "trangchuadmin.html";
+}
+function goBackHome() {
+    // Xóa trạng thái menu active trong localStorage
+    localStorage.removeItem("activeMenu");
+
+    // Xóa lớp active khỏi tất cả menu items
+    document.querySelectorAll(".menu-item").forEach(item => {
+        item.classList.remove("active");
+    });
+
+    // Điều hướng về trang chủ (nếu cần)
     window.location.href = "trangchuadmin.html";
 }
 

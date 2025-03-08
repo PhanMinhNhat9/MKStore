@@ -26,7 +26,7 @@
         </div>
         
         <div class="nav-buttons">
-            <button class="btn trangchu"><i class="fas fa-home"></i> Trang chủ</button>
+            <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
             <button class="btn thongbao"><i class="fas fa-bell"></i> Thông báo</button>
             <button class="btn taikhoan"><i class="fas fa-user"></i> Admin</button>
         </div>
@@ -46,10 +46,8 @@
         
         // Gọi activateMenu để thiết lập sự kiện cho menu
         activateMenu();
-
         // Lấy ID menu đang active
         let id = getActiveMenu();
-
         // Kiểm tra ID và gọi hàm tương ứng
         if (id === "menu-user") loadDLUser();
 

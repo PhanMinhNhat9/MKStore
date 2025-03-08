@@ -1,5 +1,5 @@
 <?php
-    include 'config.php'; 
+    include '../config.php'; 
     $iduser = isset($_GET['id']) ? intval($_GET['id']) : 0;
     $user = getAllUsers($iduser); 
 ?>
@@ -11,16 +11,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cập Nhật Người Dùng</title>
     <link rel="stylesheet" href="capnhatnguoidung.css">
-    <script src="trangchuadmin.js"></script>
+    <script src="../trangchuadmin.js"></script>
 </head>
 <body>
     <h2>🔹 Cập Nhật Người Dùng 🔹</h2>
-    <form action="#" method="POST" enctype="multipart/form-data">
+    <form action="../config.php" method="POST" enctype="multipart/form-data">
         <div class="container">
             <!-- Cột Trái: Hình Ảnh -->
             <div class="left">
                 <label>🖼 Ảnh hiện tại:</label><br>
-                <img src="<?= htmlspecialchars($user[0]['anh']) ?>" onerror="this.src='default.png'"><br>
+                <img src="../<?= htmlspecialchars($user[0]['anh']) ?>"><br>
 
                 <label>📸 Chọn ảnh mới:</label>
                 <input type="file" name="anh" accept="image/*">
@@ -57,30 +57,30 @@
                     </select>
 
                     <div class="btn-container">
-                        <button type="submit" class="btn btn-update">💾 Cập Nhật</button>
+                        <button type="submit" name="capnhatnd" class="btn btn-update">💾 Cập Nhật</button>
                         <button type="button" class="btn btn-back" onclick="goBack()">⬅ Trở Về</button>
                     </div>
                     <?php
-                        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                            $iduser  = intval($_POST['iduser']);
-                            $hoten   = $_POST['hoten'];
-                            $tendn   = $_POST['tendn'];
-                            $email   = $_POST['email'];
-                            $sdt     = $_POST['sdt'];
-                            $diachi  = $_POST['diachi'];
-                            $matkhau  = $_POST['matkhau'];
-                            $quyen   = $_POST['quyen'];
-                            $file    = $_FILES['anh'];
-                            $result = capnhatTK($iduser, $hoten, $tendn, $email, $sdt, $diachi, $matkhau, $quyen, $file);
-                            if ($result === true) {
-                                echo "<script> 
-                                        alert('Thêm thành công!');
-                                        window.location.href = 'trangchuadmin.html';
-                                      </script>";
-                            } else {
-                                echo $result;
-                            }
-                        }
+                        // if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                        //     $iduser  = intval($_POST['iduser']);
+                        //     $hoten   = $_POST['hoten'];
+                        //     $tendn   = $_POST['tendn'];
+                        //     $email   = $_POST['email'];
+                        //     $sdt     = $_POST['sdt'];
+                        //     $diachi  = $_POST['diachi'];
+                        //     $matkhau  = $_POST['matkhau'];
+                        //     $quyen   = $_POST['quyen'];
+                        //     $file    = $_FILES['anh'];
+                        //     $result = capnhatNguoiDung($iduser, $hoten, $tendn, $email, $sdt, $diachi, $matkhau, $quyen, $file);
+                        //     if ($result === true) {
+                        //         echo "<script> 
+                        //                 alert('Thêm thành công!');
+                        //                 window.location.href = 'trangchuadmin.html';
+                        //               </script>";
+                        //     } else {
+                        //         echo $result;
+                        //     }
+                        // }
                     ?>
             </div>
         </div>
