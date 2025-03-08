@@ -30,7 +30,7 @@ function getActiveMenu() {
 function reloadCSS(file) {
     let link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = file + "?v=" + new Date().getTime(); // Thêm timestamp để tránh cache
+    link.href = file + "?v=" + new Date().getTime();
     document.head.appendChild(link);
 }
 
@@ -40,7 +40,7 @@ function loadDLUser() {
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             document.getElementById("main-content").innerHTML = xhr.responseText;
-            reloadCSS("nguoidung/hienthinguoidung.css"); // Nạp lại CSS
+            reloadCSS("nguoidung/hienthinguoidung.css");
         }
     };
     xhr.send();
@@ -81,13 +81,26 @@ function loadDLSanpham() {
 function loadDLDanhmuc()
 {
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", "hienthidanhmuc.php", true);
+    xhr.open("POST", "danhmuc/hienthidanhmuc.php", true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             document.getElementById("main-content").innerHTML = xhr.responseText;
+            reloadCSS("danhmuc/hienthidanhmuc.css");
         }
     };
     xhr.send();
+}
+function themdmcon(id) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "danhmuc/themdmcon.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            document.getElementById("main-content").innerHTML = xhr.responseText;
+            reloadCSS("danhmuc/themdmcon.css");
+        }
+    };
+    xhr.send("id=" + encodeURIComponent(id));
 }
 function loadDLDonhang() {
     let xhr = new XMLHttpRequest();
@@ -119,7 +132,7 @@ function loadDLMGG() {
 
 function goBack() {
     // window.location.replace("trangchuadmin.html?id=1");
-    window.location.href = "trangchuadmin.html";
+    window.location.href = "../trangchuadmin.html";
 }
 function goBackHome() {
     // Xóa trạng thái menu active trong localStorage
@@ -131,7 +144,7 @@ function goBackHome() {
     });
 
     // Điều hướng về trang chủ (nếu cần)
-    window.location.href = "trangchuadmin.html";
+    window.location.href = "../trangchuadmin.html";
 }
 
 function toggleDetails(orderId) {
@@ -141,26 +154,4 @@ function toggleDetails(orderId) {
     } else {
         details.style.display = 'block';
     }
-}
-function themdanhmuc(id) {
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "themdmcon.php", true);
-
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("main-content").innerHTML = xhr.responseText;
-        }
-    };
-
-    // Gửi dữ liệu `iddm` đến server
-    xhr.send("id=" + encodeURIComponent(id));
-}
-
-function capnhatdanhmuc() {
-    alert ("cập nhật danh mục");
-}
-function xoadanhmuc() {
-    alert ("xóa danh mục");
 }

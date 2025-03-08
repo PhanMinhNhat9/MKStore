@@ -1,0 +1,91 @@
+/* Định dạng cho việc hiển thị bảng danh mục */
+.dm-table-container {
+    margin: 0 auto;
+    max-height: 390px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: white;
+}
+
+.dm-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+}
+
+.dm-table thead {
+    position: sticky;
+    top: 0;
+    background: #007bff;
+    color: white;
+    z-index: 10;
+}
+
+.dm-table th, .dm-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.dm-table th {
+    background: #007bff;
+    color: #fff;
+    border: 1px solid #ddd;
+}
+
+.dm-table tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+.dm-table img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+.action-icons {
+    cursor: pointer;
+    margin: 0 5px;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.action-icons:hover {
+    transform: scale(1.2);
+    color: #0056b3;
+}
+
+.add-dm-btn {
+    background: none;
+    border: 1px solid #007BFF;
+    color: #007BFF;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 10px 0px;
+    margin-left: 10px;
+    font-size: 14px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.add-dm-btn:hover {
+    background-color: #007BFF;
+    color: white;
+}
+.add-dm-btn i {
+    color: #007BFF;
+}
+.add-dm-btn:hover i {
+    color: white;
+}
+@media (max-width: 768px) {
+    .dm-table-container { width: 90%; }
+    .dm-table th, .dm-table td { font-size: 12px; padding: 6px; }
+}
+
+.fa-plus-circle { color: #28a745; } /* Xanh lá - Thêm */
+.fa-edit { color: #ffc107; } /* Vàng - Sửa */
+.fa-trash-alt { color: #dc3545; } /* Đỏ - Xóa */

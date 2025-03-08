@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm Người Dùng</title>
+    <title></title>
 </head>
 <body>
     <div class="nd-container">
         <h2>Thêm Người Dùng</h2>
-        <form action="config.php" method="POST" enctype="multipart/form-data">
+        <form action=".//config.php" method="POST" enctype="multipart/form-data">
             <div class="nd-form-container">
                 <div class="nd-column">
                     <div class="nd-input-group">

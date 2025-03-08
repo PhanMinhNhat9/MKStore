@@ -39,6 +39,17 @@ h2 {
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
+    outline: none;
+}
+/* Hiệu ứng khi input được focus */
+.nd-input-group input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Khi input focus thì icon cũng đổi màu */
+.nd-input-group input:focus + i {
+    color: #007bff;
 }
 .nd-input-group select {
     padding: 9px;

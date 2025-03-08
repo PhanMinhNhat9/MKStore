@@ -254,35 +254,61 @@
     } 
 
     function themDMcon() {
-    //     $pdo = connectDatabase(); 
-    //         $tendm = $_POST['tendm'] ?? '';
-    //         $mota = $_POST['mota'] ?? '';
-    //         $loaidm = $_POST['loaidm'] ?? '';
-    //         // Xử lý upload icon
-    //         $icon = '';
-    //         if (!empty($_FILES['icon']['name'])) {
-    //             $target_dir = "uploads/";
-    //             $target_file = $target_dir . basename($_FILES["icon"]["name"]);
-    //             move_uploaded_file($_FILES["icon"]["tmp_name"], $target_file);
-    //             $icon = $target_file;
-    //         }
-        
-        
-    //             $stmt = $pdo->prepare("INSERT INTO danhmucsp (tendm, loaidm, icon, mota) VALUES (:tendm, :loaidm, :icon, :mota)");
-    //             $stmt->execute(['tendm' => $tendm, 'loaidm' => $loaidm, 'icon' => $icon, 'mota' => $mota]);
-    //             echo "Danh mục con đã được thêm thành công!";
-            
-        
-    // }
-    echo "<script> alert('Thêm thành công!');
-            </script>";
+        $pdo = connectDatabase(); 
+        $tendm = trim($_POST['tendm'] ?? '');
+        $mota = trim($_POST['mota'] ?? '');
+        $loaidm = trim($_POST['loaidm'] ?? '');
+        // Kiểm tra dữ liệu đầu vào
+        if (empty($tendm) || empty($loaidm)) {
+            echo "<script>alert('Tên danh mục và loại danh mục không được để trống!');</script>";
+            return;
+        }
+        // Xử lý upload icon
+        $icon = '';
+        if (!empty($_FILES['icon']['name'])) {
+            $target_dir = "icon/";
+            $file_name = basename($_FILES["icon"]["name"]);
+            $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+            $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
+            if (!in_array($file_ext, $allowed_types)) {
+                echo "<script>alert('Chỉ chấp nhận các file JPG, JPEG, PNG, GIF!');</script>";
+                return;
+            }
+            $new_file_name = uniqid("icon_") . '.' . $file_ext;
+            $target_file = $target_dir . $new_file_name;
+            if (!move_uploaded_file($_FILES["icon"]["tmp_name"], $target_file)) {
+                echo "<script>alert('Lỗi khi tải lên tệp!');</script>";
+                return;
+            }
+            $icon = $target_file;
+        }
+        try {
+            $stmt = $pdo->prepare("INSERT INTO danhmucsp (tendm, loaidm, icon, mota) VALUES (:tendm, :loaidm, :icon, :mota)");
+            $stmt->execute([
+                'tendm' => $tendm,
+                'loaidm' => $loaidm,
+                'icon' => $icon,
+                'mota' => $mota
+            ]);
+    
+            echo "<script> 
+                    alert('Thêm thành công!');
+                    window.location.href = 'trangchuadmin.html';
+                    </script>";
+        } catch (PDOException $e) {
+            echo "<script>alert('Lỗi: " . $e->getMessage() . "');</script>";
+        }
     }
+    
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_POST['themnd'])) {
             themNguoiDung();
         }
         if (isset($_POST['capnhatnd'])) {
             capnhatNguoiDung();
+        }
+        if (isset($_POST['themdmcon'])) {
+            themDMcon();
         }
     }
 ?>
