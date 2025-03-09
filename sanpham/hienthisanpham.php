@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
-    
     <Script src="trangchuadmin.js"></Script>
 </head>
 <body>
 <div class="product-wrapper">
     <div class="product-container">
         <?php
-        require_once 'config.php';
+        require_once '../config.php';
         $pdo = connectDatabase();
 
         $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong,

@@ -60,20 +60,21 @@ function themnguoidung() {
 
 function capnhatsanpham(idsp) {
     let encodedId = btoa(idsp); // Mã hóa Base64
-    window.location.href = "update_product_form.php?id=" + encodeURIComponent(encodedId);
+    window.location.href = "sanpham/update_product_form.php?id=" + encodeURIComponent(encodedId);
 }
 function xoasanpham(idsp) {
     if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
         let encodedId = btoa(idsp); // Mã hóa Base64
-        window.location.href = "xoasanpham.php?id=" + encodeURIComponent(encodedId);
+        window.location.href = "sanpham/xoasanpham.php?id=" + encodeURIComponent(encodedId);
     }
 }
 function loadDLSanpham() {
     let xhr = new XMLHttpRequest();
-    xhr.open("GET", "hienthisanpham.php", true);
+    xhr.open("GET", "sanpham/hienthisanpham.php", true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             document.getElementById("main-content").innerHTML = xhr.responseText;
+            reloadCSS("sanpham/hienthisanpham.css");
         }
     };
     xhr.send();
@@ -103,7 +104,7 @@ function themdmcon(id) {
     xhr.send("id=" + encodeURIComponent(id));
 }
 function capnhatdanhmuc() {
- 
+    window.location.href = "danhmuc/capnhatdanhmuc.php";
 }
 function loadDLDonhang() {
     let xhr = new XMLHttpRequest();
@@ -123,7 +124,7 @@ function closeModal(id) {
 }
 function loadDLMGG() {
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", "hienthimgg.php", true);
+    xhr.open("POST", "khuyenmai/hienthimgg.php", true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             document.getElementById("main-content").innerHTML = xhr.responseText;
@@ -147,7 +148,7 @@ function goBackHome() {
     });
 
     // Điều hướng về trang chủ (nếu cần)
-    window.location.href = "../trangchuadmin.html";
+    window.location.href = "trangchuadmin.html";
 }
 
 function toggleDetails(orderId) {

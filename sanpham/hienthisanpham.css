@@ -101,6 +101,13 @@ h3 {
     color: white;
 }
 
-.btn:hover {
-    opacity: 0.8;
+.btn-update:hover {
+    background: #035fc2;
+    color: white;
+    transition: background 0.3s;
+}
+.btn-delete:hover {
+    background: #a31422;
+    color: white;
+    transition: background 0.3s;
 }

@@ -1,5 +1,5 @@
 <?php
-include 'config.php'; // Kết nối CSDL
+include '../config.php'; // Kết nối CSDL
 $conn = connectDatabase(); // Hàm kết nối trả về đối tượng PDO
 
 if (isset($_GET['id'])) {

@@ -299,19 +299,17 @@
             echo "<script>alert('Lỗi: " . $e->getMessage() . "');</script>";
         }
     }
-    function capnhatDanhMuc() {
-        require_once '../config.php';
-        $pdo = connectDatabase();
 
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    function capnhatDanhMuc() {
+        $pdo = connectDatabase();
             $iddm = $_POST['iddm'];
             $tendm = $_POST['tendm'];
             $loaidm = $_POST['loaidm'] ?? 0; 
             $mota = $_POST['mota'];
-            $icon = $_POST['icon_old']; 
+            $icon = $_POST['icon']; 
 
             if (!empty($_FILES['icon_new']['name'])) {
-                $targetDir = "../uploads/";
+                $targetDir = "icon/";
                 $fileName = basename($_FILES["icon_new"]["name"]);
                 $targetFilePath = $targetDir . $fileName;
                 $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
@@ -320,7 +318,7 @@
                 $allowTypes = ['jpg', 'png', 'jpeg', 'gif'];
                 if (in_array($fileType, $allowTypes)) {
                     if (move_uploaded_file($_FILES["icon_new"]["tmp_name"], $targetFilePath)) {
-                        $icon = "uploads/" . $fileName; // Lưu đường dẫn ảnh mới vào DB
+                        $icon = "icon/" . $fileName; // Lưu đường dẫn ảnh mới vào DB
                     }
                 }
             }
@@ -335,13 +333,57 @@
             $stmt->bindParam(':iddm', $iddm);
 
             if ($stmt->execute()) {
-                header("Location: danhmuc.php?success=1");
-                exit();
+                echo "<script>alert('Cập nhật danh mục thành công!'); window.location.href='danhmuc/capnhatdanhmuc.php';</script>";
             } else {
                 echo "Lỗi cập nhật danh mục.";
             }
         }
+    
+    function xoaDanhMuc() {
+        $pdo = connectDatabase();
+    
+            $iddm = $_POST['iddm'];
+    
+            // Kiểm tra xem danh mục có danh mục con không
+            $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM danhmucsp WHERE loaidm = ?");
+            $stmtCheck->execute([$iddm]);
+            $count = $stmtCheck->fetchColumn();
+    
+            if ($count > 0) {
+                echo "<script>alert('Không thể xóa! Hãy xóa danh mục con trước.');</script>";
+                return;
+            }
+    
+            // Xóa danh mục
+            $stmt = $pdo->prepare("DELETE FROM danhmucsp WHERE iddm = ?");
+            if ($stmt->execute([$iddm])) {
+                echo "<script>alert('Xóa danh mục thành công!'); window.location.href='danhmuc/capnhatdanhmuc.php';</script>";
+            } else {
+                echo "<script>alert('Xóa danh mục thất bại!');</script>";
+            }
+        }
+    
+    function capnhatMGG() {
+        // Xử lý cập nhật khi gửi form
+        $code = $_POST['code'];
+        $phantram = $_POST['phantram'];
+        $idsp = $_POST['idsp'];
+        $iddm = $_POST['iddm'];
+        $ngayhieuluc = $_POST['ngayhieuluc'];
+        $ngayketthuc = $_POST['ngayketthuc'];
+
+        $sql = "UPDATE magiamgia 
+                SET code=?, phantram=?, idsp=?, iddm=?, ngayhieuluc=?, ngayketthuc=? 
+                WHERE idmgg=?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$code, $phantram, $idsp, $iddm, $ngayhieuluc, $ngayketthuc, $idmgg]);
+
+        // Chuyển hướng về trang danh sách
+        header("Location: danh_sach_magiamgia.php");
+        exit;
+
     }
+    
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_POST['themnd'])) {
             themNguoiDung();
@@ -352,5 +394,12 @@
         if (isset($_POST['themdmcon'])) {
             themDMcon();
         }
+        if (isset($_POST['capnhatdm'])) {
+            capnhatDanhMuc();
+        }
+        if (isset($_POST['xoadm'])) {
+            xoaDanhMuc();
+        }
+
     }
 ?>

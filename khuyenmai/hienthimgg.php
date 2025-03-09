@@ -1,12 +1,21 @@
 <?php
-require_once 'config.php';
+require_once '../config.php';
 $pdo = connectDatabase();
 
-// Truy vấn dữ liệu từ bảng magiamgia
-$sql = "SELECT idmgg, code, idsp, iddm, phantram, ngayhieuluc, ngayketthuc, thoigian FROM magiamgia";
+// Truy vấn dữ liệu từ hai bảng
+$sql = "SELECT mg.idmgg, mg.code, mg.phantram, mg.ngayhieuluc, mg.ngayketthuc, mg.thoigian, 
+               GROUP_CONCAT(DISTINCT ct.idsp ORDER BY ct.idsp ASC SEPARATOR ', ') AS ds_sanpham,
+               GROUP_CONCAT(DISTINCT ct.iddm ORDER BY ct.iddm ASC SEPARATOR ', ') AS ds_danhmuc
+        FROM magiamgia mg
+        LEFT JOIN magiamgia_chitiet ct ON mg.idmgg = ct.idmgg
+        GROUP BY mg.idmgg";
+
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Lấy ngày hiện tại
+$currentDate = date('Y-m-d');
 ?>
 
 <!DOCTYPE html>
@@ -14,7 +23,7 @@ $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách Mã Giảm Giá</title>
+    <title>Danh Sách Mã Giảm Giá</title>
     <style>
         .coupon-container {
             display: flex;
@@ -23,16 +32,15 @@ $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
             gap: 15px;
             max-width: 100%;
             overflow-y: auto;
-            max-height: 425px;
+            max-height: 450px;
             padding: 10px;
-
         }
         .coupon-card {
             background: linear-gradient(135deg, #4a90e2, #86c5da);
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 200px;
+            width: 250px;
             transition: transform 0.3s ease-in-out;
             flex-shrink: 0;
             color: #fff;
@@ -58,6 +66,24 @@ $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         .coupon-info p {
             margin: 4px 0;
+        }
+        .apply-notice {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #ffeb3b;
+            text-align: center;
+        }
+        .expired-label {
+            background: #e74c3c;
+            color: white;
+            padding: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 5px;
+            text-align: center;
+            display: inline-block;
+            margin-top: 10px;
         }
         .action-buttons {
             display: flex;
@@ -89,7 +115,6 @@ $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
             background: #27ae60;
         }
     </style>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="coupon-container">
@@ -98,14 +123,34 @@ $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="coupon-code">Mã: <?= htmlspecialchars($coupon['code']) ?></div>
                 <div class="coupon-info">
                     <p>🔖 Giảm: <strong><?= $coupon['phantram'] ?>%</strong></p>
-                    <p>📦 ID Sản phẩm: <?= $coupon['idsp'] ?></p>
-                    <p>📂 ID Danh mục: <?= $coupon['iddm'] ?></p>
                     <p>📅 Hiệu lực: <?= $coupon['ngayhieuluc'] ?></p>
                     <p>⏳ Hết hạn: <?= $coupon['ngayketthuc'] ?></p>
                     <p>🕒 Thời gian: <?= $coupon['thoigian'] ?></p>
                 </div>
+
+                <!-- Kiểm tra xem mã đã hết hạn chưa -->
+                <?php if ($coupon['ngayketthuc'] < $currentDate): ?>
+                    <div class="expired-label">⏳ Hết hạn</div>
+                <?php endif; ?>
+
+                <!-- Hiển thị thông báo áp dụng -->
+                <div class="apply-notice">
+                    <?php
+                    $dsSanPham = $coupon['ds_sanpham'];
+                    $dsDanhMuc = $coupon['ds_danhmuc'];
+
+                    if ($dsSanPham && !$dsDanhMuc) {
+                        echo "📦 Mã giảm giá này chỉ áp dụng cho sản phẩm.";
+                    } elseif (!$dsSanPham && $dsDanhMuc) {
+                        echo "📂 Mã giảm giá này chỉ áp dụng cho danh mục.";
+                    } else {
+                        echo "🌍 Mã giảm giá này áp dụng toàn bộ cửa hàng.";
+                    }
+                    ?>
+                </div>
+
                 <div class="action-buttons">
-                    <a href="#?id=<?= $coupon['idmgg'] ?>" class="edit-btn">
+                    <a href="khuyenmai/capnhatmgg.php?id=<?= $coupon['idmgg'] ?>" class="edit-btn">
                         <i class="fas fa-edit"></i> Cập nhật
                     </a>
                     <a href="#?id=<?= $coupon['idmgg'] ?>" class="delete-btn" onclick="return confirm('Bạn có chắc chắn muốn xóa mã này không?');">

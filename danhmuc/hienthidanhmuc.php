@@ -52,7 +52,7 @@ foreach ($categories as $category) {
                         <td><?= $parent['thoigian'] ?></td>
                         <td>
                             <i onclick="themdmcon(<?php echo $parent['iddm']; ?>)" class="fas fa-plus-circle action-icons" title="Thêm"></i>
-                            <i onclick="capnhatdanhmuc(<?php echo $parent['iddm']; ?>)" class="fas fa-edit action-icons" title="Sửa"></i>
+                            <i onclick="capnhatdanhmuc()" class="fas fa-edit action-icons" title="Sửa"></i>
                             <i onclick="xoadanhmuccha()" class="fas fa-trash-alt action-icons" title="Xóa"></i>
                         </td>
                     </tr>
@@ -63,10 +63,6 @@ foreach ($categories as $category) {
                             <td><img src="<?= $child['icon'] ?>" class="icon" alt="Icon"></td>
                             <td><?= $child['mota'] ?></td>
                             <td><?= $child['thoigian'] ?></td>
-                            <td>
-                            <i onclick="capnhatdanhmuccon()" class="fas fa-edit action-icons" title="Sửa"></i>
-                            <i onclick="xoadanhmuccon()" class="fas fa-trash-alt action-icons" title="Xóa"></i>
-                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endforeach; ?>
