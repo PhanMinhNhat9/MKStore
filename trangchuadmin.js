@@ -102,8 +102,8 @@ function themdmcon(id) {
     };
     xhr.send("id=" + encodeURIComponent(id));
 }
-function capnhatdanhmuc(id) {
-    
+function capnhatdanhmuc() {
+ 
 }
 function loadDLDonhang() {
     let xhr = new XMLHttpRequest();

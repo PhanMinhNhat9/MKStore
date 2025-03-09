@@ -299,7 +299,49 @@
             echo "<script>alert('Lỗi: " . $e->getMessage() . "');</script>";
         }
     }
-    
+    function capnhatDanhMuc() {
+        require_once '../config.php';
+        $pdo = connectDatabase();
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $iddm = $_POST['iddm'];
+            $tendm = $_POST['tendm'];
+            $loaidm = $_POST['loaidm'] ?? 0; 
+            $mota = $_POST['mota'];
+            $icon = $_POST['icon_old']; 
+
+            if (!empty($_FILES['icon_new']['name'])) {
+                $targetDir = "../uploads/";
+                $fileName = basename($_FILES["icon_new"]["name"]);
+                $targetFilePath = $targetDir . $fileName;
+                $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
+
+                // Chỉ cho phép các định dạng ảnh hợp lệ
+                $allowTypes = ['jpg', 'png', 'jpeg', 'gif'];
+                if (in_array($fileType, $allowTypes)) {
+                    if (move_uploaded_file($_FILES["icon_new"]["tmp_name"], $targetFilePath)) {
+                        $icon = "uploads/" . $fileName; // Lưu đường dẫn ảnh mới vào DB
+                    }
+                }
+            }
+
+            // Cập nhật dữ liệu vào cơ sở dữ liệu
+            $sql = "UPDATE danhmucsp SET tendm = :tendm, loaidm = :loaidm, icon = :icon, mota = :mota WHERE iddm = :iddm";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':tendm', $tendm);
+            $stmt->bindParam(':loaidm', $loaidm);
+            $stmt->bindParam(':icon', $icon);
+            $stmt->bindParam(':mota', $mota);
+            $stmt->bindParam(':iddm', $iddm);
+
+            if ($stmt->execute()) {
+                header("Location: danhmuc.php?success=1");
+                exit();
+            } else {
+                echo "Lỗi cập nhật danh mục.";
+            }
+        }
+    }
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_POST['themnd'])) {
             themNguoiDung();

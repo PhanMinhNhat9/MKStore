@@ -30,15 +30,8 @@ $danhmucCha = $stmtCha->fetchAll(PDO::FETCH_ASSOC);
             font-family: Arial, sans-serif;
         }
         body {
-            background-color: #f8f9fa;
+            background-color:rgb(255, 255, 255);
             padding: 20px;
-        }
-        .container {
-            width: 90%;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         h2 {
             text-align: center;
@@ -97,12 +90,18 @@ $danhmucCha = $stmtCha->fetchAll(PDO::FETCH_ASSOC);
             width: 30px;
             height: 30px;
         }
+        thead {
+            position: sticky;
+            top: 0;
+            background: #007bff;
+            z-index: 2;
+        }
+
+
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2><i class="fas fa-edit"></i> Cập nhật danh mục</h2>
     <div class="table-container">
         <table>
             <thead>
@@ -119,7 +118,7 @@ $danhmucCha = $stmtCha->fetchAll(PDO::FETCH_ASSOC);
             <tbody>
                 <?php foreach ($danhmuc as $dm) { ?>
                 <tr>
-                    <form action="update_dm.php" method="POST">
+                    <form action="../config.php" method="POST" enctype="multipart/form-data">
                         <td><?php echo $dm['iddm']; ?></td>
                         <td><input type="text" name="tendm" value="<?php echo $dm['tendm']; ?>"></td>
                         <td>
@@ -133,11 +132,11 @@ $danhmucCha = $stmtCha->fetchAll(PDO::FETCH_ASSOC);
                                     <?php } ?>
                                 </select>
                             <?php } else { ?>
-                                <i class="fas fa-folder"></i> Danh mục cha
+                                <i class="fas fa-folder" style="color: blue;"></i> Danh mục cha
                             <?php } ?>
                         </td>
                         <td>
-                            <img id="icon" src="../<?php echo $dm['icon'] ?>">
+                            <img id="icon" name="icon" src="../<?php echo $dm['icon'] ?>">
                         </td>
                         <td>
                             <input type="file" name="icon_new" accept="image/*" onchange="previewImage(this, 'preview-<?php echo $dm['iddm']; ?>')">
@@ -154,21 +153,18 @@ $danhmucCha = $stmtCha->fetchAll(PDO::FETCH_ASSOC);
             </tbody>
         </table>
     </div>
-</div>
-
-<script>
-function previewImage(input, previewId) {
-    let file = input.files[0];
-    let preview = document.getElementById(previewId);
-    if (file) {
-        let reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-</script>
-
+    <script>
+        function previewImage(input, previewId) {
+            let file = input.files[0];
+            let preview = document.getElementById(previewId);
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </body>
 </html>
