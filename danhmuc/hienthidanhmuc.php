@@ -52,7 +52,7 @@ foreach ($categories as $category) {
                         <td><?= $parent['thoigian'] ?></td>
                         <td>
                             <i onclick="themdmcon(<?php echo $parent['iddm']; ?>)" class="fas fa-plus-circle action-icons" title="Thêm"></i>
-                            <i onclick="capnhatdanhmuccha()" class="fas fa-edit action-icons" title="Sửa"></i>
+                            <i onclick="capnhatdanhmuc(<?php echo $parent['iddm']; ?>)" class="fas fa-edit action-icons" title="Sửa"></i>
                             <i onclick="xoadanhmuccha()" class="fas fa-trash-alt action-icons" title="Xóa"></i>
                         </td>
                     </tr>

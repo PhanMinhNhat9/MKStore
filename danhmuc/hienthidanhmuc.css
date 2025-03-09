@@ -1,7 +1,7 @@
 /* Định dạng cho việc hiển thị bảng danh mục */
 .dm-table-container {
     margin: 0 auto;
-    max-height: 390px;
+    max-height: 375px;
     overflow-y: auto;
     border: 1px solid #ddd;
     border-radius: 5px;

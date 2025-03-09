@@ -18,7 +18,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         .table-container {
-            max-height: 395px;
+            max-height: 375px;
             overflow-y: auto;
             border: 1px solid #ddd;
             border-radius: 5px;

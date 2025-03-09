@@ -102,6 +102,9 @@ function themdmcon(id) {
     };
     xhr.send("id=" + encodeURIComponent(id));
 }
+function capnhatdanhmuc(id) {
+    
+}
 function loadDLDonhang() {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "hienthidonhang.php", true);
