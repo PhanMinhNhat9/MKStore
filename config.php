@@ -383,7 +383,38 @@
         exit;
 
     }
-    
+    function themMGG() {
+        $pdo = connectDatabase();
+        $code = trim($_POST['code']);
+        $phantram = (int) $_POST['phantram'];
+        $ngayhieuluc = $_POST['ngayhieuluc'];
+        $ngayketthuc = $_POST['ngayketthuc'];
+
+        if (empty($code) || empty($phantram) || empty($ngayhieuluc) || empty($ngayketthuc)) {
+            die("Vui lòng nhập đầy đủ thông tin!");
+        }
+
+        if ($phantram <= 0 || $phantram > 100) {
+            die("Phần trăm giảm phải từ 1 đến 100!");
+        }
+
+        try {
+            $sql = "INSERT INTO magiamgia (code, phantram, ngayhieuluc, ngayketthuc) VALUES (:code, :phantram, :ngayhieuluc, :ngayketthuc)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':code', $code, PDO::PARAM_STR);
+            $stmt->bindParam(':phantram', $phantram, PDO::PARAM_INT);
+            $stmt->bindParam(':ngayhieuluc', $ngayhieuluc, PDO::PARAM_STR);
+            $stmt->bindParam(':ngayketthuc', $ngayketthuc, PDO::PARAM_STR);
+            
+            if ($stmt->execute()) {
+                echo "<script>alert('hêm mã giảm giá thành công!'); window.location.href='danhmuc/hienthimgg.php';</script>";
+            } else {
+                echo "Lỗi khi thêm mã giảm giá!";
+            }
+        } catch (PDOException $e) {
+            echo "Lỗi: " . $e->getMessage();
+        }
+    }
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_POST['themnd'])) {
             themNguoiDung();
@@ -400,6 +431,8 @@
         if (isset($_POST['xoadm'])) {
             xoaDanhMuc();
         }
-
+        if (isset($_POST['themmgg'])) {
+            themMGG();
+        }
     }
 ?>

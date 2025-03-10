@@ -14,13 +14,13 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title></title>
 </head>
 <body>
-    <button onclick="themnguoidung()" class="themnguoidung">
-        <i class="fas fa-plus-circle"></i> Thêm người dùng</button>
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>ID <button onclick="themnguoidung()" class="themnguoidung">
+                        <i class="fas fa-plus-circle"></i> Thêm</button>
+                    </th>
                     <th>Họ Tên</th>
                     <th>Tên Đăng Nhập</th>
                     <th>Ảnh</th>
@@ -59,3 +59,4 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </body>
 </html>
+

@@ -1,0 +1,68 @@
+.table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+th {
+    background-color: #007BFF;
+    color: white;
+}
+.expired {
+    background-color: #e74c3c;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+}
+.actions a {
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin: 2px;
+    display: inline-block;
+    transition: transform 0.2s ease-in-out;
+}
+.edit-btn {
+    background: #007BFF;
+    color: white;
+}
+.delete-btn {
+    background: #e74c3c;
+    color: white;
+}
+.edit-btn:hover, .delete-btn:hover {
+    transform: scale(1.1);
+}
+.actions a i {
+    margin-right: 5px;
+}
+.add-mgg-btn {
+    background: none;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 12px;
+    transition: background 0.3s, color 0.3s;
+}
+.add-mgg-btn:hover {
+    background-color: #ffffff;
+    color: #007BFF;
+}
+.add-mgg-btn i {
+    color: #ffffff;
+}
+.add-mgg-btn:hover i {
+    color: #007BFF;
+}

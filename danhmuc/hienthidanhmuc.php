@@ -29,7 +29,6 @@ foreach ($categories as $category) {
     <title></title>
 </head>
 <body>
-    <button class="add-dm-btn" onclick=""><i class="fas fa-plus-circle"></i> Thêm danh mục gốc</button>
     <div class="dm-table-container">
         <table class="dm-table">
             <thead>

@@ -22,86 +22,15 @@ $currentDate = date('Y-m-d');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh Sách Mã Giảm Giá</title>
     <link rel="stylesheet" href="fontawesome/css/all.min.css">
-    <style>
-        .table-container {
-            max-height: 375px;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: white;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-        }
-        th {
-            background-color: #007BFF;
-            color: white;
-        }
-        .expired {
-            background-color: #e74c3c;
-            color: white;
-            padding: 5px;
-            border-radius: 5px;
-        }
-        .actions a {
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin: 2px;
-            display: inline-block;
-            transition: transform 0.2s ease-in-out;
-        }
-        .edit-btn {
-            background: #007BFF;
-            color: white;
-        }
-        .delete-btn {
-            background: #e74c3c;
-            color: white;
-        }
-        .edit-btn:hover, .delete-btn:hover {
-            transform: scale(1.1);
-        }
-        .actions a i {
-            margin-right: 5px;
-        }
-        .add-mgg-btn {
-            background: none;
-            border: 1px solid #007BFF;
-            color: #007BFF;
-            padding: 8px 12px;
-            cursor: pointer;
-            border-radius: 4px;
-            margin: 10px 0px;
-            margin-left: 10px;
-            font-size: 14px;
-            transition: background 0.3s, color 0.3s;
-        }
-        .add-mgg-btn:hover {
-            background-color: #007BFF;
-            color: white;
-        }
-        .add-mgg-btn i {
-            color: #007BFF;
-        }
-        .add-mgg-btn:hover i {
-            color: white;
-        }
-    </style>
 </head>
 <body>
-    <button class="add-mgg-btn" onclick=""><i class="fas fa-plus-circle"></i> Thêm danh MGG</button>
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th>Mã</th>
+                    <th>Mã <button onclick="themmgg()" class="add-mgg-btn">
+                        <i class="fas fa-plus-circle"></i> Thêm</button>
+                    </th>
                     <th>Giảm (%)</th>
                     <th>Hiệu lực</th>
                     <th>Hết hạn</th>
@@ -134,7 +63,7 @@ $currentDate = date('Y-m-d');
                             <a href="khuyenmai/capnhatmgg.php?id=<?= $coupon['idmgg'] ?>" class="edit-btn">
                                 <i class="fas fa-edit"></i> Cập nhật
                             </a>
-                            <a href="#?id=<?= $coupon['idmgg'] ?>" class="delete-btn" onclick="return confirm('Bạn có chắc chắn muốn xóa mã này không?');">
+                            <a href="khuyenmai/xoamgg.php?id=<?= $coupon['idmgg'] ?>" class="delete-btn" onclick="return confirm('Bạn có chắc chắn muốn xóa mã này không?');">
                                 <i class="fas fa-trash"></i> Xóa
                             </a>
                         </td>

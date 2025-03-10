@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once '../config.php';
 $pdo = connectDatabase();
 
 // Truy vấn đơn hàng
@@ -14,16 +14,14 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Đơn Hàng</title>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <title></title>
     <style>
         .table-container {
-            max-height: 375px;
+            max-height: 400px;
             overflow-y: auto;
             border: 1px solid #ddd;
             border-radius: 5px;
             background: white;
-            margin-top: 10px;
         }
         table {
             width: 100%;
@@ -46,42 +44,43 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
         .status.pending {
             color: red;
         }
-        .edit-btn, .pay-btn {
+        .edit-btn {
             cursor: pointer;
             background: none;
             border: none;
             color: #007bff;
             font-size: 16px;
         }
-        .top-actions {
-            margin: 10px 0px;
-            
-        }
-        .top-actions .pay-btn {
+        .pay-btn {
             background: none;
-    border: 1px solid #007BFF;
-    color: #007BFF;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-left: 10px;
-    font-size: 14px;
+            border: 1px solid #ffffff;
+            color: #ffffff;
+            padding: 6px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 12px;
+            transition: background 0.3s, color 0.3s;
         }
-        .top-actions .pay-btn:hover {
-            background-color: #007BFF;
-    color: white;
+        .pay-btn:hover {
+            background-color: #ffffff;
+            color: #007BFF;
+        }
+        .pay-btn i {
+            color: #ffffff;
+        }
+        .pay-btn:hover i {
+            color: #007BFF;
         }
     </style>
 </head>
 <body>
-    <div class="top-actions">
-        <button class="pay-btn"><i class="fas fa-wallet"></i> Thanh toán</button>
-    </div>
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th><i class="fas fa-file-invoice icon"></i>Mã ĐH</th>
+                    <th><i class="fas fa-file-invoice icon"></i>Mã ĐH 
+                        <button class="pay-btn"><i class="fas fa-wallet"></i> Thanh toán</button>
+                    </th>
                     <th><i class="fas fa-user icon"></i>Khách hàng</th>
                     <th><i class="fas fa-money-bill icon"></i>Tổng tiền</th>
                     <th><i class="fas fa-check-circle icon"></i>Trạng thái</th>

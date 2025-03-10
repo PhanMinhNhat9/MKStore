@@ -34,6 +34,16 @@ function reloadCSS(file) {
     document.head.appendChild(link);
 }
 
+function loadPhanHoi() {
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "phanhoi/hienthiphanhoi.php", true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            document.getElementById("main-content").innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send();
+}
 function loadDLUser() {
     let xhr = new XMLHttpRequest();
     xhr.open("GET", "nguoidung/hienthinguoidung.php", true);
@@ -108,7 +118,7 @@ function capnhatdanhmuc() {
 }
 function loadDLDonhang() {
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", "hienthidonhang.php", true);
+    xhr.open("POST", "donhang/hienthidonhang.php", true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             document.getElementById("main-content").innerHTML = xhr.responseText;
@@ -128,11 +138,22 @@ function loadDLMGG() {
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             document.getElementById("main-content").innerHTML = xhr.responseText;
+            reloadCSS("khuyenmai/hienthimgg.css");
         }
     };
     xhr.send();
 }
-
+function themmgg() {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "khuyenmai/themmgg.php", true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            document.getElementById("main-content").innerHTML = xhr.responseText;
+            reloadCSS("khuyenmai/themmgg.css");
+        }
+    };
+    xhr.send();
+}
 
 function goBack() {
     // window.location.replace("trangchuadmin.html?id=1");
