@@ -2,40 +2,28 @@
 require_once '../config.php';
 $pdo = connectDatabase();
 
-// Lấy ID mã giảm giá từ URL
 $idmgg = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// Truy vấn lấy dữ liệu mã giảm giá
-$sql = "SELECT * FROM magiamgia WHERE idmgg = ?";
+$sql = "SELECT * FROM magiamgia WHERE idmgg = :idmgg";
 $stmt = $pdo->prepare($sql);
-$stmt->execute([$idmgg]);
+$stmt->execute(['idmgg' => $idmgg]);
 $coupon = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Nếu không tìm thấy, chuyển hướng về danh sách
-if (!$coupon) {
-    header("Location: danh_sach_magiamgia.php");
-    exit;
-}
+$sqlProducts = "SELECT idsp, tensp FROM sanpham";
+$stmtProducts = $pdo->query($sqlProducts);
+$products = $stmtProducts->fetchAll(PDO::FETCH_ASSOC);
 
-// Xử lý cập nhật khi form được gửi
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $code = $_POST['code'];
-    $phantram = $_POST['phantram'];
-    $idsp = $_POST['idsp'];
-    $iddm = $_POST['iddm'];
-    $ngayhieuluc = $_POST['ngayhieuluc'];
-    $ngayketthuc = $_POST['ngayketthuc'];
+$sqlCategories = "SELECT iddm, tendm FROM danhmucsp";
+$stmtCategories = $pdo->query($sqlCategories);
+$categories = $stmtCategories->fetchAll(PDO::FETCH_ASSOC);
 
-    $sql = "UPDATE magiamgia 
-            SET code=?, phantram=?, idsp=?, iddm=?, ngayhieuluc=?, ngayketthuc=? 
-            WHERE idmgg=?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$code, $phantram, $idsp, $iddm, $ngayhieuluc, $ngayketthuc, $idmgg]);
+$sqlApplied = "SELECT idsp, iddm FROM magiamgia_chitiet WHERE idmgg = :idmgg";
+$stmtApplied = $pdo->prepare($sqlApplied);
+$stmtApplied->execute(['idmgg' => $idmgg]);
+$appliedItems = $stmtApplied->fetchAll(PDO::FETCH_ASSOC);
 
-    // Chuyển hướng về danh sách sau khi cập nhật
-    header("Location: danh_sach_magiamgia.php");
-    exit;
-}
+$appliedProducts = array_column($appliedItems, 'idsp');
+$appliedCategories = array_column($appliedItems, 'iddm');
 ?>
 
 <!DOCTYPE html>
@@ -43,140 +31,151 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cập nhật Mã Giảm Giá</title>
+    <title>Cập Nhật Mã Giảm Giá</title>
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4f9ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+            background-color: #f0f8ff;
+            margin: 20px;
         }
         .container {
-            display: flex;
+            max-width: 1100px;
+            margin: auto;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
-            width: 800px;
-            overflow: hidden;
-        }
-        .info-container, .form-container {
             padding: 20px;
-            width: 50%;
-            padding-right: 35px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        .info-container {
-            background: #007bff;
-            color: white;
+        .form-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
         }
-        .info-container h2 {
-            font-size: 22px;
-            margin-bottom: 15px;
+        .section {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
         }
-        .info-item {
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        .form-container h2 {
+        h2, h3 {
             text-align: center;
-            font-size: 22px;
-            margin-bottom: 20px;
-            color: #007bff;
-        }
-        .form-group {
-            margin-bottom: 15px;
+            color: #007BFF;
         }
         label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #007bff;
+            font-weight: bold;
             display: block;
-            margin-bottom: 5px;
+            margin-top: 10px;
         }
-        .form-control {
-            width: 100%;
-            font-size: 14px;
-            padding: 8px;
+        input, select {
+            width: 90%;
+            padding: 4px;
+            margin-top: 5px;
+            border-radius: 5px;
             border: 1px solid #ccc;
-            border-radius: 5px;
-            outline: none;
-            transition: 0.3s;
+            font-size: 13px;
+            text-align: center;
         }
-        .form-control:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        .actions {
+            text-align: center;
+            margin-top: 10px;
         }
-        .btn-custom {
-            background: #007bff;
+        .save-btn {
+            background: #007BFF;
             color: white;
-            transition: 0.3s;
-            font-size: 14px;
-            padding: 10px;
-            width: 100%;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
+            transition: 0.3s;
+            padding: 4px 12px;
+            font-size: 13px;
         }
-        .btn-custom:hover {
+        .save-btn:hover {
             background: #0056b3;
         }
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            color: #007bff;
-            text-decoration: none;
+        .table-container {
+            max-height: 180px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            margin-top: 10px;
         }
-        .back-link:hover {
-            text-decoration: underline;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th, td {
+            padding: 5px;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        .checkbox {
+            text-align: center;
+        }
+        .icon {
+            margin-right: 5px;
         }
     </style>
 </head>
 <body>
+    <h2><i class="fas fa-tags icon"></i>Cập Nhật Mã Giảm Giá</h2>
     <div class="container">
-        <div class="info-container">
-            <h2>Thông tin Mã Giảm Giá</h2>
-            <div class="info-item"><strong>Mã:</strong> <?= htmlspecialchars($coupon['code']) ?></div>
-            <div class="info-item"><strong>Phần trăm:</strong> <?= $coupon['phantram'] ?>%</div>
-            <div class="info-item"><strong>ID Sản phẩm:</strong> <?= $coupon['idsp'] ?></div>
-            <div class="info-item"><strong>ID Danh mục:</strong> <?= $coupon['iddm'] ?></div>
-            <div class="info-item"><strong>Ngày hiệu lực:</strong> <?= $coupon['ngayhieuluc'] ?></div>
-            <div class="info-item"><strong>Ngày kết thúc:</strong> <?= $coupon['ngayketthuc'] ?></div>
-        </div>
-        <div class="form-container">
-            <h2>Cập nhật</h2>
-            <form method="POST">
-                <div class="form-group">
-                    <label>Mã giảm giá:</label>
-                    <input type="text" name="code" class="form-control" value="<?= htmlspecialchars($coupon['code']) ?>" required>
+        <form action="capnhattientrinh.php" method="post">
+            <div class="form-container">
+                <div class="section">
+                    <input type="hidden" name="idmgg" value="<?= $coupon['idmgg'] ?>">
+                    <label for="code"><i class="fas fa-barcode icon"></i>Mã Giảm Giá:</label>
+                    <input type="text" id="code" name="code" value="<?= htmlspecialchars($coupon['code']) ?>" required>
+                    
+                    <label for="phantram"><i class="fas fa-percent icon"></i>Phần Trăm Giảm:</label>
+                    <input type="number" id="phantram" name="phantram" value="<?= $coupon['phantram'] ?>" required>
+                    
+                    <label for="ngayhieuluc"><i class="fas fa-calendar-alt icon"></i>Ngày Hiệu Lực:</label>
+                    <input type="date" id="ngayhieuluc" name="ngayhieuluc" value="<?= $coupon['ngayhieuluc'] ?>" required>
+                    
+                    <label for="ngayketthuc"><i class="fas fa-calendar-times icon"></i>Ngày Kết Thúc:</label>
+                    <input type="date" id="ngayketthuc" name="ngayketthuc" value="<?= $coupon['ngayketthuc'] ?>" required>
                 </div>
-                <div class="form-group">
-                    <label>Phần trăm giảm giá:</label>
-                    <input type="number" name="phantram" class="form-control" value="<?= $coupon['phantram'] ?>" required min="0" max="100">
+                <div class="section">
+                    <h3><i class="fas fa-box icon"></i>Sản Phẩm & Danh Mục Áp Dụng</h3>
+                    <div class="table-container">
+                        <table>
+                            <tr><th>Tên Sản Phẩm</th><th class="checkbox">Chọn</th></tr>
+                            <?php foreach ($products as $product): ?>
+                            <tr>
+                                <td><?= $product['tensp'] ?></td>
+                                <td class="checkbox">
+                                    <input type="checkbox" name="sanpham[]" value="<?= $product['idsp'] ?>" <?= in_array($product['idsp'], $appliedProducts) ? 'checked' : '' ?>>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </table>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <tr><th>Tên Danh Mục</th><th class="checkbox">Chọn</th></tr>
+                            <?php foreach ($categories as $category): ?>
+                            <tr>
+                                <td><?= $category['tendm'] ?></td>
+                                <td class="checkbox">
+                                    <input type="checkbox" name="danhmuc[]" value="<?= $category['iddm'] ?>" <?= in_array($category['iddm'], $appliedCategories) ? 'checked' : '' ?>>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </table>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>ID Sản phẩm:</label>
-                    <input type="number" name="idsp" class="form-control" value="<?= $coupon['idsp'] ?>" required>
-                </div>
-                <div class="form-group">
-                    <label>ID Danh mục:</label>
-                    <input type="number" name="iddm" class="form-control" value="<?= $coupon['iddm'] ?>" required>
-                </div>
-                <div class="form-group">
-                    <label>Ngày hiệu lực:</label>
-                    <input type="date" name="ngayhieuluc" class="form-control" value="<?= $coupon['ngayhieuluc'] ?>" required>
-                </div>
-                <div class="form-group">
-                    <label>Ngày kết thúc:</label>
-                    <input type="date" name="ngayketthuc" class="form-control" value="<?= $coupon['ngayketthuc'] ?>" required>
-                </div>
-                <button type="submit" class="btn-custom">Cập nhật</button>
-            </form>
-            <a href="danh_sach_magiamgia.php" class="back-link">⬅ Quay lại</a>
-        </div>
+            </div>
+            <div class="actions">
+                <button type="submit" class="save-btn"><i class="fas fa-save icon"></i>Lưu Cập Nhật</button>
+            </div>
+        </form>
     </div>
 </body>
 </html>
-
