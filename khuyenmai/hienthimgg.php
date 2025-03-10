@@ -144,7 +144,7 @@ $currentDate = date('Y-m-d');
                     } elseif (!$dsSanPham && $dsDanhMuc) {
                         echo "📂 Mã giảm giá này chỉ áp dụng cho danh mục.";
                     } else {
-                        echo "🌍 Mã giảm giá này áp dụng toàn bộ cửa hàng.";
+                        echo "🌍 Mã giảm giá này áp dụng cho cả sản phẩm và dm.";
                     }
                     ?>
                 </div>
