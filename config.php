@@ -354,27 +354,6 @@
                 echo "<script>alert('Xóa danh mục thất bại!');</script>";
             }
         }
-    
-    function capnhatMGG() {
-        // Xử lý cập nhật khi gửi form
-        $code = $_POST['code'];
-        $phantram = $_POST['phantram'];
-        $idsp = $_POST['idsp'];
-        $iddm = $_POST['iddm'];
-        $ngayhieuluc = $_POST['ngayhieuluc'];
-        $ngayketthuc = $_POST['ngayketthuc'];
-
-        $sql = "UPDATE magiamgia 
-                SET code=?, phantram=?, idsp=?, iddm=?, ngayhieuluc=?, ngayketthuc=? 
-                WHERE idmgg=?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$code, $phantram, $idsp, $iddm, $ngayhieuluc, $ngayketthuc, $idmgg]);
-
-        // Chuyển hướng về trang danh sách
-        header("Location: hienthimgg.php");
-        exit;
-
-    }
     function themMGG() {
         $pdo = connectDatabase();
         $code = trim($_POST['code']);
