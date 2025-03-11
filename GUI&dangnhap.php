@@ -1,15 +1,13 @@
 <?php
 require_once 'config.php'; // Sử dụng require_once
 
-$error = ""; // Khởi tạo biến lỗi
-    // Tạo CSRF token nếu chưa có
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        die("Yêu cầu không hợp lệ");
-    }
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            die("Yêu cầu không hợp lệ");
+        }
     $tendn = trim($_POST['tendn'] ?? '');
     $matkhau = trim($_POST['matkhau'] ?? '');
     $error = dangnhap($tendn, $matkhau); // Gọi hàm dangnhap
