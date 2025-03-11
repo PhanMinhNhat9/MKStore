@@ -1,12 +1,48 @@
 <?php
-    include "config.php";
-   
-// Giả sử admin đã đăng nhập và thông tin được lấy từ session hoặc database
-$admin_name = "Admin Name"; // Thay bằng tên thật từ database
-$admin_email = "admin@example.com"; // Thay bằng email thật từ database
-$admin_avatar = "https://i.pravatar.cc/100"; // URL ảnh đại diện giả lập
+include "config.php";
 
+// Bắt đầu session nếu chưa có
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Kiểm tra xem admin đã đăng nhập chưa
+if (!isset($_SESSION['user']) || $_SESSION['user']['quyen'] != 0) {
+    header("Location: GUI&dangnhap.php");
+    exit();
+}
+
+define('SESSION_TIMEOUT', 1800);
+
+if (isset($_SESSION['last_activity'])) {
+    $inactive_time = time() - $_SESSION['last_activity'];
+    error_log("Session inactive time: $inactive_time seconds"); // Debug log
+    
+    if ($inactive_time > SESSION_TIMEOUT) {
+        // Hủy session và chuyển hướng đến trang đăng nhập
+        session_unset();
+        session_destroy();
+        setcookie(session_name(), '', time() - 3600, '/'); // Xóa cookie session
+        echo "<script>window.location.href = 'GUI&dangnhap.php?timeout=1';</script>";
+        exit();
+    }
+}
+// Cập nhật lại thời gian hoạt động cuối cùng
+$_SESSION['last_activity'] = time();
+// Làm mới session ID để tăng cường bảo mật (kiểm tra session trước khi gọi)
+if (session_status() == PHP_SESSION_ACTIVE) {
+    session_regenerate_id(true);
+}
+
+session_write_close(); // Đảm bảo session được ghi lại ngay lập tức
+
+// Lấy thông tin admin từ session
+$admin_name = htmlspecialchars($_SESSION['user']['hoten'], ENT_QUOTES, 'UTF-8');
+$admin_email = htmlspecialchars($_SESSION['user']['email'], ENT_QUOTES, 'UTF-8');
+$admin_phone = htmlspecialchars($_SESSION['user']['sdt'], ENT_QUOTES, 'UTF-8');
+$admin_avatar = !empty($_SESSION['user']['anh']) ? htmlspecialchars($_SESSION['user']['anh'], ENT_QUOTES, 'UTF-8') : "https://i.pravatar.cc/100";
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +55,6 @@ $admin_avatar = "https://i.pravatar.cc/100"; // URL ảnh đại diện giả l�
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-        /* Dropdown menu */
         .dropdown {
             position: absolute;
             top: 100%;
@@ -54,7 +89,7 @@ $admin_avatar = "https://i.pravatar.cc/100"; // URL ảnh đại diện giả l�
             color: #333;
         }
         .dropdown .logout {
-            background:rgb(7, 34, 155);
+            background:rgb(40, 73, 218);
             color: white;
             padding: 8px;
             text-align: center;
@@ -63,7 +98,7 @@ $admin_avatar = "https://i.pravatar.cc/100"; // URL ảnh đại diện giả l�
             margin-top: 10px;
         }
         .dropdown .logout:hover {
-            background: #b02a37;
+            background:rgb(19, 10, 146);
         }
     </style>
 </head>
@@ -86,13 +121,14 @@ $admin_avatar = "https://i.pravatar.cc/100"; // URL ảnh đại diện giả l�
             <button class="btn thongbao"><i class="fas fa-bell"></i> Thông báo</button>
             <!-- Nút Admin với dropdown -->
             <div style="position: relative;">
-                <button class="btn taikhoan" onclick="toggleDropdown()">
-                    <i class="fas fa-user"></i> Admin
+                <button class="btn taikhoan" onclick="ddadmin()">
+                    <i class="fas fa-user"></i> <?= !empty($admin_name) ? $admin_name : "Admin"; ?>
                 </button>
                 <div class="dropdown" id="adminDropdown">
                     <div class="profile">
                         <img src="<?= $admin_avatar ?>" alt="Avatar">
                         <p><strong><?= $admin_name ?></strong></p>
+                        <p><?= $admin_phone ?></p>
                         <p><?= $admin_email ?></p>
                     </div>
                     <div class="logout" onclick="logout()">Đăng xuất</div>
@@ -120,20 +156,18 @@ $admin_avatar = "https://i.pravatar.cc/100"; // URL ảnh đại diện giả l�
         if (id === "menu-order") loadDLDonhang();
         if (id === "menu-discount") loadDLMGG();
         if (id === "menu-support") loadPhanHoi();
-          // Toggle dropdown khi nhấn vào nút admin
-    function toggleDropdown() {
-        document.getElementById("adminDropdown").classList.toggle("active");
-    }
-
-    // Ẩn dropdown khi click ra ngoài
-    document.addEventListener("click", function(event) {
-        var dropdown = document.getElementById("adminDropdown");
-        var button = document.querySelector(".taikhoan");
-
-        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.classList.remove("active");
+        function ddadmin() {
+            document.getElementById("adminDropdown").classList.toggle("active");
         }
-    });
+        document.addEventListener("click", function(event) {
+            var dropdown = document.getElementById("adminDropdown");
+            var button = document.querySelector(".taikhoan");
+
+            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove("active");
+            }
+        });
+        handleSessionTimeout(<?= SESSION_TIMEOUT ?>);
     </script>
     <div class="main-content" id="main-content">
         <!-- Nội dung trang web --> 

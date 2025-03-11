@@ -20,7 +20,7 @@
             $pdo = new PDO($dsn, $username, $password, $options);
             return $pdo;
         } catch (PDOException $e) {
-            die("Lỗi kết nối CSDL: " . $e->getMessage()); // Không nên in lỗi ra ngoài thực tế, có thể log vào file
+            die("Lỗi kết nối CSDL: " . $e->getMessage());
         }
     }
     // Đăng nhâp
@@ -34,12 +34,15 @@
         $_SESSION['login_attempts'] = 0;
         $_SESSION['last_attempt_time'] = time();
     }
+    if (!isset($_SESSION['lock_time'])) {
+        $_SESSION['lock_time'] = 0;
+    }
     // Nếu đã quá 10 phút từ lần nhập sai đầu tiên, reset lại số lần nhập
-    if (time() - $_SESSION['last_attempt_time'] > 180) {
+    if (time() - $_SESSION['last_attempt_time'] > 120) {
         $_SESSION['login_attempts'] = 0;
     }
-    if ($_SESSION['login_attempts'] >= 2) {
-        return "Bạn đã nhập sai quá nhiều lần, hãy thử lại sau 10 phút.";
+    if ($_SESSION['login_attempts'] >= 2 && time() < $_SESSION['lock_time']) {
+        return "Bạn đã nhập sai quá nhiều lần, hãy thử lại sau 2 phút.";
     }
         $stmt = $pdo->prepare("SELECT * FROM user WHERE tendn = :tendn LIMIT 1");
         $stmt->bindParam(':tendn', $tendn, PDO::PARAM_STR);
@@ -47,8 +50,8 @@
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($matkhau, trim($user['matkhau']))) {
-             // Đăng nhập thành công -> Xóa bộ đếm sai
         $_SESSION['login_attempts'] = 0;
+        $_SESSION['lock_time'] = 0; // Reset thời gian khóa
             $_SESSION['user'] = [
                 'iduser' => $user['iduser'],
                 'tendn' => $user['tendn'],
@@ -65,15 +68,17 @@
                 exit();
             }
             else {           
-                header("Location: index.php"); // Chuyển hướng đến trang chủ
+                header("Location: index.php");
                 exit();
             }
             
         } else {
-            // Sai tài khoản/mật khẩu -> Tăng bộ đếm thất bại
-        $_SESSION['login_attempts']++;
-        $_SESSION['last_attempt_time'] = time();
-        return "Sai tài khoản hoặc mật khẩu";
+            $_SESSION['login_attempts']++;
+            $_SESSION['last_attempt_time'] = time();
+            if ($_SESSION['login_attempts'] >= 2) {
+                $_SESSION['lock_time'] = time() + 120; // Khóa trong 2 phút
+            }
+            return "Sai tài khoản hoặc mật khẩu";
         }
     }
 

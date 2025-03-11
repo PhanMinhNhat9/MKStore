@@ -33,7 +33,6 @@ function reloadCSS(file) {
     link.href = file + "?v=" + new Date().getTime();
     document.head.appendChild(link);
 }
-
 function loadPhanHoi() {
     let xhr = new XMLHttpRequest();
     xhr.open("GET", "phanhoi/hienthiphanhoi.php", true);
@@ -194,3 +193,19 @@ function toggleDetails(orderId) {
         details.style.display = 'block';
     }
 }
+function handleSessionTimeout(sessionTimeoutInSeconds) {
+    let sessionTimeout = sessionTimeoutInSeconds * 1000; // Chuyển thành mili-giây
+    let warningTime = sessionTimeout - 60000; // Cảnh báo trước 1 phút
+
+    // Cảnh báo trước khi hết session
+    setTimeout(function() {
+        alert("Phiên làm việc sắp hết hạn. Hệ thống sẽ tự động đăng xuất sau 1 phút.");
+    }, warningTime);
+
+    // Chuyển hướng về trang đăng nhập khi hết hạn
+    setTimeout(function() {
+        window.location.href = 'GUI&dangnhap.php?timeout=1';
+    }, sessionTimeout);
+}
+
+
