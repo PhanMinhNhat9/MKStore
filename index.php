@@ -29,7 +29,6 @@ $products = getProducts();
             <ul>
                 <li><a href="index.php">Trang Chủ</a></li>
                 <li><a href="GUI&dangnhap.php">Đăng Nhập</a></li>
-                <li><a href="GUI&quenMK.php">Quên Mật Khẩu</a></li>
             </ul>
         </nav>
     </header>
