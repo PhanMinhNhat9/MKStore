@@ -12,14 +12,47 @@ $coupon = $stmt->fetch(PDO::FETCH_ASSOC);
 $sqlProducts = "
     SELECT sanpham.idsp, sanpham.tensp 
     FROM sanpham
+    INNER JOIN magiamgia_chitiet ON sanpham.idsp = magiamgia_chitiet.idsp
+    WHERE magiamgia_chitiet.idmgg = :idmgg
+    GROUP BY sanpham.idsp, sanpham.tensp
+    HAVING COUNT(DISTINCT magiamgia_chitiet.idmgg) = 1
+
+    UNION
+
+    SELECT sanpham.idsp, sanpham.tensp 
+    FROM sanpham
     LEFT JOIN magiamgia_chitiet ON sanpham.idsp = magiamgia_chitiet.idsp
     WHERE magiamgia_chitiet.idsp IS NULL
 ";
-$stmtProducts = $pdo->query($sqlProducts);
+$stmtProducts = $pdo->prepare($sqlProducts);
+$stmtProducts->execute(['idmgg' => $idmgg]);
 $products = $stmtProducts->fetchAll(PDO::FETCH_ASSOC);
 
-$sqlCategories = "SELECT iddm, tendm FROM danhmucsp";
-$stmtCategories = $pdo->query($sqlCategories);
+$sqlCategories = "
+    -- Lấy danh mục thuộc mã giảm giá đang xét nhưng không thuộc mã khác
+    SELECT d.iddm, d.tendm, d.loaidm, d.icon, d.mota, d.thoigian
+    FROM danhmucsp d
+    INNER JOIN magiamgia_chitiet mgg ON d.iddm = mgg.iddm
+    WHERE mgg.idmgg = :idmgg
+    GROUP BY d.iddm, d.tendm, d.loaidm, d.icon, d.mota, d.thoigian
+    HAVING COUNT(DISTINCT mgg.idmgg) = 1
+
+    UNION
+
+    -- Lấy danh mục chưa có mã giảm giá nào
+    SELECT d.iddm, d.tendm, d.loaidm, d.icon, d.mota, d.thoigian
+    FROM danhmucsp d
+    LEFT JOIN magiamgia_chitiet mgg ON d.iddm = mgg.iddm
+    WHERE mgg.iddm IS NULL
+
+    -- Chỉ lấy danh mục con (loaidm != 0) hoặc danh mục cha không có con
+    AND (d.loaidm != 0 OR NOT EXISTS (
+        SELECT 1 FROM danhmucsp dc WHERE dc.loaidm = d.iddm
+    ))
+";
+
+$stmtCategories = $pdo->prepare($sqlCategories);
+$stmtCategories->execute(['idmgg' => $idmgg]);
 $categories = $stmtCategories->fetchAll(PDO::FETCH_ASSOC);
 
 $sqlApplied = "SELECT idsp, iddm FROM magiamgia_chitiet WHERE idmgg = :idmgg";
