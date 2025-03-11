@@ -127,6 +127,40 @@ body {
     color: white;
 }
 
+/* Dropdown cho tài khoản */
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    width: 200px;
+    border-radius: 8px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    flex-direction: column;
+    padding: 10px;
+    z-index: 10;
+    margin-top: 10px;
+}
+
+.dropdown.active {
+    display: flex;
+}
+
+.logout {
+    background: rgb(40, 73, 218);
+    color: white;
+    padding: 8px;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.logout:hover {
+    background: rgb(19, 10, 146);
+}
+
 /* Nội dung chính */
 main {
     flex: 1;
