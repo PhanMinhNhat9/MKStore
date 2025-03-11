@@ -371,7 +371,7 @@
         $stmt->execute([$code, $phantram, $idsp, $iddm, $ngayhieuluc, $ngayketthuc, $idmgg]);
 
         // Chuyển hướng về trang danh sách
-        header("Location: danh_sach_magiamgia.php");
+        header("Location: hienthimgg.php");
         exit;
 
     }
