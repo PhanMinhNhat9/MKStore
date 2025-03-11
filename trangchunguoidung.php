@@ -7,7 +7,11 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // Kiểm tra xem người dùng đã đăng nhập chưa
-$isLoggedIn = isset($_SESSION['user']);
+if (!isset($_SESSION['user'])) {
+    // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
+    header("Location: GUI&dangnhap.php");
+    exit();
+}
 
 // Lấy danh sách sản phẩm từ cơ sở dữ liệu
 function getProducts() {
@@ -48,13 +52,11 @@ $products = getProducts();
             <div style="position: relative;">
                 <button class="btn taikhoan" onclick="toggleAccountDropdown()">
                     <i class="fas fa-user"></i> 
-                    <?= $isLoggedIn ? htmlspecialchars($_SESSION['user']['hoten'], ENT_QUOTES, 'UTF-8') : "Tài khoản"; ?>
+                    <?= htmlspecialchars($_SESSION['user']['hoten'], ENT_QUOTES, 'UTF-8'); ?>
                 </button>
-                <?php if ($isLoggedIn): ?>
                 <div class="dropdown" id="accountDropdown">
                     <div class="logout" onclick="logout()">Đăng xuất</div>
                 </div>
-                <?php endif; ?>
             </div>
         </div>
     </nav>
