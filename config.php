@@ -1,7 +1,9 @@
 <?php
+    // Cấu hình session an toàn
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.cookie_secure', 1);
+    ini_set('session.use_only_cookies', 1);
     session_start();
-    require_once 'config.php';
-
     function connectDatabase(): PDO {
         $host = "localhost";  
         $dbname = "quanlybanpk"; 
@@ -23,49 +25,30 @@
     }
     // Đăng nhâp
     function dangnhap($tendn, $matkhau) {
-        // if (empty($tendn) || empty($matkhau)) {
-        //     return "Vui lòng nhập đầy đủ thông tin";
-        // }
-
-        // $pdo = connectDatabase();
-        // $stmt = $pdo->prepare("SELECT * FROM user WHERE tendn = :tendn LIMIT 1");
-        // $stmt->bindParam(':tendn', $tendn, PDO::PARAM_STR);
-        // $stmt->execute();
-        // $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // if ($user && password_verify($matkhau, trim($user['matkhau']))) {
-        //     $_SESSION['user'] = [
-        //         'iduser' => $user['iduser'],
-        //         'tendn' => $user['tendn'],
-        //         'hoten' => $user['hoten'],
-        //         'anh' => $user['anh'],
-        //         'email' => $user['email'],
-        //         'sdt' => $user['sdt'],
-        //         'diachi' => $user['diachi'],
-        //         'quyen' => $user['quyen']
-        //     ];
-        //     if ($_SESSION['user']['quyen']==0) {
-        //         header("Location: trangchuadmin.html");
-        //         exit();
-        //     }
-        //     else {
-        //         header("Location: #");
-        //         exit();
-        //     }
-        // } else {
-        //     return "Sai tài khoản hoặc mật khẩu";
-        // }
         if (empty($tendn) || empty($matkhau)) {
             return "Vui lòng nhập đầy đủ thông tin";
         }
-
         $pdo = connectDatabase();
+        // Kiểm tra số lần đăng nhập thất bại
+    if (!isset($_SESSION['login_attempts'])) {
+        $_SESSION['login_attempts'] = 0;
+        $_SESSION['last_attempt_time'] = time();
+    }
+    // Nếu đã quá 10 phút từ lần nhập sai đầu tiên, reset lại số lần nhập
+    if (time() - $_SESSION['last_attempt_time'] > 180) {
+        $_SESSION['login_attempts'] = 0;
+    }
+    if ($_SESSION['login_attempts'] >= 2) {
+        return "Bạn đã nhập sai quá nhiều lần, hãy thử lại sau 10 phút.";
+    }
         $stmt = $pdo->prepare("SELECT * FROM user WHERE tendn = :tendn LIMIT 1");
         $stmt->bindParam(':tendn', $tendn, PDO::PARAM_STR);
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($matkhau, trim($user['matkhau']))) {
+             // Đăng nhập thành công -> Xóa bộ đếm sai
+        $_SESSION['login_attempts'] = 0;
             $_SESSION['user'] = [
                 'iduser' => $user['iduser'],
                 'tendn' => $user['tendn'],
@@ -76,8 +59,9 @@
                 'diachi' => $user['diachi'],
                 'quyen' => $user['quyen']
             ];
+            
             if ($_SESSION['user']['quyen']==0) {
-                header("Location: trangchuadmin.html");
+                header("Location: trangchuadmin.php");
                 exit();
             }
             else {           
@@ -86,7 +70,10 @@
             }
             
         } else {
-            return "Sai tài khoản hoặc mật khẩu";
+            // Sai tài khoản/mật khẩu -> Tăng bộ đếm thất bại
+        $_SESSION['login_attempts']++;
+        $_SESSION['last_attempt_time'] = time();
+        return "Sai tài khoản hoặc mật khẩu";
         }
     }
 

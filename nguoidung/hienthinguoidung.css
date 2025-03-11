@@ -41,3 +41,29 @@ th {
 .themnguoidung:hover i {
     color: #007BFF;
 }
+.action-icon {
+    display: inline-block;
+    padding: 8px;
+    font-size: 18px;
+    transition: transform 0.2s ease, color 0.3s ease;
+    text-decoration: none;
+}
+
+.edit {
+    color: #28a745; /* Màu xanh */
+}
+
+.edit:hover {
+    color: #218838;
+    transform: scale(1.2);
+}
+
+.delete {
+    color: #dc3545; /* Màu đỏ */
+    margin-left: 10px;
+}
+
+.delete:hover {
+    color: #c82333;
+    transform: scale(1.2);
+}

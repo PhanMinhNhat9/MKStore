@@ -154,10 +154,24 @@ function themmgg() {
     };
     xhr.send();
 }
+// Hàm đăng xuất
+function logout() {
+    window.location.href = "logout.php"; // Thay bằng trang xử lý đăng xuất
+}
+// Đổi icon khi hover
+function changeIcon(button) {
+    button.querySelector("i").classList.remove("fa-arrow-left");
+    button.querySelector("i").classList.add("fa-check");
+}
 
+// Trả lại icon khi rời chuột
+function resetIcon(button) {
+    button.querySelector("i").classList.remove("fa-check");
+    button.querySelector("i").classList.add("fa-arrow-left");
+}
 function goBack() {
     // window.location.replace("trangchuadmin.html?id=1");
-    window.location.href = "../trangchuadmin.html";
+    window.location.href = "../trangchuadmin.php";
 }
 function goBackHome() {
     // Xóa trạng thái menu active trong localStorage
@@ -169,7 +183,7 @@ function goBackHome() {
     });
 
     // Điều hướng về trang chủ (nếu cần)
-    window.location.href = "trangchuadmin.html";
+    window.location.href = "trangchuadmin.php";
 }
 
 function toggleDetails(orderId) {

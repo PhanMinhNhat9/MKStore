@@ -14,8 +14,8 @@ if ($id_nhan <= 0) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['noidung'])) {
     $noidung = trim($_POST['noidung']);
 
-    $sql = "INSERT INTO chattructuyen (idgui, idnhan, noidung, trangthai, thoigian) 
-            VALUES (:id_gui, :id_nhan, :noidung, 0, NOW())";
+    $sql = "INSERT INTO chattructuyen (idgui, idnhan, noidung, trangthai, daxem, thoigian) 
+            VALUES (:id_gui, :id_nhan, :noidung, 1, 0, NOW())"; // Mặc định tin chưa đọc (daxem = 0)
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
@@ -28,6 +28,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['noidung'])) {
     header("Location: chat.php?id=$id_nhan");
     exit();
 }
+
+// // Cập nhật trạng thái tin nhắn chưa đọc thành đã xem
+$update_sql = "UPDATE chattructuyen SET daxem = 1 WHERE idgui = :id_nhan AND idnhan = :id_gui AND daxem = 0";
+$update_stmt = $pdo->prepare($update_sql);
+$update_stmt->execute([
+    'id_nhan' => $id_nhan,
+    'id_gui' => $id_gui
+]);
 
 // Truy vấn danh sách tin nhắn
 $sql = "SELECT * FROM chattructuyen 
@@ -44,7 +52,6 @@ $stmt->execute([
 ]);
 
 $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 
 <!DOCTYPE html>
@@ -52,56 +59,31 @@ $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <title>Chat Trực Tuyến</title>
-    <style>
-        .chat-container {
-            width: 500px;
-            margin: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
-            background: white;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        .message {
-            padding: 5px;
-            margin: 5px 0;
-        }
-        .sent {
-            text-align: right;
-            color: blue;
-        }
-        .received {
-            text-align: left;
-            color: green;
-        }
-        .message-form {
-            display: flex;
-            margin-top: 10px;
-        }
-        .message-input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .send-btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-left: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="../trangchuadmin.js"></script>
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="chat.css">
 </head>
 <body>
     <div class="chat-container">
-        <h3>Chat với ID <?= $id_nhan ?></h3>
-        <div>
+        <div class="chat-header">
+            <!-- Nút trở về -->
+            <button class="back-btn" onclick="goBack()" onmouseover="changeIcon(this)" onmouseout="resetIcon(this)">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            📨 Chat với: <?= $id_nhan ?>
+        </div>
+
+        <div class="chat-messages" id="chat-box">
             <?php foreach ($messages as $message): ?>
                 <div class="message <?= ($message['idgui'] == $id_gui) ? 'sent' : 'received' ?>">
                     <?= htmlspecialchars($message['noidung']) ?>
+                    <div class="message-time"><?= date('H:i', strtotime($message['thoigian'])) ?></div>
+                    <?php if ($message['idgui'] == $id_gui): ?>
+                        <div class="status">
+                            <?= ($message['daxem'] == 1) ? 'Đã xem <i class="fa fa-check-double"></i>' : 'Đã gửi <i class="fa fa-check"></i>' ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -109,9 +91,15 @@ $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <!-- Form gửi tin nhắn -->
         <form action="chat.php?id=<?= $id_nhan ?>" method="POST" class="message-form">
             <input type="text" name="noidung" class="message-input" placeholder="Nhập tin nhắn..." required>
-            <button type="submit" class="send-btn">Gửi</button>
+            <button type="submit" class="send-btn"><i class="fa fa-paper-plane"></i></button>
         </form>
     </div>
+
+    <script>
+        // Cuộn xuống tin nhắn mới nhất khi tải trang
+        var chatBox = document.getElementById("chat-box");
+        chatBox.scrollTop = chatBox.scrollHeight;
+    </script>
 </body>
 </html>
 

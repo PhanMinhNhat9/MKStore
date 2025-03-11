@@ -34,32 +34,39 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         .table-container {
-            max-height: 400px;
-            overflow-y: auto;
-            max-width: 800px;
-            margin: 20px auto;
+            max-width: 900px;
+            margin: auto;
             background: white;
-            padding: 15px;
-            border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-
+            max-height: 375px;
+            overflow-x: auto;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            border-radius: 10px;
-            overflow: hidden;
+        }
+        thead {
+            position: sticky;
+            top: 0;
+            background: #007bff;
+            color: white;
+            z-index: 100;
         }
         th, td {
             padding: 12px;
-            text-align: center;
             border-bottom: 1px solid #ddd;
         }
         th {
             background: #007bff;
             color: white;
-            position: sticky;
-            top: 0;
+            text-align: center;
+        }
+        td {
+            text-align: center;
+        }
+        td:first-child, th:first-child {
+            text-align: left;
+            padding-left: 15px;
         }
         tr:hover {
             background: #f1f1f1;
@@ -77,30 +84,32 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .action-btn {
             background-color: #007bff;
             color: white;
-            padding: 8px 12px;
+            padding: 6px 12px;
             border-radius: 5px;
             text-decoration: none;
             display: inline-block;
+            font-size: 14px;
             transition: 0.3s;
+            min-width: 120px;
         }
         .action-btn:hover {
             background-color: #0056b3;
             transform: scale(1.1);
         }
         .icon {
-            font-size: 18px;
+            font-size: 14px;
             margin-right: 5px;
         }
         .new-message {
-            color: red;
-            font-weight: bold;
+            color: gray;
+            font-weight: normal;
         }
     </style>
 </head>
 <body>
-
+<h2 style="text-align: center; color: #007bff;">📩 Danh Sách Người Dùng Đã Nhắn Tin</h2>
     <div class="table-container">
-        <h2 style="text-align: center;"><i class="fa-solid fa-comments icon"></i> Danh Sách Người Dùng Đã Nhắn Tin</h2>
+        
         <table>
             <thead>
                 <tr>
@@ -108,7 +117,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <th><i class="fa-solid fa-user-tag"></i> Tên Đăng Nhập</th>
                     <th><i class="fa-solid fa-envelope"></i> Số Tin Nhắn</th>
                     <th><i class="fa-solid fa-bell"></i> Thông Báo</th>
-                    <th><i class="fa-solid fa-comment-dots"></i> Hành Động</th>
+                    <th style="min-width: 150px;"><i class="fa-solid fa-comment-dots"></i> Hành Động</th>
                 </tr>
             </thead>
             <tbody>
@@ -116,7 +125,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <tr>
                         <td><i class="fa-solid fa-user icon"></i> <?= htmlspecialchars($user['hoten']) ?></td>
                         <td><i class="fa-solid fa-user-tag icon"></i> <?= htmlspecialchars($user['tendn']) ?></td>
-                        <td><i class="fa-solid fa-envelope-open icon"></i> <?= $user['so_tin_nhan'] ?></td>
+                        <td>
+                            <i class="fa-solid fa-envelope-open icon"></i> <?= $user['so_tin_nhan'] ?>
+                        </td>
                         <td>
                             <?php if ($user['chua_doc'] > 0): ?>
                                 <span class="unread"><i class="fa-solid fa-bell icon"></i> <?= $user['chua_doc'] ?> tin chưa đọc</span>
