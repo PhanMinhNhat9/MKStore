@@ -17,20 +17,28 @@ $products = getProducts();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cửa Hàng Phụ Kiện</title>
-    <link rel="stylesheet" href="trangchucss.css"> <!-- Liên kết đến tệp CSS mới -->
+    <link rel="stylesheet" href="trangchucss.css"> <!-- Liên kết đến tệp CSS -->
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <h1>Cửa Hàng Phụ Kiện</h1>
+    <!-- Thanh navbar -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="picture/logoTD.png" alt="Logo Cửa Hàng" class="logo">
+            <span class="store-name"> M'K STORE</span>
         </div>
-        <nav>
-            <ul>
-                <li><a href="trangchunguoidung.php">Trang Chủ</a></li>
-                <li><a href="GUI&dangnhap.php">Đăng Nhập</a></li>
-            </ul>
-        </nav>
-    </header>
+        
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Tìm kiếm...">
+            <button class="mic-btn"><i class="fas fa-microphone"></i></button>
+            <button class="search-btn"> Tìm kiếm</button>
+        </div>
+        
+        <div class="nav-buttons">
+            <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
+            <button class="btn thongbao"><i class="fas fa-bell"></i> Thông báo</button>
+            <button class="btn taikhoan"><i class="fas fa-user"></i> Tài khoản</button>
+        </div>
+    </nav>
 
     <main>
         <h2>Sản Phẩm Nổi Bật</h2>

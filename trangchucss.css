@@ -1,40 +1,136 @@
 body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 0;
+    font-family: Arial, sans-serif;
     background-color: #e0f7fa; /* Màu nền xanh dương nhạt */
-}
-
-header {
-    background-color: #03a9f4; /* Màu nền tiêu đề xanh dương nhạt */
-    color: white;
-    padding: 20px;
-    text-align: center;
-}
-
-header .logo h1 {
     margin: 0;
-}
-
-nav ul {
-    list-style-type: none;
     padding: 0;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-nav ul li {
-    display: inline;
-    margin: 0 15px;
+/* Thanh navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 0px 20px;
+    border-bottom: 1px solid #ddd;
+    position: relative;
 }
 
-nav ul li a {
-    color: white;
-    text-decoration: none;
+/* Logo trên thanh navbar */
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 80px;
+    margin-right: 10px;
+    animation: fadeInSlide 1s ease-in-out;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.store-name {
+    font-size: 32px;
     font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    position: relative;
+    animation: colorShift 5s infinite linear, glowEffect 3s infinite ease-in-out;
+    transition: all 0.3s ease-in-out;
 }
 
-h2 {
-    text-align: center;
-    margin: 20px 0;
+@keyframes colorShift {
+    0% { color: #007BFF; }
+    25% { color: #00A6FF; }
+    50% { color: #ffffff; }
+    75% { color: #00A6FF; }
+    100% { color: #007BFF; }
+}
+
+@keyframes glowEffect {
+    0% { text-shadow: 0 0 5px rgba(0, 123, 255, 0.3); }
+    50% { text-shadow: 0 0 15px rgba(0, 166, 255, 0.6); }
+    100% { text-shadow: 0 0 5px rgba(0, 123, 255, 0.3); }
+}
+
+/* Thanh tìm kiếm trên navbar */
+.search-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    background-color: #fff;
+    position: absolute;
+    left: 45%;
+    transform: translateX(-50%);
+    width: 35%;
+}
+
+.search-bar {
+    border: none;
+    outline: none;
+    padding: 5px;
+    font-size: 14px;
+    color: #333;
+    flex-grow: 1;
+}
+
+.search-btn, .mic-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 5px;
+    color: #007BFF;
+}
+
+.search-btn:hover, .mic-btn:hover {
+    color: #0056b3;
+}
+
+/* 3 nút chức năng trên navbar */
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.nav-buttons .btn {
+    background: none;
+    border: 1px solid #007BFF;
+    color: #007BFF;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.nav-buttons .btn:hover {
+    background-color: #007BFF;
+    color: white;
+}
+
+/* Nội dung chính */
+main {
+    flex: 1;
+    padding: 20px;
 }
 
 .product-list {
@@ -68,12 +164,12 @@ h2 {
 
 .price {
     font-size: 1.2em;
-    color: #03a9f4; /* Màu giá xanh dương nhạt */
+    color: #03a9f4;
     font-weight: bold;
 }
 
 .buy-button {
-    background-color: #03a9f4; /* Màu nút xanh dương nhạt */
+    background-color: #03a9f4;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -83,14 +179,14 @@ h2 {
 }
 
 .buy-button:hover {
-    background-color: #0288d1; /* Màu xanh dương đậm hơn khi hover */
+    background-color: #0288d1;
 }
 
+/* Chân trang */
 footer {
+    background-color: #007BFF;
+    color: white;
     text-align: center;
     padding: 20px;
-    background-color: #e0f7fa; /* Màu nền chân trang xanh dương nhạt */
-    position: relative;
-    bottom: 0;
     width: 100%;
 }
