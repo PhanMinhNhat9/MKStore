@@ -9,7 +9,12 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute(['idmgg' => $idmgg]);
 $coupon = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$sqlProducts = "SELECT idsp, tensp FROM sanpham";
+$sqlProducts = "
+    SELECT sanpham.idsp, sanpham.tensp 
+    FROM sanpham
+    LEFT JOIN magiamgia_chitiet ON sanpham.idsp = magiamgia_chitiet.idsp
+    WHERE magiamgia_chitiet.idsp IS NULL
+";
 $stmtProducts = $pdo->query($sqlProducts);
 $products = $stmtProducts->fetchAll(PDO::FETCH_ASSOC);
 
