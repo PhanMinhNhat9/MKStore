@@ -1,21 +1,36 @@
 <?php
 require_once 'config.php'; // Sử dụng require_once
 
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Khởi tạo biến tránh lỗi
+if (!isset($_SESSION['login_attempts'])) {
+    $_SESSION['login_attempts'] = 0;
+}
+if (!isset($_SESSION['lock_time']) || !is_numeric($_SESSION['lock_time'])) {
+    $_SESSION['lock_time'] = 0; // Đặt giá trị mặc định nếu bị lỗi
+}
+
+$error = ""; // Mặc định không có lỗi
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Yêu cầu không hợp lệ");
     }
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            die("Yêu cầu không hợp lệ");
-        }
     $tendn = trim($_POST['tendn'] ?? '');
     $matkhau = trim($_POST['matkhau'] ?? '');
-    $error = dangnhap($tendn, $matkhau); // Gọi hàm dangnhap
-    if ($error) {
-        echo "<script>alert('$error'); window.location.href='GUI&dangnhap.php';</script>";
-    }
-
+    $error = dangnhap($tendn, $matkhau); 
 }
+
+// Kiểm tra nếu đã hết thời gian khóa, reset lỗi
+if ($_SESSION['login_attempts'] >= 2 && time() >= $_SESSION['lock_time']) {
+    $_SESSION['login_attempts'] = 0;
+    $_SESSION['lock_time'] = 0;
+    $error = ""; // Reset lỗi
+}
+$lockTime = $_SESSION['lock_time']-time();
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -25,11 +40,20 @@ require_once 'config.php'; // Sử dụng require_once
     <title>Đăng nhập</title>
     <link rel="stylesheet" href="fontawesome/css/all.min.css">
     <link rel="stylesheet" href="FMdangnhap.css">
+    <script>
+        let lockTime = <?= $lockTime; ?>;
+        if (lockTime > 0) {
+            setTimeout(() => {
+                alert("Bạn có thể đăng nhập lại ngay bây giờ.");
+                document.querySelector(".error").textContent = "";
+            }, lockTime * 1000);
+        }
+    </script>
 </head>
 <body>
     <div class="login-container">
         <h2>Đăng nhập</h2>
-        <?php if (!empty($error)) echo "<p class='error'>$error</p>"; ?>
+        <p class='error'><?= !empty($error) ? $error : ""; ?></p>
         <form method="POST">
             <div class="input-group">
                 <i class="fa fa-user"></i>
