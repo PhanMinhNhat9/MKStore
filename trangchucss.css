@@ -253,3 +253,84 @@ footer {
     background-color: #218838;
 }
 
+/* Dropdown giỏ hàng trên navbar */
+.cart-dropdown {
+    position: relative;
+}
+
+.cart-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+    padding: 10px;
+    border-radius: 10px;
+    z-index: 999;
+    margin-top: 10px;
+}
+
+.cart-content.active {
+    display: block;
+}
+
+.cart-content .cart-item {
+    display: flex;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.cart-content .cart-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-right: 10px;
+}
+
+.cart-content .cart-info {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #333;
+}
+
+.checkout-form {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.checkout-form .checkout-button {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.checkout-form .checkout-button:hover {
+    background-color: #218838;
+}
+.toast-message {
+    position: fixed;
+    top: 80px;
+    right: 30px;
+    background-color: #28a745;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    display: none;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+
+

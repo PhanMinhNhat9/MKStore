@@ -107,6 +107,62 @@ $cartProducts = getCartProducts();
     <title>Cửa Hàng Phụ Kiện</title>
     <link rel="stylesheet" href="trangchucss.css">
 </head>
+
+<div id="toast" class="toast-message"></div>
+<script>
+function addToCart(idsp) {
+    const formData = new URLSearchParams();
+    formData.append('idsp', idsp);
+
+    fetch('add_to_cart.php', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: formData.toString()
+})
+.then(response => {
+    if (!response.ok) {
+        throw new Error("Server trả về lỗi HTTP: " + response.status);
+    }
+    return response.text();
+})
+.then(text => {
+    console.log("Phản hồi thô từ PHP:", text);
+
+    try {
+        const data = JSON.parse(text);
+        if (data.status === 'success') {
+            showToast(data.message);
+        } else {
+            alert("Lỗi: " + data.message);
+        }
+    } catch (err) {
+        console.error("Lỗi khi phân tích JSON:", err);
+        alert("Lỗi JSON không hợp lệ từ máy chủ:\n" + text);
+    }
+})
+.catch(error => {
+    console.error("Lỗi fetch:", error);
+    alert("Lỗi khi gửi yêu cầu đến server: " + error.message);
+});
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.display = 'block';
+    toast.style.opacity = '1';
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 500);
+    }, 2000);
+}
+</script>
+
 <body>
     <!-- Thanh navbar -->
     <nav class="navbar">
@@ -123,6 +179,9 @@ $cartProducts = getCartProducts();
         
         <div class="nav-buttons">
             <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
+            <button class="btn giohang" onclick="window.location.href='giohang.php'">
+                <i class="fas fa-shopping-cart"></i> Giỏ hàng
+            </button>
             <button class="btn thongbao"><i class="fas fa-bell"></i> Thông báo</button>
             <!-- Nút Tài khoản -->
             <div style="position: relative;">
@@ -138,40 +197,17 @@ $cartProducts = getCartProducts();
     </nav>
 
     <main>
-    <h2>Giỏ Hàng</h2>
-    <div class="cart-section">
-        <div class="cart-list">
-            <?php if (count($cartProducts) > 0): ?>
-                <?php foreach ($cartProducts as $product): ?>
-                    <div class="cart-item">
-                        <img src="<?php echo $product['anh']; ?>" alt="<?php echo $product['tensp']; ?>">
-                        <h3><?php echo $product['tensp']; ?></h3>
-                        <p>Số lượng: <?php echo $product['quantity']; ?></p>
-                        <p class="price">Giá: <?php echo number_format($product['giaban'] * $product['quantity'], 0, ',', '.'); ?> VNĐ</p>
-                    </div>
-                <?php endforeach; ?>
-                <form action="trangchunguoidung.php" method="post" class="checkout-form">
-                    <button type="submit" name="checkout" class="checkout-button">🛒 Thanh Toán Ngay</button>
-                </form>
-            <?php else: ?>
-                <p>Giỏ hàng của bạn đang trống.</p>
-            <?php endif; ?>
-        </div>
-    </div>
 
     <h2>Sản Phẩm Nổi Bật</h2>
     <div class="product-list">
         <?php foreach ($products as $product): ?>
-            <div class="product-item">
-                <img src="<?php echo $product['anh']; ?>" alt="<?php echo $product['tensp']; ?>">
-                <h3><?php echo $product['tensp']; ?></h3>
-                <p><?php echo $product['mota']; ?></p>
-                <p class="price">Giá: <?php echo number_format($product['giaban'], 0, ',', '.'); ?> VNĐ</p>
-                <form action="trangchunguoidung.php" method="post">
-                    <input type="hidden" name="idsp" value="<?php echo $product['idsp']; ?>">
-                    <button type="submit" name="add_to_cart" class="buy-button">Thêm vào giỏ</button>
-                </form>
-            </div>
+        <div class="product-item">
+            <img src="<?php echo $product['anh']; ?>" alt="<?php echo $product['tensp']; ?>">
+            <h3><?php echo $product['tensp']; ?></h3>
+            <p><?php echo $product['mota']; ?></p>
+            <p class="price">Giá: <?php echo number_format($product['giaban'], 0, ',', '.'); ?> VNĐ</p>
+            <button onclick="addToCart(<?php echo $product['idsp']; ?>)" class="buy-button">Thêm vào giỏ</button>
+        </div>
         <?php endforeach; ?>
     </div>
 </main>
