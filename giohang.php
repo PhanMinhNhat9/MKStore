@@ -254,16 +254,34 @@ $cartProducts = getCartProducts();
                 </div>
             <?php endforeach; ?>
 
-            <div class="total-section">
-                Tổng thanh toán: <span id="grand-total">0</span> VNĐ
-            </div>
+            <!-- BẮT ĐẦU: Tổng tiền + phương thức thanh toán + nút thanh toán -->
+            <div class="checkout-section">
+                <div class="payment-method">
+                    <label for="phuongthuctt">💳 Phương thức thanh toán:</label>
+                    <select name="phuongthuctt" id="phuongthuctt" required>
+                        <option value="" disabled selected>-- Chọn phương thức --</option>
+                        <option value="tienmat">Thanh toán khi nhận hàng</option>
+                        <option value="chuyenkhoan">Chuyển khoản ngân hàng</option>
+                        <option value="momo">Ví MoMo</option>
+                        <option value="zalopay">ZaloPay</option>
+                    </select>
+                </div>
 
-            <button type="submit" name="checkout" class="checkout-btn">Thanh toán</button>
+                <div class="grand-total">
+                    <strong>Tổng thanh toán: </strong><span id="grand-total">0</span> VNĐ
+                </div>
+
+                <div class="checkout-button">
+                    <button type="submit" name="checkout" class="checkout-btn">Thanh toán</button>
+                </div>
+            </div>
+            <!-- KẾT THÚC -->
         <?php else: ?>
             <p>Giỏ hàng của bạn đang trống.</p>
         <?php endif; ?>
     </form>
 </main>
+
 
 <script>
     function formatCurrency(number) {
@@ -309,5 +327,30 @@ $cartProducts = getCartProducts();
     <?php if (isset($_GET['thank_you'])): ?>
         <script>alert("Cảm ơn bạn đã đặt hàng! Đơn hàng đang được xử lý.");</script>
     <?php endif; ?>
+
+    <script>
+    function updateGrandTotal() {
+        let total = 0;
+        const items = document.querySelectorAll('.cart-item');
+        items.forEach(item => {
+            const price = parseInt(item.getAttribute('data-price'));
+            const quantity = item.querySelector('.quantity-input').value;
+            const itemTotal = price * quantity;
+            item.querySelector('.item-total').innerText = itemTotal.toLocaleString('vi-VN');
+            total += itemTotal;
+        });
+
+        document.getElementById('grand-total').innerText = total.toLocaleString('vi-VN');
+    }
+
+    // Tự động tính tổng khi trang tải
+    window.addEventListener('DOMContentLoaded', updateGrandTotal);
+
+    // Cập nhật lại khi thay đổi số lượng
+    const quantityInputs = document.querySelectorAll('.quantity-input');
+    quantityInputs.forEach(input => {
+        input.addEventListener('input', updateGrandTotal);
+    });
+</script>
 </body>
 </html>
