@@ -5,7 +5,7 @@
         if (xoaNguoiDung($id)) {
             echo "<script> 
                     alert('Thêm thành công!');
-                    window.location.href = 'trangchuadmin.html';
+                    window.location.href = 'trangchuadmin.php';
                   </script>";
         } else {
             echo "Lỗi khi xóa: ";

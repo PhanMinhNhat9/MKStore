@@ -14,7 +14,7 @@ if (isset($_GET['id'])) {
 
             if ($stmt->rowCount() > 0) {
                 echo "<script> alert('Xóa thành công!');
-        window.location.replace('trangchuadmin.html?id=2');</script>";
+        window.location.replace('trangchuadmin.php?id=2');</script>";
             } else {
                 echo "Không tìm thấy sản phẩm để xóa!";
             }

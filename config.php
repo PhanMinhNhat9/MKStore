@@ -169,7 +169,7 @@
             $stmt->bindParam(':avatar', $target_file);
             if ($stmt->execute()) {
                 echo "<script> alert('Thêm thành công!');
-            window.location.replace('trangchuadmin.html?id=1');</script>";
+            window.location.replace('trangchuadmin.php?id=1');</script>";
             } else {
                 echo "Lỗi khi thêm người dùng.";
             }
@@ -225,7 +225,7 @@
             $stmt->execute($params);
             echo "<script> 
                     alert('Thêm thành công!');
-                    window.location.href = 'trangchuadmin.html';
+                    window.location.href = 'trangchuadmin.php';
                     </script>";
         } catch (PDOException $e) {
             return "Lỗi cập nhật: " . $e->getMessage();
@@ -285,7 +285,7 @@
     
             echo "<script> 
                     alert('Thêm thành công!');
-                    window.location.href = 'trangchuadmin.html';
+                    window.location.href = 'trangchuadmin.php';
                     </script>";
         } catch (PDOException $e) {
             echo "<script>alert('Lỗi: " . $e->getMessage() . "');</script>";
