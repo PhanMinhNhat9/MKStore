@@ -1,6 +1,40 @@
 <?php
 require_once 'config.php'; // Kết nối cơ sở dữ liệu
 
+// Xử lý tìm kiếm sản phẩm
+$keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+$productsPerPage = 20; // Số sản phẩm trên mỗi trang
+$currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Trang hiện tại
+$offset = ($currentPage - 1) * $productsPerPage; // Tính toán offset
+
+function getProducts($keyword = '', $offset = 0, $limit = 20) {
+    $pdo = connectDatabase();
+    if ($keyword !== '') {
+        $stmt = $pdo->prepare("SELECT * FROM sanpham WHERE tensp LIKE ? LIMIT ?, ?");
+        $stmt->execute(['%' . $keyword . '%', $offset, $limit]);
+    } else {
+        $stmt = $pdo->prepare("SELECT * FROM sanpham LIMIT ?, ?");
+        $stmt->execute([$offset, $limit]);
+    }
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+$products = getProducts($keyword, $offset, $productsPerPage);
+function getTotalProducts($keyword = '') {
+    $pdo = connectDatabase();
+    if ($keyword !== '') {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM sanpham WHERE tensp LIKE ?");
+        $stmt->execute(['%' . $keyword . '%']);
+    } else {
+        $stmt = $pdo->query("SELECT COUNT(*) FROM sanpham");
+    }
+    return $stmt->fetchColumn();
+}
+
+$totalProducts = getTotalProducts($keyword);
+$totalPages = ceil($totalProducts / $productsPerPage);
+
 // Bắt đầu session nếu chưa có
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -13,13 +47,7 @@ if (!isset($_SESSION['user'])) {
 }
 
 // Lấy danh sách sản phẩm từ cơ sở dữ liệu
-function getProducts() {
-    $pdo = connectDatabase();
-    $stmt = $pdo->query("SELECT * FROM sanpham");
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-$products = getProducts();
+// $products = getProducts();
 
 // Xử lý thêm sản phẩm vào giỏ hàng
 if (isset($_POST['add_to_cart'])) {
@@ -172,10 +200,13 @@ function showToast(message) {
         </div>
         
         <div class="search-container">
-            <input type="text" class="search-bar" placeholder="Tìm kiếm...">
-            <button class="mic-btn"><i class="fas fa-microphone"></i></button>
-            <button class="search-btn"> Tìm kiếm</button>
+            <form method="GET" action="trangchunguoidung.php" style="display: flex;">
+                <input type="text" name="search" class="search-bar" placeholder="Tìm kiếm..." value="<?= htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8') ?>">
+                <button type="submit" class="search-btn">Tìm kiếm</button>
+            </form>
         </div>
+        
+
         
         <div class="nav-buttons">
             <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
@@ -199,6 +230,9 @@ function showToast(message) {
     <main>
 
     <h2>Sản Phẩm Nổi Bật</h2>
+    <?php if ($keyword !== ''): ?>
+            <p style="margin-left: 16px;">Kết quả tìm kiếm cho: <strong><?= htmlspecialchars($keyword) ?></strong></p>
+        <?php endif; ?>
     <div class="product-list">
         <?php foreach ($products as $product): ?>
         <div class="product-item">
@@ -210,7 +244,22 @@ function showToast(message) {
         </div>
         <?php endforeach; ?>
     </div>
+    <div class="pagination">
+        <?php if ($currentPage > 1): ?>
+            <a href="?page=<?= $currentPage - 1 ?>&search=<?= htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8') ?>">« Trước</a>
+        <?php endif; ?>
+
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <a href="?page=<?= $i ?>&search=<?= htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8') ?>" class="<?= $i === $currentPage ? 'active' : '' ?>"><?= $i ?></a>
+        <?php endfor; ?>
+
+        <?php if ($currentPage < $totalPages): ?>
+            <a href="?page=<?= $currentPage + 1 ?>&search=<?= htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8') ?>">Sau »</a>
+        <?php endif; ?>
+    </div>
 </main>
+
+    
 
     <footer>
         <p>&copy; 2025 Cửa Hàng Phụ Kiện. Tất cả quyền được bảo lưu.</p>

@@ -71,37 +71,45 @@ body {
 /* Thanh tìm kiếm trên navbar */
 .search-container {
     display: flex;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 5px;
-    background-color: #fff;
-    position: absolute;
-    left: 45%;
-    transform: translateX(-50%);
-    width: 35%;
+    justify-content: center; /* Căn giữa nội dung */
+    margin: 20px auto; /* Căn giữa container */
+    width: 50%; /* Đặt chiều rộng cho thanh tìm kiếm */
 }
 
 .search-bar {
-    border: none;
-    outline: none;
-    padding: 5px;
-    font-size: 14px;
+    border: 1px solid #007BFF; /* Đổi màu viền thành màu xanh dương */
+    border-radius: 25px; /* Tăng độ cong của input */
+    padding: 10px 20px; /* Tăng padding để tạo không gian */
+    font-size: 16px; /* Tăng kích thước chữ */
     color: #333;
-    flex-grow: 1;
+    flex-grow: 1; /* Cho phép input chiếm không gian còn lại */
+    transition: border-color 0.3s ease; /* Thêm hiệu ứng chuyển tiếp */
+    outline: none; /* Bỏ viền khi focus */
 }
 
-.search-btn, .mic-btn {
-    background: none;
+.search-bar::placeholder {
+    color: #aaa; /* Màu chữ cho placeholder */
+    opacity: 1; /* Đảm bảo placeholder không mờ */
+}
+
+.search-bar:focus {
+    border-color: #0056b3; /* Đổi màu viền khi focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Thêm bóng đổ khi focus */
+}
+
+.search-btn {
+    background: #007BFF; /* Đổi màu nền nút tìm kiếm */
+    color: white; /* Đổi màu chữ nút tìm kiếm */
     border: none;
+    border-radius: 25px; /* Tăng độ cong của nút */
+    padding: 10px 20px; /* Tăng padding cho nút */
     cursor: pointer;
-    font-size: 14px;
-    margin-left: 5px;
-    color: #007BFF;
+    transition: background-color 0.3s ease; /* Thêm hiệu ứng chuyển tiếp */
+    margin-left: 10px; /* Thêm khoảng cách giữa input và nút */
 }
 
-.search-btn:hover, .mic-btn:hover {
-    color: #0056b3;
+.search-btn:hover {
+    background-color: #0056b3; /* Đổi màu nền khi hover */
 }
 
 /* 3 nút chức năng trên navbar */
@@ -570,4 +578,27 @@ body {
         gap: 15px;
     }
 }
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
 
+.pagination a {
+    margin: 0 5px;
+    padding: 8px 12px;
+    border: 1px solid #007BFF;
+    border-radius: 5px;
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.pagination a.active {
+    background-color: #007BFF;
+    color: white;
+}
+
+.pagination a:hover {
+    background-color: #0056b3;
+    color: white;
+}
