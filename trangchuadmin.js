@@ -24,8 +24,6 @@ function activateMenu() {
 function getActiveMenu() {
     return localStorage.getItem("activeMenu") || null;
 }
-// Gọi hàm để kích hoạt menu khi tải trang
-//document.addEventListener("DOMContentLoaded", activateMenu);
 
 function reloadCSS(file) {
     let link = document.createElement("link");
@@ -39,10 +37,13 @@ function loadPhanHoi() {
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             document.getElementById("main-content").innerHTML = xhr.responseText;
+            reloadCSS("phanhoi/hienthiphanhoi.css");
         }
     };
     xhr.send();
 }
+
+// Chức năng quản lý người dùng
 function loadDLUser() {
     let xhr = new XMLHttpRequest();
     xhr.open("GET", "nguoidung/hienthinguoidung.php", true);
@@ -59,16 +60,20 @@ function themnguoidung() {
     window.location.href = "nguoidung/themnguoidung.html";
 }
 
-function capnhatsanpham(idsp) {
-    let encodedId = btoa(idsp); // Mã hóa Base64
-    window.location.href = "sanpham/update_product_form.php?id=" + encodeURIComponent(encodedId);
+function capnhatnguoidung(iduser) {
+    let encodedId = btoa(iduser);
+    window.location.href = "nguoidung/capnhatnguoidung.php?id=" + encodeURIComponent(encodedId);
 }
-function xoasanpham(idsp) {
-    if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
-        let encodedId = btoa(idsp); // Mã hóa Base64
-        window.location.href = "sanpham/xoasanpham.php?id=" + encodeURIComponent(encodedId);
+
+function xoanguoidung(iduser) {
+    let confirmDelete = confirm("Xác nhận xóa?");
+    if (confirmDelete) {
+        let encodedId = btoa(iduser);
+        window.location.href = "nguoidung/xoanguoidung.php?id=" + encodeURIComponent(encodedId);
     }
 }
+
+// Chức năng quản lý sản phẩm
 function loadDLSanpham() {
     let xhr = new XMLHttpRequest();
     xhr.open("GET", "sanpham/hienthisanpham.php", true);
@@ -80,6 +85,75 @@ function loadDLSanpham() {
     };
     xhr.send();
 }
+
+function themsanpham() {
+
+}
+
+function capnhatsanpham(idsp) {
+    let encodedId = btoa(idsp);
+    window.location.href = "sanpham/update_product_form.php?id=" + encodeURIComponent(encodedId);
+}
+
+function xoasanpham(idsp) {
+    if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
+        let encodedId = btoa(idsp);
+        window.location.href = "sanpham/xoasanpham.php?id=" + encodeURIComponent(encodedId);
+    }
+}
+
+function themvaogiohang(idsp) {
+    let encodedId = btoa(idsp);
+    let xhr = new XMLHttpRequest();
+    
+    xhr.open("POST", "donhang/giohang.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            try {
+                let response = JSON.parse(xhr.responseText);
+                if (response.status === "success") {
+                    showSuccessMessage(response.message);
+                } else {
+                    showErrorMessage("❌ " + response.message);
+                }
+            } catch (error) {
+                console.error("Lỗi phân tích JSON:", error);
+                showErrorMessage("❌ Phản hồi không hợp lệ từ server.");
+            }
+        }
+    };
+
+    xhr.send("id=" + encodeURIComponent(encodedId));
+}
+
+function showSuccessMessage(message) {
+    let alertBox = document.getElementById("success-alert");
+    alertBox.innerText = message;
+    alertBox.style.display = "flex";
+    alertBox.classList.add("show");
+    setTimeout(() => {
+        alertBox.classList.remove("show");
+        setTimeout(() => {
+            alertBox.style.display = "none";
+        }, 300);
+    }, 3000);
+}
+
+function showErrorMessage(message) {
+    let alertBox = document.getElementById("error-alert");
+    alertBox.innerText = message;
+    alertBox.style.display = "flex";
+    alertBox.classList.add("show");
+    setTimeout(() => {
+        alertBox.classList.remove("show");
+        setTimeout(() => {
+            alertBox.style.display = "none";
+        }, 300);
+    }, 3000);
+}
+// Chức năng quản lý danh mục
 function loadDLDanhmuc()
 {
     let xhr = new XMLHttpRequest();
@@ -92,6 +166,7 @@ function loadDLDanhmuc()
     };
     xhr.send();
 }
+
 function themdmcon(id) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "danhmuc/themdmcon.php", true);
@@ -104,8 +179,21 @@ function themdmcon(id) {
     };
     xhr.send("id=" + encodeURIComponent(id));
 }
+
 function capnhatdanhmuc() {
     window.location.href = "danhmuc/capnhatdanhmuc.php";
+}
+
+function loadDLThanhToan() {
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "donhang/sanphamtt.php", true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            document.getElementById("main-content").innerHTML = xhr.responseText;
+            reloadCSS("donhang/sanphamtt.css");
+        }
+    };
+    xhr.send();
 }
 function loadDLDonhang() {
     let xhr = new XMLHttpRequest();

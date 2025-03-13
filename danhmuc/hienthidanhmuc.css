@@ -1,13 +1,15 @@
 /* Định dạng cho việc hiển thị bảng danh mục */
 .dm-table-container {
     margin: 0 auto;
-    max-height: 400px;
+    max-height: 375px;
     overflow-y: auto;
     border: 1px solid #ddd;
     border-radius: 5px;
     background: white;
 }
-
+.dm-table-container::-webkit-scrollbar {
+    display: none; /* Ẩn thanh cuộn trên Chrome, Edge, Safari */
+}
 .dm-table {
     width: 100%;
     border-collapse: collapse;
@@ -65,4 +67,3 @@
 
 .fa-plus-circle { color: #28a745; } /* Xanh lá - Thêm */
 .fa-edit { color: #ffc107; } /* Vàng - Sửa */
-.fa-trash-alt { color: #dc3545; } /* Đỏ - Xóa */

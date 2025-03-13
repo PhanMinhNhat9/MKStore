@@ -1,8 +1,9 @@
 <?php
 require_once '../config.php';
 $pdo = connectDatabase();
-
-$sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong,
+$query = isset($_POST['query']) ? trim($_POST['query']) : '';
+if ($query != '') {
+    $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong,
             COALESCE(SUM(ctdh.soluong), 0) AS soluong_daban,
             COALESCE(AVG(dg.sosao), 0) AS trungbinhsao,
             COALESCE(mgg.phantram, 0) AS giamgia,
@@ -15,12 +16,36 @@ $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong,
         LEFT JOIN magiamgia mgg ON mgct.idmgg = mgg.idmgg 
             AND mgg.ngayhieuluc <= CURDATE() 
             AND mgg.ngayketthuc >= CURDATE()
+        WHERE sp.idsp LIKE :searchTerm OR sp.mota LIKE :searchTerm1
         GROUP BY sp.idsp 
         ORDER BY sp.thoigianthemsp ASC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['searchTerm' => "%{$query}%", 'searchTerm1' => "%{$query}%"]);
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} else
+{
+    $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong,
+    COALESCE(SUM(ctdh.soluong), 0) AS soluong_daban,
+    COALESCE(AVG(dg.sosao), 0) AS trungbinhsao,
+    COALESCE(mgg.phantram, 0) AS giamgia,
+    (sp.soluong - COALESCE(SUM(ctdh.soluong), 0)) AS soluong_conlai
+FROM sanpham sp
+LEFT JOIN chitietdonhang ctdh ON sp.idsp = ctdh.idsp
+LEFT JOIN donhang dh ON ctdh.iddh = dh.iddh AND dh.trangthai = 'Đã thanh toán'
+LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
+LEFT JOIN magiamgia_chitiet mgct ON sp.idsp = mgct.idsp
+LEFT JOIN magiamgia mgg ON mgct.idmgg = mgg.idmgg 
+    AND mgg.ngayhieuluc <= CURDATE() 
+    AND mgg.ngayketthuc >= CURDATE()
+GROUP BY sp.idsp 
+ORDER BY sp.thoigianthemsp ASC";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -80,8 +105,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 // Nút hành động
                 echo '    <div class="btn-group-sp">';
-                echo '        <button class="btn btn-update" onclick="capnhatsanpham('.(int)$row['idsp'].')">✏️ Sửa</button>';
-                echo '        <button class="btn btn-delete" onclick="xoasanpham('.(int)$row['idsp'].')">🗑️ Xóa</button>';
+                echo '        <button class="btn btn-update" onclick="capnhatsanpham('.(int)$row['idsp'].')"> <i class="fas fa-sync-alt"></i> Sửa</button>';
+                echo '        <button class="btn btn-delete" onclick="xoasanpham('.(int)$row['idsp'].')"><i class="fas fa-trash"></i> Xóa</button>';
+                echo '        <button class="btn btn-giohang" onclick="themvaogiohang('.(int)$row['idsp'].')"><i class="fas fa-shopping-cart"></i> Thêm</button>';
                 echo '    </div>';
                 
                 echo '</div>';

@@ -1,13 +1,11 @@
 <?php
 require_once '../config.php';
 $pdo = connectDatabase();
-
 // Truy vấn dữ liệu danh mục
 $sql = "SELECT iddm, tendm, loaidm, icon, mota, thoigian FROM danhmucsp ORDER BY loaidm, iddm";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 // Sắp xếp danh mục cha và con
 $categoryTree = [];
 foreach ($categories as $category) {
@@ -52,7 +50,6 @@ foreach ($categories as $category) {
                         <td>
                             <i onclick="themdmcon(<?php echo $parent['iddm']; ?>)" class="fas fa-plus-circle action-icons" title="Thêm"></i>
                             <i onclick="capnhatdanhmuc()" class="fas fa-edit action-icons" title="Sửa"></i>
-                            <i onclick="xoadanhmuccha()" class="fas fa-trash-alt action-icons" title="Xóa"></i>
                         </td>
                     </tr>
                     <?php foreach ($parent['children'] as $child): ?>

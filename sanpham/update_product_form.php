@@ -4,13 +4,11 @@ $pdo = connectDatabase();
 
 if (isset($_GET['id'])) {
     $id = intval(base64_decode($_GET['id']));
-
     $sql = "SELECT * FROM sanpham WHERE idsp = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
-
     if (!$product) {
         echo "Không tìm thấy sản phẩm!";
         exit();
@@ -26,87 +24,38 @@ if (isset($_GET['id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cập Nhật Sản Phẩm</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            background: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            width: 350px;
-            text-align: center;
-            border: 2px solid #007bff;
-        }
-        h2 {
-            color: #007bff;
-            margin-bottom: 20px;
-        }
-        .input-group {
-            position: relative;
-            margin-bottom: 15px;
-        }
-        input, select, textarea, button {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            outline: none;
-            transition: 0.3s;
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-            transition: 0.3s;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-    </style>
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+    <script src="../trangchuadmin.js"></script>
+    <link rel="stylesheet" href="update_product_form.css">
 </head>
 <body>
+    <canvas class="snow" id="snowCanvas"></canvas>
     <div class="container">
-        <h2>Cập Nhật Sản Phẩm</h2>
+        <h2><i class="fas fa-edit"></i> Cập Nhật Sản Phẩm</h2>
         <form action="update_product.php" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="idsp" value="<?= $product['idsp'] ?>">
             <div class="input-group">
+                <i class="fas fa-box"></i>
                 <input type="text" name="tensp" placeholder="Tên sản phẩm" value="<?= htmlspecialchars($product['tensp']) ?>" required>
             </div>
             <div class="input-group">
+                <i class="fas fa-align-left"></i>
                 <textarea name="mota" placeholder="Mô tả" required><?= htmlspecialchars($product['mota']) ?></textarea>
             </div>
             <div class="input-group">
+                <i class="fas fa-dollar-sign"></i>
                 <input type="number" name="giaban" placeholder="Giá bán" value="<?= $product['giaban'] ?>" required>
             </div>
             <div class="input-group">
+                <i class="fas fa-sort-numeric-up"></i>
                 <input type="number" name="soluong" placeholder="Số lượng" value="<?= $product['soluong'] ?>" required>
             </div>
             <div class="input-group">
+                <i class="fas fa-image"></i>
                 <input type="file" name="anh">
             </div>
             <div class="input-group">
+                <i class="fas fa-list"></i>
                 <select name="iddm" required>
                     <?php
                     $sql_dm = "SELECT * FROM danhmucsp";
@@ -118,10 +67,56 @@ if (isset($_GET['id'])) {
                     ?>
                 </select>
             </div>
-            <button type="submit">Cập nhật</button>
+            <div class="button-group">
+                <button type="submit" class="update-button"><i class="fas fa-save"></i> Cập nhật</button>
+                <button type="button" class="back-button" onclick="goBack()"><i class="fas fa-arrow-left"></i> Trở về</button>
+            </div>
         </form>
     </div>
+    <script>
+        const canvas = document.getElementById("snowCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particles = [];
+        class Snowflake {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.radius = Math.random() * 4 + 1;
+                this.speedY = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                if (this.y > canvas.height) {
+                    this.y = -10;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = "white";
+                ctx.fill();
+            }
+        }
+        function createSnowflakes() {
+            for (let i = 0; i < 100; i++) {
+                particles.push(new Snowflake());
+            }
+        }
+        function animateSnow() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateSnow);
+        }
+        createSnowflakes();
+        animateSnow();
+    </script>
 </body>
 </html>
-
-

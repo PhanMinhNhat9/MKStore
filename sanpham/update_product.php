@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Xử lý hình ảnh nếu có upload
     if (!empty($_FILES["anh"]["name"])) {
-        $target_dir = "picture\\";
+        $target_dir = "picture/";
         $target_file = $target_dir . basename($_FILES["anh"]["name"]);
         
         if (move_uploaded_file($_FILES["anh"]["tmp_name"], $target_file)) {

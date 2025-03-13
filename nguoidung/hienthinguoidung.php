@@ -1,10 +1,23 @@
 <?php
 require_once '../config.php';
 $pdo = connectDatabase();
-$sql = "SELECT iduser, hoten, tendn, anh, email, matkhau, sdt, diachi, quyen, thoigian FROM user";
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$query = isset($_POST['query']) ? trim($_POST['query']) : '';
+if ($query != '') {
+    $sql = "SELECT iduser, hoten, tendn, anh, email, matkhau, sdt, diachi, quyen, thoigian 
+            FROM user
+            WHERE email LIKE :searchTerm OR sdt LIKE :searchTerm1";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['searchTerm' => "%{$query}%", 'searchTerm1' => "%{$query}%"]);
+    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} else
+{
+    $sql = "SELECT iduser, hoten, tendn, anh, email, matkhau, sdt, diachi, quyen, thoigian 
+            FROM user";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -45,10 +58,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td><?= $user['quyen'] ?></td>
                         <td><?= $user['thoigian'] ?></td>
                         <td>
-                            <a href="nguoidung/capnhatnguoidung.php?id=<?= $user['iduser'] ?>" class="action-icon edit">
+                            <a href="#" onclick="capnhatnguoidung(<?= $user['iduser'] ?>)" class="action-icon edit">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="nguoidung/xoanguoidung.php?id=<?= $user['iduser'] ?>" class="action-icon delete" onclick="return confirm('Bạn có chắc muốn xóa?');">
+                            <a href="#" onclick="xoanguoidung(<?= $user['iduser'] ?>)" class="action-icon delete">
                                 <i class="fas fa-trash-alt"></i>
                             </a>
                         </td>

@@ -1,46 +1,46 @@
 <?php
-include "config.php";
+    include "config.php";
 
-// Bắt đầu session nếu chưa có
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+    // Bắt đầu session nếu chưa có
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
 
-// Kiểm tra xem admin đã đăng nhập chưa
-if (!isset($_SESSION['user']) || $_SESSION['user']['quyen'] != 0) {
-    header("Location: GUI&dangnhap.php");
-    exit();
-}
-
-define('SESSION_TIMEOUT', 1800);
-
-if (isset($_SESSION['last_activity'])) {
-    $inactive_time = time() - $_SESSION['last_activity'];
-    error_log("Session inactive time: $inactive_time seconds"); // Debug log
-    
-    if ($inactive_time > SESSION_TIMEOUT) {
-        // Hủy session và chuyển hướng đến trang đăng nhập
-        session_unset();
-        session_destroy();
-        setcookie(session_name(), '', time() - 3600, '/'); // Xóa cookie session
-        echo "<script>window.location.href = 'GUI&dangnhap.php?timeout=1';</script>";
+    // Kiểm tra xem admin đã đăng nhập chưa
+    if (!isset($_SESSION['user']) || $_SESSION['user']['quyen'] != 0) {
+        header("Location: GUI&dangnhap.php");
         exit();
     }
-}
-// Cập nhật lại thời gian hoạt động cuối cùng
-$_SESSION['last_activity'] = time();
-// Làm mới session ID để tăng cường bảo mật (kiểm tra session trước khi gọi)
-if (session_status() == PHP_SESSION_ACTIVE) {
-    session_regenerate_id(true);
-}
 
-session_write_close(); // Đảm bảo session được ghi lại ngay lập tức
+    define('SESSION_TIMEOUT', 1800);
 
-// Lấy thông tin admin từ session
-$admin_name = htmlspecialchars($_SESSION['user']['hoten'], ENT_QUOTES, 'UTF-8');
-$admin_email = htmlspecialchars($_SESSION['user']['email'], ENT_QUOTES, 'UTF-8');
-$admin_phone = htmlspecialchars($_SESSION['user']['sdt'], ENT_QUOTES, 'UTF-8');
-$admin_avatar = !empty($_SESSION['user']['anh']) ? htmlspecialchars($_SESSION['user']['anh'], ENT_QUOTES, 'UTF-8') : "https://i.pravatar.cc/100";
+    if (isset($_SESSION['last_activity'])) {
+        $inactive_time = time() - $_SESSION['last_activity'];
+        error_log("Session inactive time: $inactive_time seconds"); // Debug log
+        
+        if ($inactive_time > SESSION_TIMEOUT) {
+            // Hủy session và chuyển hướng đến trang đăng nhập
+            session_unset();
+            session_destroy();
+            setcookie(session_name(), '', time() - 3600, '/'); // Xóa cookie session
+            echo "<script>window.location.href = 'GUI&dangnhap.php?timeout=1';</script>";
+            exit();
+        }
+    }
+    // Cập nhật lại thời gian hoạt động cuối cùng
+    $_SESSION['last_activity'] = time();
+    // Làm mới session ID để tăng cường bảo mật (kiểm tra session trước khi gọi)
+    if (session_status() == PHP_SESSION_ACTIVE) {
+        session_regenerate_id(true);
+    }
+
+    session_write_close(); // Đảm bảo session được ghi lại ngay lập tức
+
+    // Lấy thông tin admin từ session
+    $admin_name = htmlspecialchars($_SESSION['user']['hoten'], ENT_QUOTES, 'UTF-8');
+    $admin_email = htmlspecialchars($_SESSION['user']['email'], ENT_QUOTES, 'UTF-8');
+    $admin_phone = htmlspecialchars($_SESSION['user']['sdt'], ENT_QUOTES, 'UTF-8');
+    $admin_avatar = !empty($_SESSION['user']['anh']) ? htmlspecialchars($_SESSION['user']['anh'], ENT_QUOTES, 'UTF-8') : "https://i.pravatar.cc/100";
 ?>
 
 <!DOCTYPE html>
@@ -100,9 +100,50 @@ $admin_avatar = !empty($_SESSION['user']['anh']) ? htmlspecialchars($_SESSION['u
         .dropdown .logout:hover {
             background:rgb(19, 10, 146);
         }
+        .alert-success, .alert-error {
+    display: none;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 1000;
+    min-width: 180px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+/* Thành công - màu xanh lá */
+.alert-success {
+    background-color: white;
+    color: #28a745;
+    border: 2px solid #28a745;
+    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+}
+
+/* Lỗi - màu đỏ */
+.alert-error {
+    background-color: white;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+}
+
+/* Hiệu ứng hiển thị */
+.alert-success.show, .alert-error.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
     </style>
 </head>
 <body>
+<div id="success-alert" class="alert-success"></div>
+<div id="error-alert" class="alert-error"></div>
     <!-- Thanh navbar -->
     <nav class="navbar">
         <div class="logo-container">
@@ -110,12 +151,51 @@ $admin_avatar = !empty($_SESSION['user']['anh']) ? htmlspecialchars($_SESSION['u
             <span class="store-name"> M'K STORE</span>
         </div>
         
-        <div class="search-container">
-            <input type="text" class="search-bar" placeholder="Tìm kiếm...">
-            <button class="mic-btn"><i class="fas fa-microphone"></i></button>
-            <button class="search-btn"> Tìm kiếm</button>
-        </div>
-        
+            <div class="search-container">
+                <input type="text" class="search-bar" placeholder="Tìm kiếm..." onkeyup="handleSearch(this.value)">
+                <button class="mic-btn"><i class="fas fa-microphone"></i></button>
+                <button class="search-btn"> Tìm kiếm</button>
+            </div>
+            <script>
+    function handleSearch(query) {
+        query = query.trim();
+        let activeMenu = getActiveMenu(); // Lấy menu hiện tại
+
+        if (activeMenu === "menu-user") {
+            searchUsers(query);
+        } else if (activeMenu === "menu-product") {
+            searchProducts(query);
+        }
+    }
+
+    function searchUsers(query) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "nguoidung/hienthinguoidung.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                document.getElementById("main-content").innerHTML = xhr.responseText;
+            }
+        };
+        xhr.send("query=" + encodeURIComponent(query));
+    }
+
+    function searchProducts(query) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "sanpham/hienthisanpham.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                document.getElementById("main-content").innerHTML = xhr.responseText;
+            }
+        };
+        xhr.send("query=" + encodeURIComponent(query));
+    }
+
+</script>
+
         <div class="nav-buttons">
             <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
             <button class="btn thongbao"><i class="fas fa-bell"></i> Thông báo</button>
