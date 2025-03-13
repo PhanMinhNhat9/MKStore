@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Người Dùng</title>
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="themnguoidung.css">
+    <script src="../trangchuadmin.js"></script>
+</head>
+<body>
+    <canvas class="snow" id="snowCanvas"></canvas>
+    <div class="nd-container">
+        <h2>Thêm Người Dùng</h2>
+        <form action="../config.php" method="POST" enctype="multipart/form-data">
+            <div class="nd-form-container">
+                <div class="nd-input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="fullname" placeholder="Họ và tên" required>
+                </div>
+                <div class="nd-input-group">
+                    <i class="fas fa-user-circle"></i>
+                    <input type="text" name="username" placeholder="Tên đăng nhập" required>
+                </div>
+                <div class="nd-input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="nd-input-group">
+                    <i class="fas fa-key"></i>
+                    <input type="password" name="password" placeholder="Mật khẩu" required>
+                </div>
+                <div class="nd-input-group">
+                    <i class="fas fa-phone"></i>
+                    <input type="text" name="phone" placeholder="Số điện thoại" required>
+                </div>
+                <div class="nd-input-group">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <input type="text" name="address" placeholder="Địa chỉ" required>
+                </div>
+                <div class="nd-input-group">
+                    <i class="fas fa-image"></i>
+                    <input type="file" name="anh" required>
+                </div>
+                <div class="nd-input-group">
+                    <i class="fas fa-user-tag"></i>
+                    <select name="role" required>
+                        <option value="">Chọn quyền</option>
+                        <option value="0">Admin</option>
+                        <option value="1">User</option>
+                    </select>
+                </div>
+            </div>
+            <div class="nhomnut-nd">
+                <input type="submit" id="nd-themnd" name="themnd" value="Thêm Người Dùng">
+                <input type="button" id="nd-trove" onclick="goBack()" value="Trở về">
+            </div>
+        </form>
+    </div>
+    <script>
+        const canvas = document.getElementById("snowCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particles = [];
+        class Snowflake {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.radius = Math.random() * 4 + 1;
+                this.speedY = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                if (this.y > canvas.height) {
+                    this.y = -10;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = "white";
+                ctx.fill();
+            }
+        }
+        function createSnowflakes() {
+            for (let i = 0; i < 100; i++) {
+                particles.push(new Snowflake());
+            }
+        }
+        function animateSnow() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateSnow);
+        }
+        createSnowflakes();
+        animateSnow();
+    </script>
+</body>
+</html>

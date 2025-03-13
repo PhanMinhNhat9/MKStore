@@ -56,15 +56,7 @@ function loadDLUser() {
 }
 
 function themnguoidung() {
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "nguoidung/themnguoidung.php", true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("main-content").innerHTML = xhr.responseText;
-            reloadCSS("nguoidung/themnguoidung.css");
-        }
-    };
-    xhr.send();
+    window.location.href = "nguoidung/themnguoidung.html";
 }
 
 function capnhatsanpham(idsp) {

@@ -60,28 +60,6 @@
                         <button type="submit" name="capnhatnd" class="btn btn-update">💾 Cập Nhật</button>
                         <button type="button" class="btn btn-back" onclick="goBack()">⬅ Trở Về</button>
                     </div>
-                    <?php
-                        // if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                        //     $iduser  = intval($_POST['iduser']);
-                        //     $hoten   = $_POST['hoten'];
-                        //     $tendn   = $_POST['tendn'];
-                        //     $email   = $_POST['email'];
-                        //     $sdt     = $_POST['sdt'];
-                        //     $diachi  = $_POST['diachi'];
-                        //     $matkhau  = $_POST['matkhau'];
-                        //     $quyen   = $_POST['quyen'];
-                        //     $file    = $_FILES['anh'];
-                        //     $result = capnhatNguoiDung($iduser, $hoten, $tendn, $email, $sdt, $diachi, $matkhau, $quyen, $file);
-                        //     if ($result === true) {
-                        //         echo "<script> 
-                        //                 alert('Thêm thành công!');
-                        //                 window.location.href = 'trangchuadmin.html';
-                        //               </script>";
-                        //     } else {
-                        //         echo $result;
-                        //     }
-                        // }
-                    ?>
             </div>
         </div>
     </form>
