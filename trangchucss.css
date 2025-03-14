@@ -581,16 +581,22 @@ body {
 .pagination {
     display: flex;
     justify-content: center;
+    gap: 8px; /* khoảng cách giữa các nút */
     margin: 20px 0;
 }
 
 .pagination a {
-    margin: 0 5px;
-    padding: 8px 12px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid #007BFF;
-    border-radius: 5px;
+    border-radius: 0px; /* Nếu bạn muốn vuông hoàn toàn thì để 0 */
     color: #007BFF;
     text-decoration: none;
+    font-size: 16px;
+    transition: 0.3s;
 }
 
 .pagination a.active {
@@ -602,3 +608,4 @@ body {
     background-color: #0056b3;
     color: white;
 }
+
