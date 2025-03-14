@@ -79,7 +79,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
             <thead>
                 <tr>
                     <th><i class="fas fa-file-invoice icon"></i>Mã ĐH 
-                        <button class="pay-btn" onclick="loadDLThanhToan()"><i class="fas fa-wallet"></i> Thanh toán</button>
+                        <button class="pay-btn" onclick="loadGioHang()"><i class="fas fa-wallet"></i> Giỏ hàng</button>
                     </th>
                     <th><i class="fas fa-user icon"></i>Khách hàng</th>
                     <th><i class="fas fa-money-bill icon"></i>Tổng tiền</th>

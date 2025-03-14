@@ -106,7 +106,7 @@ function themvaogiohang(idsp) {
     let encodedId = btoa(idsp);
     let xhr = new XMLHttpRequest();
     
-    xhr.open("POST", "donhang/giohang.php", true);
+    xhr.open("POST", "donhang/themvaogiohang.php", true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     
     xhr.onreadystatechange = function () {
@@ -184,16 +184,8 @@ function capnhatdanhmuc() {
     window.location.href = "danhmuc/capnhatdanhmuc.php";
 }
 
-function loadDLThanhToan() {
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", "donhang/sanphamtt.php", true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("main-content").innerHTML = xhr.responseText;
-            reloadCSS("donhang/sanphamtt.css");
-        }
-    };
-    xhr.send();
+function loadGioHang() {
+    window.location.href = "donhang/hienthigiohang.php";
 }
 function loadDLDonhang() {
     let xhr = new XMLHttpRequest();
