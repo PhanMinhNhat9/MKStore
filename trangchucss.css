@@ -581,31 +581,49 @@ body {
 .pagination {
     display: flex;
     justify-content: center;
-    gap: 8px; /* khoảng cách giữa các nút */
+    align-items: center;
+    gap: 8px;
     margin: 20px 0;
+    flex-wrap: wrap;
 }
 
 .pagination a {
     width: 40px;
     height: 40px;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     border: 1px solid #007BFF;
-    border-radius: 0px; /* Nếu bạn muốn vuông hoàn toàn thì để 0 */
+    border-radius: 6px;
     color: #007BFF;
     text-decoration: none;
     font-size: 16px;
-    transition: 0.3s;
+    transition: background 0.3s, color 0.3s;
 }
 
 .pagination a.active {
     background-color: #007BFF;
     color: white;
+    font-weight: bold;
 }
 
 .pagination a:hover {
     background-color: #0056b3;
     color: white;
+}
+
+.pagination .arrow {
+    width: auto;
+    padding: 0 16px;
+}
+
+.pagination .dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    font-size: 18px;
+    color: #777;
+    user-select: none;
 }
 

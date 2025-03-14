@@ -209,7 +209,9 @@ function showToast(message) {
 
         
         <div class="nav-buttons">
-            <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
+            <button class="btn trangchu" onclick="window.location.href='trangchunguoidung.php'">
+                <i class="fas fa-home"></i> Trang chủ
+            </button>
             <button class="btn giohang" onclick="window.location.href='giohang.php'">
                 <i class="fas fa-shopping-cart"></i> Giỏ hàng
             </button>
@@ -245,17 +247,37 @@ function showToast(message) {
         <?php endforeach; ?>
     </div>
     <div class="pagination">
-        <?php if ($currentPage > 1): ?>
-            <a href="?page=<?= $currentPage - 1 ?>&search=<?= htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8') ?>">« Trước</a>
-        <?php endif; ?>
+    <?php if ($currentPage > 1): ?>
+        <a class="arrow" href="?page=<?= $currentPage - 1 ?>&search=<?= htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8') ?>">« Trước</a>
+    <?php endif; ?>
 
-        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <a href="?page=<?= $i ?>&search=<?= htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8') ?>" class="<?= $i === $currentPage ? 'active' : '' ?>"><?= $i ?></a>
-        <?php endfor; ?>
+    <?php
+    // Số lượng trang muốn hiển thị xung quanh trang hiện tại
+    $range = 2;
 
-        <?php if ($currentPage < $totalPages): ?>
-            <a href="?page=<?= $currentPage + 1 ?>&search=<?= htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8') ?>">Sau »</a>
-        <?php endif; ?>
+    // Hiển thị trang 1 luôn
+    if ($currentPage > $range + 2) {
+        echo '<a href="?page=1&search=' . htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8') . '">1</a>';
+        echo '<span class="dots">...</span>';
+    }
+
+    // Các trang ở giữa
+    for ($i = max(1, $currentPage - $range); $i <= min($totalPages, $currentPage + $range); $i++) {
+        $activeClass = ($i === $currentPage) ? 'active' : '';
+        echo '<a class="' . $activeClass . '" href="?page=' . $i . '&search=' . htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8') . '">' . $i . '</a>';
+    }
+
+    // Hiển thị trang cuối nếu cách xa trang hiện tại
+    if ($currentPage < $totalPages - ($range + 1)) {
+        echo '<span class="dots">...</span>';
+        echo '<a href="?page=' . $totalPages . '&search=' . htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8') . '">' . $totalPages . '</a>';
+    }
+    ?>
+
+    <?php if ($currentPage < $totalPages): ?>
+        <a class="arrow" href="?page=<?= $currentPage + 1 ?>&search=<?= htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8') ?>">Sau »</a>
+    <?php endif; ?>
+</div>
     </div>
 </main>
 

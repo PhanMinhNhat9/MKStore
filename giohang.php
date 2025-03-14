@@ -246,10 +246,12 @@ $cartProducts = getCartProducts();
                         <label>Số lượng: 
                             <input type="number" class="quantity-input" name="quantities[<?php echo $product['idsp']; ?>]" value="<?php echo $product['quantity']; ?>" min="1">
                         </label>
-                        <p>Tổng: <span class="item-total"><?php echo number_format($product['giaban'] * $product['quantity'], 0, ',', '.'); ?></span> VNĐ</p>
                     </div>
                     <div class="cart-actions">
                         <a href="giohang.php?delete=<?php echo $product['idsp']; ?>" class="btn delete-btn">Xóa</a>
+                    </div>
+                    <div class="cart-details">
+                        <p>Tổng: <span class="item-total"><?php echo number_format($product['giaban'] * $product['quantity'], 0, ',', '.'); ?></span> VNĐ</p>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -266,7 +268,7 @@ $cartProducts = getCartProducts();
                         <option value="zalopay">ZaloPay</option>
                     </select>
                 </div>
-
+                
                 <div class="grand-total">
                     <strong>Tổng thanh toán: </strong><span id="grand-total">0</span> VNĐ
                 </div>
