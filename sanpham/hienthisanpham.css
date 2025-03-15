@@ -63,13 +63,8 @@ h3 {
     font-size: 14px;
 }
 
-.old-price {
-    text-decoration: line-through;
-    color: #888;
-    margin-right: 3px;
-}
 
-.new-price {
+.old-price {
     color: red;
 }
 

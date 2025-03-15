@@ -23,7 +23,7 @@ if ($idmgg > 0) {
         // Commit transaction nếu mọi thứ thành công
         $pdo->commit();
 
-        echo "<script>alert('Xóa thành công!'); window.location.href='hienthimgg.php';</script>";
+        echo "<script>alert('Xóa thành công!'); window.location.href='trangchuadmin.php';</script>";
     } catch (Exception $e) {
         // Nếu có lỗi, rollback để không mất dữ liệu quan trọng
         $pdo->rollBack();

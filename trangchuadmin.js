@@ -94,7 +94,10 @@ function capnhatsanpham(idsp) {
     let encodedId = btoa(idsp);
     window.location.href = "sanpham/update_product_form.php?id=" + encodeURIComponent(encodedId);
 }
-
+function chat(iduser) {
+    let encodedId = btoa(iduser);
+    window.location.href = "phanhoi/chat.php?id=" + encodeURIComponent(encodedId);
+}
 function xoasanpham(idsp) {
     if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
         let encodedId = btoa(idsp);
@@ -197,6 +200,9 @@ function loadDLDonhang() {
     };
     xhr.send();
 }
+function loadBCTK() {
+    alert ("hello");
+}
 function showModal(id) {
     document.getElementById('modal-' + id).style.display = 'flex';
 }
@@ -215,15 +221,7 @@ function loadDLMGG() {
     xhr.send();
 }
 function themmgg() {
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "khuyenmai/themmgg.php", true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("main-content").innerHTML = xhr.responseText;
-            reloadCSS("khuyenmai/themmgg.css");
-        }
-    };
-    xhr.send();
+    window.location.href = "khuyenmai/themmgg.php";
 }
 // Hàm đăng xuất
 function logout() {
