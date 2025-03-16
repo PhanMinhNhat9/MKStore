@@ -146,30 +146,24 @@ function xoasanpham(idsp) {
 }
 
 function themvaogiohang(idsp) {
-    let encodedId = btoa(idsp);
-    let xhr = new XMLHttpRequest();
-    
-    xhr.open("POST", "themvaogiohang.php", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            try {
-                let response = JSON.parse(xhr.responseText);
-                if (response.status === "success") {
-                    showSuccessMessage(response.message);
-                } else {
-                    showErrorMessage("❌ " + response.message);
-                }
-            } catch (error) {
-                console.error("Lỗi phân tích JSON:", error);
-                showErrorMessage("❌ Phản hồi không hợp lệ từ server.");
-            }
-        }
-    };
+    let encodedId = btoa(idsp); // Mã hóa ID sản phẩm
+    fetch("../donhang/themvaogiohang.php?id=" + encodeURIComponent(encodedId))
+        .then(response => response.text()) // Lấy phản hồi từ PHP
+        .then(data => {
+            console.log("Server response:", data); // Kiểm tra phản hồi
 
-    xhr.send("id=" + encodeURIComponent(encodedId));
+            if (data.trim() === "success") {
+                showSuccessMessage("Thêm vào giỏ hàng thành công! 🛒");
+            } else {
+                showErrorMessage("Lỗi khi thêm vào giỏ hàng!");
+            }
+        })
+        .catch(error => {
+            console.error("❌ Lỗi khi gửi yêu cầu:", error);
+            showErrorMessage("Không thể kết nối đến server!");
+        });
 }
+
 
 function showSuccessMessage(message) {
     let alertBox = document.getElementById("success-alert");
@@ -207,10 +201,8 @@ function capnhatdanhmuc() {
     window.top.location.href = "capnhatdanhmuc.php";
 }
 
-
-
 function loadGioHang() {
-    window.location.href = "donhang/hienthigiohang.php";
+    window.location.href = "hienthigiohang.php";
 }
 
 function loadBCTK() {

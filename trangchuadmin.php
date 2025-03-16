@@ -49,9 +49,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="trangchuadmin.css">
     <script src="trangchuadmin.js"></script>
+    <link rel="stylesheet" href="fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="trangchuadmin.css?v=<?= time(); ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
@@ -103,8 +103,6 @@
     </style>
 </head>
 <body>
-<div id="success-alert" class="alert-success"></div>
-<div id="error-alert" class="alert-error"></div>
     <!-- Thanh navbar -->
     <nav class="navbar">
         <div class="logo-container">
@@ -253,6 +251,6 @@
                 <a href="#" class="social-icon"><i class="fab fa-facebook"></i> Facebook</a>
             </div>
         </div>
-    </footer>    
+    </footer>   
 </body>
 </html>

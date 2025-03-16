@@ -1,10 +1,9 @@
 <?php
 require_once '../config.php';
 $pdo = connectDatabase();
-header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
-    $idsp = base64_decode($_POST['id']);
+if (isset($_GET['id'])) {
+    $idsp = base64_decode($_GET['id']);
 
     try {
         $pdo->beginTransaction();
@@ -15,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
         $sanpham = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$sanpham) {
-            echo json_encode(["status" => "error", "message" => "Sản phẩm không tồn tại."]);
+            echo "error"; // Sản phẩm không tồn tại
             exit;
         }
 
@@ -46,14 +45,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
         }
 
         $pdo->commit();
-        echo json_encode(["status" => "success", "message" => "✔ Sản phẩm đã được thêm vào giỏ hàng!"]);
+        echo "success"; // ✅ Thêm thành công
     } catch (Exception $e) {
         $pdo->rollBack();
-        echo json_encode(["status" => "error", "message" => "Lỗi khi thêm vào giỏ hàng: " . $e->getMessage()]);
+        echo "error"; // ❌ Thêm thất bại
     }
     exit;
 }
-
-echo json_encode(["status" => "error", "message" => "Lỗi: Dữ liệu không hợp lệ."]);
-exit;
 ?>
