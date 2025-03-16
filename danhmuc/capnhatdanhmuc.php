@@ -77,7 +77,7 @@
                             <td>
                                 <input type="hidden" name="iddm" value="<?= htmlspecialchars($dm['iddm']) ?>">
                                 <input type="submit" name="capnhatdm" class="btn-save" value="&#xf0c7;" style="font-family: 'Font Awesome 5 Free'; font-weight: 900;"> <br> <br>
-                                <input type="submit" name="xoadm" class="btn-delete" value="&#xf1f8;" style="font-family: 'Font Awesome 5 Free'; font-weight: 900;">
+                                <input type="submit" name="xoadm" onclick="return confirm('Bạn có chắc chắn muốn xóa không?');" class="btn-delete" value="&#xf1f8;" style="font-family: 'Font Awesome 5 Free'; font-weight: 900;">
                             </td>
 
                         </form>

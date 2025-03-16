@@ -1,102 +1,105 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #E3F2FD;
-    text-align: center;
+/* Reset cơ bản */
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
-.container {
-    width: 100%;
-    max-width: 700px;
-    background: #FFFFFF;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
-    margin: auto;
-    margin-top: 25px;
-    border-top: 5px solid #2196F3;
+
+body {
+    background: #f8f9fa;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
-.left, .right {
-    width: 48%;
-}
-.left {
+
+.container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
     text-align: center;
 }
+
 h2 {
-    color: #0D47A1;
-    text-shadow: 2px 2px rgb(136, 179, 243);
+    color: #333;
+    margin-bottom: 20px;
 }
-input[type="file"] {
-    height: 16px;
-}
-select {
-    width: 320px;
-    padding: 8px;
-    margin: 5px 0;
-    border: 2px solid #90CAF9;
-    border-radius: 10px;
-    outline: none;
-    background: #F0F8FF;
-    font-size: 14px;
-}
-input {
-    width: 300px;
-    padding: 8px;
-    margin: 5px 0;
-    border: 2px solid #90CAF9;
-    border-radius: 10px;
-    outline: none;
-    background: #F0F8FF;
-    font-size: 14px;
-}
-.btn-container {
+
+.img-container {
     display: flex;
-    margin-top: 15px;
+    justify-content: center;
+    margin-bottom: 15px;
 }
-.btn {
-    width: 44%;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-.btn-update {
-    background: #2196F3;
-    color: white;
-    margin-left: 10px;
-}
-.btn-update:hover {
-    background: #1976D2;
-}
-.btn-back {
-    background: #B0BEC5;
-    color: black;
-    margin-left: 18px;
-}
-.btn-back:hover {
-    background: #90A4AE;
-}
-img {
-    width: 97px;
-    height: 97px;
+
+.img-container img {
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    border: 3px solid #2196F3;
     object-fit: cover;
+    border: 3px solid #007bff;
 }
-label {
-    font-weight: bold;
-    color: #0D47A1;
-    display: block;
-    text-align: left;
+
+.form-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
     margin-top: 10px;
 }
-@media (max-width: 600px) {
-    .left, .right {
-        width: 100%;
-    }
+
+.form-group label {
+    width: 100%;
+    text-align: left;
+    font-weight: 500;
+    color: #555;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+input:focus, select:focus {
+    border-color: #007bff;
+    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.2);
+}
+
+.btn-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-weight: 500;
+}
+
+.btn-update {
+    background: #007bff;
+    color: white;
+}
+
+.btn-update:hover {
+    background: #0056b3;
+}
+
+.btn-back {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-back:hover {
+    background: #545b62;
 }

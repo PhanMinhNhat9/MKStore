@@ -13,8 +13,11 @@ if (isset($_GET['id'])) {
             $stmt->execute();
 
             if ($stmt->rowCount() > 0) {
-                echo "<script> alert('Xóa thành công!');
-        window.location.replace('trangchuadmin.php?id=2');</script>";
+                echo "<script src='../trangchuadmin.js'></script>";
+                echo "<script> 
+                        alert('Xóa thành công!');
+                        goBack();
+                    </script>";
             } else {
                 echo "Không tìm thấy sản phẩm để xóa!";
             }

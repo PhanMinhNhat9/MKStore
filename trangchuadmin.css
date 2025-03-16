@@ -314,3 +314,92 @@ body {
     background-color: #007BFF;
     color: white;
 }
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    width: 200px;
+    border-radius: 8px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    flex-direction: column;
+    padding: 10px;
+    z-index: 10;
+    margin-top: 10px ;
+}
+.dropdown.active {
+    display: flex;
+}
+.dropdown .profile {
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+.dropdown .profile img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 5px;
+}
+.dropdown .profile p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #333;
+}
+.dropdown .logout {
+    background:rgb(40, 73, 218);
+    color: white;
+    padding: 8px;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.dropdown .logout:hover {
+    background:rgb(19, 10, 146);
+}
+.alert-success, .alert-error {
+    display: none;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 1000;
+    min-width: 180px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+/* Thành công - màu xanh lá */
+.alert-success {
+    background-color: white;
+    color: #28a745;
+    border: 2px solid #28a745;
+    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+}
+
+/* Lỗi - màu đỏ */
+.alert-error {
+    background-color: white;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+}
+
+/* Hiệu ứng hiển thị */
+.alert-success.show, .alert-error.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+#Frame {
+    width: 100%;
+    min-height: 410px;
+    display: flex;
+}

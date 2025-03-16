@@ -3,12 +3,13 @@
     if (isset($_GET['id'])) {
         $id = intval(base64_decode($_GET['id']));
         if (xoaNguoiDung($id)) {
+            echo "<script src='../trangchuadmin.js'></script>";
             echo "<script> 
                     alert('Xóa thành công!');
-                    window.location.href = '../trangchuadmin.php';
+                    goBack();
                   </script>";
         } else {
-            echo "Lỗi khi xóa: ";
+            echo "<script>alert('Lỗi khi xóa người dùng!');</script>";
         }
     }
 ?>

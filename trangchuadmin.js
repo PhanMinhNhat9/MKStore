@@ -49,14 +49,14 @@ function themnguoidung() {
 
 function capnhatnguoidung(iduser) {
     let encodedId = btoa(iduser);
-    window.location.href = "nguoidung/capnhatnguoidung.php?id=" + encodeURIComponent(encodedId);
+    window.location.href = "capnhatnguoidung.php?id=" + encodeURIComponent(encodedId);
 }
 
 function xoanguoidung(iduser) {
     let confirmDelete = confirm("Xác nhận xóa?");
     if (confirmDelete) {
         let encodedId = btoa(iduser);
-        window.location.href = "nguoidung/xoanguoidung.php?id=" + encodeURIComponent(encodedId);
+        window.location.href = "xoanguoidung.php?id=" + encodeURIComponent(encodedId);
     }
 }
 
@@ -130,16 +130,18 @@ function themsanpham() {
 
 function capnhatsanpham(idsp) {
     let encodedId = btoa(idsp);
-    window.location.href = "sanpham/update_product_form.php?id=" + encodeURIComponent(encodedId);
+    window.location.href = "update_product_form.php?id=" + encodeURIComponent(encodedId);
 }
+
 function chat(iduser) {
     let encodedId = btoa(iduser);
     window.location.href = "phanhoi/chat.php?id=" + encodeURIComponent(encodedId);
 }
+
 function xoasanpham(idsp) {
     if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
         let encodedId = btoa(idsp);
-        window.location.href = "sanpham/xoasanpham.php?id=" + encodeURIComponent(encodedId);
+        window.location.href = "xoasanpham.php?id=" + encodeURIComponent(encodedId);
     }
 }
 
@@ -147,7 +149,7 @@ function themvaogiohang(idsp) {
     let encodedId = btoa(idsp);
     let xhr = new XMLHttpRequest();
     
-    xhr.open("POST", "donhang/themvaogiohang.php", true);
+    xhr.open("POST", "themvaogiohang.php", true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     
     xhr.onreadystatechange = function () {
@@ -197,21 +199,15 @@ function showErrorMessage(message) {
 
 
 function themdmcon(id) {
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "danhmuc/themdmcon.php", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("main-content").innerHTML = xhr.responseText;
-            reloadCSS("danhmuc/themdmcon.css");
-        }
-    };
-    xhr.send("id=" + encodeURIComponent(id));
+    let encodedId = btoa(id);
+    window.location.href = "themdmcon.php?id=" + encodeURIComponent(encodedId);
 }
 
 function capnhatdanhmuc() {
-    window.location.href = "danhmuc/capnhatdanhmuc.php";
+    window.top.location.href = "capnhatdanhmuc.php";
 }
+
+
 
 function loadGioHang() {
     window.location.href = "donhang/hienthigiohang.php";
@@ -247,9 +243,13 @@ function resetIcon(button) {
     button.querySelector("i").classList.add("fa-arrow-left");
 }
 function goBack() {
-    // window.location.replace("trangchuadmin.html?id=1");
-    window.location.href = "../trangchuadmin.php";
+    if (window.top !== window.self) {
+        window.top.location.href = "../trangchuadmin.php"; // Điều hướng thoát khỏi iframe
+    } else {
+        window.location.href = "../trangchuadmin.php"; // Điều hướng thông thường
+    }
 }
+
 function goBackHome() {
     // Xóa trạng thái menu active trong localStorage
     localStorage.removeItem("activeMenu");

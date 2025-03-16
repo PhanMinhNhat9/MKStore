@@ -26,43 +26,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="hienthinguoidung.css">
     <script src="../trangchuadmin.js"></script>
-    <style>
-
-        /* Modal hiển thị ảnh */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-}
-.modal-content {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    position: relative;
-    width: 320px; /* Giảm chiều rộng modal */
-    max-width: 90%;
-}
-.modal img {
-    width: 200px; /* Giảm kích thước ảnh */
-    height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
-}
-.close-btn {
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    font-size: 18px;
-    cursor: pointer;
-    color: red;
-}
-
-    </style>
 </head>
 <body>
     <div class="container">
@@ -76,7 +39,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <p class="info"> 📍 <?= htmlspecialchars($user['diachi']) ?></p>
                     <p class="info">📞 <?= htmlspecialchars($user['sdt']) ?></p>
                     <p class="role"> 🔒 Quyền: <?= htmlspecialchars($user['quyen']) ?></p>
-
                     <div class="btn-group">
                         <button onclick="capnhatnguoidung(<?= $user['iduser'] ?>)" class="btn btn-update">
                             <i class="fas fa-edit"></i>

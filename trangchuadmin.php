@@ -100,51 +100,6 @@
         .dropdown .logout:hover {
             background:rgb(19, 10, 146);
         }
-        .alert-success, .alert-error {
-    display: none;
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    z-index: 1000;
-    min-width: 180px;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    opacity: 0;
-}
-
-/* Thành công - màu xanh lá */
-.alert-success {
-    background-color: white;
-    color: #28a745;
-    border: 2px solid #28a745;
-    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
-}
-
-/* Lỗi - màu đỏ */
-.alert-error {
-    background-color: white;
-    color: #dc3545;
-    border: 2px solid #dc3545;
-    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
-}
-
-/* Hiệu ứng hiển thị */
-.alert-success.show, .alert-error.show {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.1);
-}
-#Frame {
-    width: 100%;
-    min-height: 410px;
-    border: 1px solid blue;
-    display: flex;
-}
-
     </style>
 </head>
 <body>
@@ -176,6 +131,9 @@
         if (activeMenu === "menu-order") {
             searchDonHang(query);
         }
+        if (activeMenu === "menu-support") {
+            searchPhanHoi(query);
+        }
     }
 
     function searchUsers(query) {
@@ -205,6 +163,16 @@
             let iframe = document.getElementById("Frame");
             if (iframe) {
                 iframe.src = "donhang/hienthidonhang.php?query="+encodeURIComponent(query);
+            } else {
+                console.error("Không tìm thấy iframe có ID 'Frame'");
+            }
+        }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+    }
+    function searchPhanHoi(query) {
+        setTimeout(() => {
+            let iframe = document.getElementById("Frame");
+            if (iframe) {
+                iframe.src = "phanhoi/hienthiphanhoi.php?query="+encodeURIComponent(query);
             } else {
                 console.error("Không tìm thấy iframe có ID 'Frame'");
             }
@@ -246,8 +214,6 @@
         activateMenu();
         setTimeout(() => {
             let id = getActiveMenu();
-            console.log("ID menu sau khi active:", id); 
-
             if (id === "menu-user") loadDLUser();
             if (id === "menu-product") loadDLSanpham();
             if (id === "menu-category") loadDLDanhmuc();
@@ -268,8 +234,9 @@
         });
         handleSessionTimeout(<?= SESSION_TIMEOUT ?>);
     </script>
+    
+    <!-- Nội dung trang web -->
     <div class="main-content" id="main-content">
-       <!-- Nội dung trang web -->
         <iframe id="Frame" src="" scrolling="no"></iframe>
     </div>
 

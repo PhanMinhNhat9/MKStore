@@ -353,27 +353,27 @@ if (!isset($_SESSION['lock_time'])) {
         }
     
     function xoaDanhMuc() {
-        $pdo = connectDatabase();
+        // $pdo = connectDatabase();
     
-            $iddm = $_POST['iddm'];
+        //     $iddm = $_POST['iddm'];
     
-            // Kiểm tra xem danh mục có danh mục con không
-            $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM danhmucsp WHERE loaidm = ?");
-            $stmtCheck->execute([$iddm]);
-            $count = $stmtCheck->fetchColumn();
+        //     // Kiểm tra xem danh mục có danh mục con không
+        //     $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM danhmucsp WHERE loaidm = ?");
+        //     $stmtCheck->execute([$iddm]);
+        //     $count = $stmtCheck->fetchColumn();
     
-            if ($count > 0) {
-                echo "<script>alert('Không thể xóa! Hãy xóa danh mục con trước.');</script>";
-                return;
-            }
+        //     if ($count > 0) {
+        //         echo "<script>alert('Không thể xóa! Hãy xóa danh mục con trước.');</script>";
+        //         return;
+        //     }
     
-            // Xóa danh mục
-            $stmt = $pdo->prepare("DELETE FROM danhmucsp WHERE iddm = ?");
-            if ($stmt->execute([$iddm])) {
-                echo "<script>alert('Xóa danh mục thành công!'); window.location.href='danhmuc/capnhatdanhmuc.php';</script>";
-            } else {
-                echo "<script>alert('Xóa danh mục thất bại!');</script>";
-            }
+        //     // Xóa danh mục
+        //     $stmt = $pdo->prepare("DELETE FROM danhmucsp WHERE iddm = ?");
+        //     if ($stmt->execute([$iddm])) {
+        //         echo "<script>alert('Xóa danh mục thành công!'); window.location.href='danhmuc/capnhatdanhmuc.php';</script>";
+        //     } else {
+        //         echo "<script>alert('Xóa danh mục thất bại!');</script>";
+        //     }
         }
     function themMGG() {
         $pdo = connectDatabase();
