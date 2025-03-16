@@ -24,6 +24,9 @@ foreach ($categories as $category) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="hienthidanhmuc.css">
+    <script src="../trangchuadmin.js"></script>
     <title></title>
 </head>
 <body>
@@ -44,19 +47,19 @@ foreach ($categories as $category) {
                     <tr class="parent">
                         <td><?php echo $parent['iddm']; ?></td>
                         <td><?= $parent['tendm'] ?></td>
-                        <td><img src="<?= $parent['icon'] ?>" class="icon" alt="Icon"></td>
+                        <td><img src="../<?= $parent['icon'] ?>" class="icon" alt="Icon"></td>
                         <td><?= $parent['mota'] ?></td>
                         <td><?= $parent['thoigian'] ?></td>
                         <td>
-                            <i onclick="themdmcon(<?php echo $parent['iddm']; ?>)" class="fas fa-plus-circle action-icons" title="Thêm"></i>
-                            <i onclick="capnhatdanhmuc()" class="fas fa-edit action-icons" title="Sửa"></i>
+                            <i onclick="themdmcon(<?php echo $parent['iddm']; ?>)" class="fas fa-plus-circle action-icons btn-xoadm" title="Thêm"></i>
+                            <i onclick="capnhatdanhmuc()" class="fas fa-edit action-icons btn-updatedm" title="Sửa"></i>
                         </td>
                     </tr>
                     <?php foreach ($parent['children'] as $child): ?>
                         <tr class="child">
                             <td><?= $child['iddm'] ?></td>
                             <td> 🌱 <?= $child['tendm'] ?></td>
-                            <td><img src="<?= $child['icon'] ?>" class="icon" alt="Icon"></td>
+                            <td><img src="../<?= $child['icon'] ?>" class="icon" alt="Icon"></td>
                             <td><?= $child['mota'] ?></td>
                             <td><?= $child['thoigian'] ?></td>
                         </tr>

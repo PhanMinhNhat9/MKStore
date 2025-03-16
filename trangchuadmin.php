@@ -138,6 +138,12 @@
     opacity: 1;
     transform: translate(-50%, -50%) scale(1.1);
 }
+#Frame {
+    width: 100%;
+    min-height: 410px;
+    border: 1px solid blue;
+    display: flex;
+}
 
     </style>
 </head>
@@ -163,37 +169,47 @@
 
         if (activeMenu === "menu-user") {
             searchUsers(query);
-        } else if (activeMenu === "menu-product") {
+        } 
+        if (activeMenu === "menu-product") {
             searchProducts(query);
+        }
+        if (activeMenu === "menu-order") {
+            searchDonHang(query);
         }
     }
 
     function searchUsers(query) {
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", "nguoidung/hienthinguoidung.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                document.getElementById("main-content").innerHTML = xhr.responseText;
+        setTimeout(() => {
+            let iframe = document.getElementById("Frame");
+            if (iframe) {
+                iframe.src = "nguoidung/hienthinguoidung.php?query="+encodeURIComponent(query);
+            } else {
+                console.error("Không tìm thấy iframe có ID 'Frame'");
             }
-        };
-        xhr.send("query=" + encodeURIComponent(query));
+        }, 100); // Đợi 100ms để đảm bảo iframe đã được render
     }
 
     function searchProducts(query) {
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", "sanpham/hienthisanpham.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                document.getElementById("main-content").innerHTML = xhr.responseText;
+        setTimeout(() => {
+            let iframe = document.getElementById("Frame");
+            if (iframe) {
+                iframe.src = "sanpham/hienthisanpham.php?query="+encodeURIComponent(query);
+            } else {
+                console.error("Không tìm thấy iframe có ID 'Frame'");
             }
-        };
-        xhr.send("query=" + encodeURIComponent(query));
+        }, 100); // Đợi 100ms để đảm bảo iframe đã được render
     }
 
+    function searchDonHang(query) {
+        setTimeout(() => {
+            let iframe = document.getElementById("Frame");
+            if (iframe) {
+                iframe.src = "donhang/hienthidonhang.php?query="+encodeURIComponent(query);
+            } else {
+                console.error("Không tìm thấy iframe có ID 'Frame'");
+            }
+        }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+    }
 </script>
 
         <div class="nav-buttons">
@@ -228,13 +244,17 @@
     </nav>
     <script>
         activateMenu();
-        let id = getActiveMenu();
-        if (id === "menu-user") loadDLUser();
-        if (id === "menu-product") loadDLSanpham();
-        if (id === "menu-category") loadDLDanhmuc();
-        if (id === "menu-order") loadDLDonhang();
-        if (id === "menu-discount") loadDLMGG();
-        if (id === "menu-support") loadPhanHoi();
+        setTimeout(() => {
+            let id = getActiveMenu();
+            console.log("ID menu sau khi active:", id); 
+
+            if (id === "menu-user") loadDLUser();
+            if (id === "menu-product") loadDLSanpham();
+            if (id === "menu-category") loadDLDanhmuc();
+            if (id === "menu-order") loadDLDonhang();
+            if (id === "menu-discount") loadDLMGG();
+            if (id === "menu-support") loadPhanHoi();
+        }, 100); // Đợi 100ms để cập nhật menu
         function ddadmin() {
             document.getElementById("adminDropdown").classList.toggle("active");
         }
@@ -249,8 +269,10 @@
         handleSessionTimeout(<?= SESSION_TIMEOUT ?>);
     </script>
     <div class="main-content" id="main-content">
-        <!-- Nội dung trang web --> 
+       <!-- Nội dung trang web -->
+        <iframe id="Frame" src="" scrolling="no"></iframe>
     </div>
+
     <!-- Chân web -->
     <footer class="footer">
         <div class="footer-content">

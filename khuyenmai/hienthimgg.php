@@ -18,6 +18,9 @@ $currentDate = date('Y-m-d');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh Sách Mã Giảm Giá</title>
     <link rel="stylesheet" href="fontawesome/css/all.min.css">
+    <script src="../trangchuadmin.js"></script>
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="hienthimgg.css">
     <style>
        
     </style>

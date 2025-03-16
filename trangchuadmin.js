@@ -32,29 +32,16 @@ function reloadCSS(file) {
     document.head.appendChild(link);
 }
 function loadPhanHoi() {
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", "phanhoi/hienthiphanhoi.php", true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("main-content").innerHTML = xhr.responseText;
-            reloadCSS("phanhoi/hienthiphanhoi.css");
+    setTimeout(() => {
+        let iframe = document.getElementById("Frame");
+        if (iframe) {
+            iframe.src = "phanhoi/hienthiphanhoi.php";
+        } else {
+            console.error("Không tìm thấy iframe có ID 'Frame'");
         }
-    };
-    xhr.send();
+    }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 }
 
-// Chức năng quản lý người dùng
-function loadDLUser() {
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", "nguoidung/hienthinguoidung.php", true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("main-content").innerHTML = xhr.responseText;
-            reloadCSS("nguoidung/hienthinguoidung.css");
-        }
-    };
-    xhr.send();
-}
 
 function themnguoidung() {
     window.location.href = "nguoidung/themnguoidung.html";
@@ -74,18 +61,69 @@ function xoanguoidung(iduser) {
 }
 
 // Chức năng quản lý sản phẩm
-function loadDLSanpham() {
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", "sanpham/hienthisanpham.php", true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("main-content").innerHTML = xhr.responseText;
-            reloadCSS("sanpham/hienthisanpham.css");
+// function loadDLSanpham() {
+//     let xhr = new XMLHttpRequest();
+//     xhr.open("GET", "sanpham/hienthisanpham.php", true);
+//     xhr.onreadystatechange = function () {
+//         if (xhr.readyState == 4 && xhr.status == 200) {
+//             document.getElementById("main-content").innerHTML = xhr.responseText;
+//             reloadCSS("sanpham/hienthisanpham.css");
+//         }
+//     };
+//     xhr.send();
+// }
+function loadDLUser() {
+    setTimeout(() => {
+        let iframe = document.getElementById("Frame");
+        if (iframe) {
+            iframe.src = "nguoidung/hienthinguoidung.php";
+        } else {
+            console.error("Không tìm thấy iframe có ID 'Frame'");
         }
-    };
-    xhr.send();
+    }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+}
+function loadDLSanpham() {
+    setTimeout(() => {
+        let iframe = document.getElementById("Frame");
+        if (iframe) {
+            iframe.src = "sanpham/hienthisanpham.php";
+        } else {
+            console.error("Không tìm thấy iframe có ID 'Frame'");
+        }
+    }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+}
+function loadDLDanhmuc()
+{
+    setTimeout(() => {
+        let iframe = document.getElementById("Frame");
+        if (iframe) {
+            iframe.src = "danhmuc/hienthidanhmuc.php";
+        } else {
+            console.error("Không tìm thấy iframe có ID 'Frame'");
+        }
+    }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+}
+function loadDLDonhang() {
+    setTimeout(() => {
+        let iframe = document.getElementById("Frame");
+        if (iframe) {
+            iframe.src = "donhang/hienthidonhang.php";
+        } else {
+            console.error("Không tìm thấy iframe có ID 'Frame'");
+        }
+    }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 }
 
+function loadDLMGG() {
+    setTimeout(() => {
+        let iframe = document.getElementById("Frame");
+        if (iframe) {
+            iframe.src = "khuyenmai/hienthimgg.php";
+        } else {
+            console.error("Không tìm thấy iframe có ID 'Frame'");
+        }
+    }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+}
 function themsanpham() {
 
 }
@@ -156,19 +194,7 @@ function showErrorMessage(message) {
         }, 300);
     }, 3000);
 }
-// Chức năng quản lý danh mục
-function loadDLDanhmuc()
-{
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "danhmuc/hienthidanhmuc.php", true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("main-content").innerHTML = xhr.responseText;
-            reloadCSS("danhmuc/hienthidanhmuc.css");
-        }
-    };
-    xhr.send();
-}
+
 
 function themdmcon(id) {
     let xhr = new XMLHttpRequest();
@@ -190,36 +216,17 @@ function capnhatdanhmuc() {
 function loadGioHang() {
     window.location.href = "donhang/hienthigiohang.php";
 }
-function loadDLDonhang() {
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "donhang/hienthidonhang.php", true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("main-content").innerHTML = xhr.responseText;
-        }
-    };
-    xhr.send();
-}
+
 function loadBCTK() {
     alert ("hello");
 }
-function showModal(id) {
-    document.getElementById('modal-' + id).style.display = 'flex';
-}
-function closeModal(id) {
-    document.getElementById('modal-' + id).style.display = 'none';
-}
-function loadDLMGG() {
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "khuyenmai/hienthimgg.php", true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("main-content").innerHTML = xhr.responseText;
-            reloadCSS("khuyenmai/hienthimgg.css");
-        }
-    };
-    xhr.send();
-}
+// function showModal(id) {
+//     document.getElementById('modal-' + id).style.display = 'flex';
+// }
+// function closeModal(id) {
+//     document.getElementById('modal-' + id).style.display = 'none';
+// }
+
 function themmgg() {
     window.location.href = "khuyenmai/themmgg.php";
 }
@@ -227,6 +234,7 @@ function themmgg() {
 function logout() {
     window.location.href = "logout.php"; // Thay bằng trang xử lý đăng xuất
 }
+
 // Đổi icon khi hover
 function changeIcon(button) {
     button.querySelector("i").classList.remove("fa-arrow-left");
@@ -255,14 +263,14 @@ function goBackHome() {
     window.location.href = "trangchuadmin.php";
 }
 
-function toggleDetails(orderId) {
-    var details = document.getElementById('details-' + orderId);
-    if (details.style.display === 'block') {
-        details.style.display = 'none';
-    } else {
-        details.style.display = 'block';
-    }
-}
+// function toggleDetails(orderId) {
+//     var details = document.getElementById('details-' + orderId);
+//     if (details.style.display === 'block') {
+//         details.style.display = 'none';
+//     } else {
+//         details.style.display = 'block';
+//     }
+// }
 function handleSessionTimeout(sessionTimeoutInSeconds) {
     let sessionTimeout = sessionTimeoutInSeconds * 1000; // Chuyển thành mili-giây
     let warningTime = sessionTimeout - 60000; // Cảnh báo trước 1 phút
@@ -279,3 +287,54 @@ function handleSessionTimeout(sessionTimeoutInSeconds) {
 }
 
 
+let selectedUserId = null;
+
+        function openModal(imageSrc, userId) {
+            document.getElementById('modalImage').src = imageSrc;
+            document.getElementById('imageModal').style.display = "flex";
+            selectedUserId = userId;
+            document.getElementById('iduser').value = selectedUserId;
+
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = "none";
+        }
+
+        function uploadNewImage() {
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput.files.length === 0) {
+                alert("Vui lòng chọn một ảnh mới.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('iduser', selectedUserId);
+
+            fetch('upload.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+                alert(result);
+                location.reload(); // Tải lại trang để cập nhật ảnh mới
+            })
+            .catch(error => console.error('Lỗi:', error));
+        }
+
+        
+        function loadanh() {
+            const fileInput = document.getElementById('fileInput');
+            const modalImage = document.getElementById('modalImage');
+        
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    modalImage.src = e.target.result; // Cập nhật ảnh hiển thị
+                };
+                reader.readAsDataURL(fileInput.files[0]); // Đọc file ảnh
+            }
+        }
+        

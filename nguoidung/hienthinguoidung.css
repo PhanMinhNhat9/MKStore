@@ -1,12 +1,8 @@
 .container {
-    max-width: 100%;
-    margin: auto;
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 375px; /* Giới hạn chiều cao và thêm thanh cuộn dọc */
     overflow-y: auto;
-    max-height: 400px; /* Giới hạn chiều cao và thêm thanh cuộn */
+    padding: 10px;
+    width: 100%;
 }
 
 .container::-webkit-scrollbar {

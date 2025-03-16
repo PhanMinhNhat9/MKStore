@@ -1,11 +1,24 @@
 <?php
 require_once '../config.php';
 $pdo = connectDatabase();
+$query = isset($_GET['query']) ? trim($_GET['query']) : '';
+if ($query != '') {
+    // Truy vấn đơn hàng
+    $sqlOrders = "SELECT iddh, idkh, tongtien, trangthai, phuongthuctt, thoigian 
+    FROM donhang 
+    WHERE iddh LIKE :searchTerm OR idkh LIKE :searchTerm1
+    ORDER BY thoigian DESC";
+    $stmtOrders = $pdo->prepare($sqlOrders);
+    $stmtOrders->execute(['searchTerm' => "%{$query}%", 'searchTerm1' => "%{$query}%"]);
+} else {
+    // Truy vấn đơn hàng
+    $sqlOrders = "SELECT iddh, idkh, tongtien, trangthai, phuongthuctt, thoigian 
+    FROM donhang 
+    ORDER BY thoigian DESC";
+    $stmtOrders = $pdo->prepare($sqlOrders);
+    $stmtOrders->execute();
 
-// Truy vấn đơn hàng
-$sqlOrders = "SELECT iddh, idkh, tongtien, trangthai, phuongthuctt, thoigian FROM donhang ORDER BY thoigian DESC";
-$stmtOrders = $pdo->prepare($sqlOrders);
-$stmtOrders->execute();
+}
 $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
 ?>
 

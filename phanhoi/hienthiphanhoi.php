@@ -30,6 +30,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh Sách Người Dùng</title>
+    <script src="../trangchuadmin.js"></script>
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="hienthiphanhoi.css">
 </head>
 <body>
 <div class="product-wrapper">
@@ -37,7 +40,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php foreach ($users as $user): ?>
             <div class="product-card">
                 <div class="avatar-container">
-                    <img src="<?= htmlspecialchars($user['anh']) ?>" alt="Ảnh đại diện">
+                    <img src="../<?= htmlspecialchars($user['anh']) ?>" alt="Ảnh đại diện">
                 </div>
                 <h3 class="user-name"> 🧑 <?= htmlspecialchars($user['hoten']) ?></h3>
                 <h3 class="user-name"> 📛 <?= htmlspecialchars($user['tendn']) ?></h3>

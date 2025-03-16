@@ -39,14 +39,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách sản phẩm</title>
-    <script src="trangchuadmin.js"></script>
+    <script src="../trangchuadmin.js"></script>
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="hienthisanpham.css">
     <style>
-        .product-card img {
-            transition: 0.3s;
-        }
-        .product-card.out-of-stock img {
-            opacity: 0.2;
-        }
+
     </style>
 </head>
 <body>
@@ -62,9 +59,9 @@
                 
                 echo '<div class="product-card ' . $classOutOfStock . '" style="position: relative;">';
 
-                echo '    <img src="' . htmlspecialchars($row['anh']) . '" alt="' . htmlspecialchars($row['tensp']) . '">';
+                echo '    <img src="../' . htmlspecialchars($row['anh']) . '" alt="' . htmlspecialchars($row['tensp']) . '">';
                 echo '    <h3>' . htmlspecialchars(mb_strimwidth($row['tensp'], 0, 20, "...")) . '</h3>';
-                echo '    <p class="desc">' . htmlspecialchars(mb_strimwidth($row['mota'], 0, 40, "...")) . '</p>';
+                echo '    <p class="desc">' . htmlspecialchars(mb_strimwidth($row['mota'], 0, 50, "...")) . '</p>';
                 
                 // Giá sản phẩm
                 echo '    <div class="price">';

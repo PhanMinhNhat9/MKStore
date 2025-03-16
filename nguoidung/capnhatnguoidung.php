@@ -22,9 +22,6 @@
                 <label>🖼 Ảnh hiện tại:</label><br>
                 <img src="../<?= htmlspecialchars($user[0]['anh']) ?>"><br>
 
-                <label>📸 Chọn ảnh mới:</label>
-                <input type="file" name="anh" accept="image/*">
-
                 <label>👤 Họ tên:</label>
                 <input type="text" name="hoten" value="<?php echo $user[0]['hoten']; ?>" required>
 

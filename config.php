@@ -197,23 +197,9 @@ if (!isset($_SESSION['lock_time'])) {
             $diachi  = $_POST['diachi'];
             $matkhau  = $_POST['matkhau'];
             $quyen   = $_POST['quyen'];
-            $file    = $_FILES['anh'];
-            // Xử lý ảnh nếu có tải lên
-            if (!empty($file['name'])) {
-                $target_dir = "picture/";
-                $anh = $target_dir . basename($file["name"]);
-                move_uploaded_file($file["tmp_name"], $anh);
-                $anh = addslashes($anh);
-            } else {
-                // Nếu không có ảnh mới, lấy ảnh cũ từ DB
-                $stmt = $pdo->prepare("SELECT anh FROM user WHERE iduser = ?");
-                $stmt->execute([$iduser]);
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $anh = addslashes($row['anh']) ?? '';
-            }
             $sql = "UPDATE user SET 
                     hoten = :hoten, tendn = :tendn, email = :email, 
-                    sdt = :sdt, diachi = :diachi, quyen = :quyen, anh = :anh";
+                    sdt = :sdt, diachi = :diachi, quyen = :quyen";
             $params = [
                 ':iduser'  => $iduser,
                 ':hoten'   => $hoten,
@@ -222,7 +208,6 @@ if (!isset($_SESSION['lock_time'])) {
                 ':sdt'     => $sdt,
                 ':diachi'  => $diachi,
                 ':quyen'   => $quyen,
-                ':anh'     => $anh
             ];
             if (!empty($matkhau)) {
                 $sql .= ", matkhau = :matkhau"; 
@@ -240,6 +225,34 @@ if (!isset($_SESSION['lock_time'])) {
         }
     }
 
+    function capnhatAnhUser() {
+        $pdo = connectDatabase();
+            $iduser = intval($_POST['iduser']);
+            $file = $_FILES['fileInput'];
+            // Xử lý ảnh nếu có tải lên
+            if (!empty($file['name'])) {
+                $target_dir = "picture/";
+                $anh = $target_dir . basename($file["name"]);
+                move_uploaded_file($file["tmp_name"], $anh);
+                $anh = addslashes($anh);
+            } else {
+                // Nếu không có ảnh mới, lấy ảnh cũ từ DB
+                $stmt = $pdo->prepare("SELECT anh FROM user WHERE iduser = ?");
+                $stmt->execute([$iduser]);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $anh = addslashes($row['anh']) ?? '';
+            }
+            $updateSql = "UPDATE user SET anh = :anh WHERE iduser = :iduser";
+            $stmt = $pdo->prepare($updateSql);
+            $stmt->execute([
+                'anh' => $anh,
+                'iduser' => $iduser
+            ]);
+            echo "<script> 
+                alert('Thêm thành công!');
+                window.location.href = 'trangchuadmin.php';
+                </script>";
+    }
     function xoaNguoiDung($id) {
         $pdo = connectDatabase(); 
         try {
@@ -412,6 +425,9 @@ if (!isset($_SESSION['lock_time'])) {
         }
         if (isset($_POST['themmgg'])) {
             themMGG();
+        }
+        if (isset($_POST['capnhatanhuser'])) {
+            capnhatAnhUser();
         }
     }
 ?>
