@@ -216,7 +216,7 @@ function loadBCTK() {
 // }
 
 function themmgg() {
-    window.location.href = "khuyenmai/themmgg.php";
+    window.location.href = "themmgg.php";
 }
 // Hàm đăng xuất
 function logout() {

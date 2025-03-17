@@ -405,7 +405,7 @@
             $stmt->bindParam(':ngayketthuc', $ngayketthuc, PDO::PARAM_STR);
             
             if ($stmt->execute()) {
-                echo "<script>alert('Thêm mã giảm giá thành công!'); window.location.href='danhmuc/hienthimgg.php';</script>";
+                echo "<script>alert('Thêm mã giảm giá thành công!'); window.location.href='khuyenmai/hienthimgg.php';</script>";
             } else {
                 echo "Lỗi khi thêm mã giảm giá!";
             }
