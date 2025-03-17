@@ -291,7 +291,34 @@
             echo "<script>alert('Lỗi: " . $e->getMessage() . "');</script>";
         }
     }
-
+    function capnhatAnhUser() {
+        $pdo = connectDatabase();
+            $iduser = intval($_POST['iduser']);
+            $file = $_FILES['fileInput'];
+            // Xử lý ảnh nếu có tải lên
+            if (!empty($file['name'])) {
+                $target_dir = "picture/";
+                $anh = $target_dir . basename($file["name"]);
+                move_uploaded_file($file["tmp_name"], $anh);
+                $anh = addslashes($anh);
+            } else {
+                // Nếu không có ảnh mới, lấy ảnh cũ từ DB
+                $stmt = $pdo->prepare("SELECT anh FROM user WHERE iduser = ?");
+                $stmt->execute([$iduser]);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $anh = addslashes($row['anh']) ?? '';
+            }
+            $updateSql = "UPDATE user SET anh = :anh WHERE iduser = :iduser";
+            $stmt = $pdo->prepare($updateSql);
+            $stmt->execute([
+                'anh' => $anh,
+                'iduser' => $iduser
+            ]);
+            echo "<script> 
+                alert('Thêm thành công!');
+                window.location.href = 'trangchuadmin.php';
+                </script>";
+    }
     function capnhatDanhMuc() {
         $pdo = connectDatabase();
             $iddm = $_POST['iddm'];
@@ -435,6 +462,9 @@
         }
         if (isset($_POST['capnhatmgg'])) {
             capnhatMGG();
+        }
+        if (isset($_POST['capnhatanhuser'])) {
+            capnhatAnhUser();
         }
     }
 ?>
