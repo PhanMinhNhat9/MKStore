@@ -1,4 +1,4 @@
-    <?php
+<?php
     require_once 'config.php'; // Kết nối cơ sở dữ liệu
 
     // Xử lý tìm kiếm sản phẩm
@@ -11,8 +11,8 @@
     function getProducts($keyword = '', $offset = 0, $limit = 20) {
         $pdo = connectDatabase();
         if ($keyword !== '') {
-            $stmt = $pdo->prepare("SELECT * FROM sanpham WHERE tensp LIKE ? LIMIT ?, ?");
-            $stmt->execute(['%' . $keyword . '%', $offset, $limit]);
+            $stmt = $pdo->prepare("SELECT * FROM sanpham WHERE tensp LIKE ? OR mota LIKE ? LIMIT ?, ?");
+            $stmt->execute(['%' . $keyword . '%', '%' . $keyword . '%', $offset, $limit]);
         } else {
             $stmt = $pdo->prepare("SELECT * FROM sanpham LIMIT ?, ?");
             $stmt->execute([$offset, $limit]);
