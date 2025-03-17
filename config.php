@@ -28,23 +28,15 @@
         if (empty($tendn) || empty($matkhau)) {
             return "Vui lòng nhập đầy đủ thông tin";
         }
-        // Kiểm tra và khởi tạo biến session nếu chưa có
-if (!isset($_SESSION['login_attempts'])) {
-    $_SESSION['login_attempts'] = 0;
-}
-if (!isset($_SESSION['last_attempt_time'])) {
-    $_SESSION['last_attempt_time'] = time();
-}
-if (!isset($_SESSION['lock_time'])) {
-    $_SESSION['lock_time'] = 0;
-}
         $pdo = connectDatabase();
         // Kiểm tra số lần đăng nhập thất bại
     if (!isset($_SESSION['login_attempts'])) {
         $_SESSION['login_attempts'] = 0;
         $_SESSION['last_attempt_time'] = time();
     }
-
+    if (!isset($_SESSION['lock_time'])) {
+        $_SESSION['lock_time'] = 0;
+    }
     // Nếu đã quá 10 phút từ lần nhập sai đầu tiên, reset lại số lần nhập
     if (time() - $_SESSION['last_attempt_time'] > 120) {
         $_SESSION['login_attempts'] = 0;
@@ -197,9 +189,23 @@ if (!isset($_SESSION['lock_time'])) {
             $diachi  = $_POST['diachi'];
             $matkhau  = $_POST['matkhau'];
             $quyen   = $_POST['quyen'];
+            $file    = $_FILES['anh'];
+            // Xử lý ảnh nếu có tải lên
+            if (!empty($file['name'])) {
+                $target_dir = "picture\\";
+                $anh = $target_dir . basename($file["name"]);
+                move_uploaded_file($file["tmp_name"], $anh);
+                $anh = addslashes($anh);
+            } else {
+                // Nếu không có ảnh mới, lấy ảnh cũ từ DB
+                $stmt = $pdo->prepare("SELECT anh FROM user WHERE iduser = ?");
+                $stmt->execute([$iduser]);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $anh = addslashes($row['anh']) ?? '';
+            }
             $sql = "UPDATE user SET 
                     hoten = :hoten, tendn = :tendn, email = :email, 
-                    sdt = :sdt, diachi = :diachi, quyen = :quyen";
+                    sdt = :sdt, diachi = :diachi, quyen = :quyen, anh = :anh";
             $params = [
                 ':iduser'  => $iduser,
                 ':hoten'   => $hoten,
@@ -208,6 +214,7 @@ if (!isset($_SESSION['lock_time'])) {
                 ':sdt'     => $sdt,
                 ':diachi'  => $diachi,
                 ':quyen'   => $quyen,
+                ':anh'     => $anh
             ];
             if (!empty($matkhau)) {
                 $sql .= ", matkhau = :matkhau"; 
@@ -225,34 +232,6 @@ if (!isset($_SESSION['lock_time'])) {
         }
     }
 
-    function capnhatAnhUser() {
-        $pdo = connectDatabase();
-            $iduser = intval($_POST['iduser']);
-            $file = $_FILES['fileInput'];
-            // Xử lý ảnh nếu có tải lên
-            if (!empty($file['name'])) {
-                $target_dir = "picture/";
-                $anh = $target_dir . basename($file["name"]);
-                move_uploaded_file($file["tmp_name"], $anh);
-                $anh = addslashes($anh);
-            } else {
-                // Nếu không có ảnh mới, lấy ảnh cũ từ DB
-                $stmt = $pdo->prepare("SELECT anh FROM user WHERE iduser = ?");
-                $stmt->execute([$iduser]);
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $anh = addslashes($row['anh']) ?? '';
-            }
-            $updateSql = "UPDATE user SET anh = :anh WHERE iduser = :iduser";
-            $stmt = $pdo->prepare($updateSql);
-            $stmt->execute([
-                'anh' => $anh,
-                'iduser' => $iduser
-            ]);
-            echo "<script> 
-                alert('Thêm thành công!');
-                window.location.href = 'trangchuadmin.php';
-                </script>";
-    }
     function xoaNguoiDung($id) {
         $pdo = connectDatabase(); 
         try {
@@ -425,9 +404,6 @@ if (!isset($_SESSION['lock_time'])) {
         }
         if (isset($_POST['themmgg'])) {
             themMGG();
-        }
-        if (isset($_POST['capnhatanhuser'])) {
-            capnhatAnhUser();
         }
     }
 ?>
