@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if ($stmt->execute()) {
         echo "<script> alert('Cập nhật thành công!');
-        window.location.replace('trangchuadmin.php?id=2');</script>";
+        window.location.replace('trangchuadmin.php?');</script>";
     } else {
         echo "Lỗi cập nhật.";
     }

@@ -378,12 +378,40 @@
             $stmt->bindParam(':ngayketthuc', $ngayketthuc, PDO::PARAM_STR);
             
             if ($stmt->execute()) {
-                echo "<script>alert('hêm mã giảm giá thành công!'); window.location.href='danhmuc/hienthimgg.php';</script>";
+                echo "<script>alert('Thêm mã giảm giá thành công!'); window.location.href='danhmuc/hienthimgg.php';</script>";
             } else {
                 echo "Lỗi khi thêm mã giảm giá!";
             }
         } catch (PDOException $e) {
             echo "Lỗi: " . $e->getMessage();
+        }
+    }
+    function capnhatMGG() {
+        $pdo = connectDatabase();
+        $code = !empty($_POST['code']) ? $_POST['code'] : taoMaGiamGia();
+        $idmgg = $_POST['idmgg'];
+        $phantram = $_POST['phantram'];
+        $ngayhieuluc = $_POST['ngayhieuluc'];
+        $ngayketthuc = $_POST['ngayketthuc'];
+        $giaapdung = $_POST['giaapdung'];
+        $soluong = $_POST['soluong'];
+
+        $stmt = $pdo->prepare("UPDATE magiamgia SET code = :code, phantram = :phantram, ngayhieuluc = :ngayhieuluc, 
+                            ngayketthuc = :ngayketthuc, giaapdung = :giaapdung, soluong = :soluong WHERE idmgg = :id");
+        $stmt->execute([
+            'code' => $code,
+            'phantram' => $phantram,
+            'ngayhieuluc' => $ngayhieuluc,
+            'ngayketthuc' => $ngayketthuc,
+            'giaapdung' => $giaapdung,
+            'soluong' => $soluong,
+            'id' => $idmgg
+        ]);
+        if ($stmt->rowCount() > 0) {
+            echo "<script>alert('Cập nhật mã giảm giá thành công!'); 
+                window.location.href='khuyenmai/hienthimgg.php';</script>";
+        } else {
+            echo "<script>alert('Không thể cập nhật!'); </script>";
         }
     }
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -404,6 +432,9 @@
         }
         if (isset($_POST['themmgg'])) {
             themMGG();
+        }
+        if (isset($_POST['capnhatmgg'])) {
+            capnhatMGG();
         }
     }
 ?>
