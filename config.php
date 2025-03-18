@@ -184,7 +184,51 @@
             echo "Lỗi kết nối CSDL: " . $e->getMessage();
         }
     }
+    function themSanPham() {
+        $tensp = $_POST['tensp'];
+        $mota = $_POST['mota'];
+        $giaban = $_POST['giaban'];
+        $soluong = $_POST['soluong'];
 
+        $iddm = $_POST['iddm'];
+
+        // Xử lý upload ảnh
+        $anh = "";
+        if (!empty($_FILES['anh']['name'])) {
+            $targetDir = "picture/";
+            $fileName = time() . "_" . basename($_FILES["anh"]["name"]);
+            $targetFilePath = $targetDir . $fileName;
+
+            $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
+            $allowTypes = array('jpg', 'png', 'jpeg', 'gif');
+
+            if (in_array($fileType, $allowTypes)) {
+                if (move_uploaded_file($_FILES["anh"]["tmp_name"], $targetFilePath)) {
+                    $anh = "picture/".$fileName;
+                } else {
+                    echo "Lỗi khi tải ảnh lên!";
+                    exit;
+                }
+            } else {
+                echo "Chỉ hỗ trợ định dạng JPG, JPEG, PNG, GIF!";
+                exit;
+            }
+        }
+        // Thêm vào database
+        try {
+            $pdo = connectDatabase();
+            $stmt = $pdo->prepare("INSERT INTO sanpham (tensp, mota, giaban, soluong, anh, iddm) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$tensp, $mota, $giaban, $soluong, $anh, $iddm]);
+            if ($stmt->rowcount()>0) {
+                echo "<script> 
+                        alert('Thêm thành công!');
+                        window.top.location.href = 'trangchuadmin.php';
+                      </script>";
+            }
+        } catch (PDOException $e) {
+            echo "Lỗi: " . $e->getMessage();
+        }
+    }
     function capnhatNguoiDung() {
         $pdo = connectDatabase(); // Kết nối PDO
         try {
@@ -508,6 +552,9 @@
         }
         if (isset($_POST['capnhatanhuser'])) {
             capnhatAnhUser();
+        }
+        if (isset($_POST['themsp'])) {
+            themSanPham();
         }
     }
 ?>

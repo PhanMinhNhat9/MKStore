@@ -81,6 +81,28 @@
         opacity: 1;
         transform: translate(-50%, -50%) scale(1.1);
     }
+    .floating-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.floating-btn:hover {
+    background-color: #0056b3;
+}
     </style>
 </head>
 <body>
@@ -132,5 +154,8 @@
         ?>
     </div>
 </div>
+<button class="floating-btn" onclick="themsanpham()">
+        <i class="fas fa-plus"></i>
+    </button>
 </body>
 </html>

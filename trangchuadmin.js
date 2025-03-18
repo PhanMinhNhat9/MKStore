@@ -125,7 +125,7 @@ function loadDLMGG() {
     }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 }
 function themsanpham() {
-
+    window.location.href = "themsanpham.php";
 }
 
 function capnhatsanpham(idsp) {

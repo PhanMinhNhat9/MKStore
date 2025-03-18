@@ -67,8 +67,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
      </form>
      <button class="floating-btn" onclick="themnguoidung()">
-    <i class="fas fa-plus"></i>
-
-</button>
+        <i class="fas fa-plus"></i>
+    </button>
 </body>
 </html>
