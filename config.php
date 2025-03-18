@@ -168,10 +168,17 @@
             $stmt->bindParam(':role', $role);
             $stmt->bindParam(':avatar', $target_file);
             if ($stmt->execute()) {
-                echo "<script> alert('Thêm thành công!');
-            window.location.replace('trangchuadmin.php?id=1');</script>";
+                echo "<script src='../trangchuadmin.js'></script>";
+                echo "<script> 
+                        alert('Thêm thành công!');
+                        goBack();
+                    </script>";
             } else {
-                echo "Lỗi khi thêm người dùng.";
+                echo "<script src='../trangchuadmin.js'></script>";
+                echo "<script> 
+                        alert('Thêm không thành công!');
+                        goBack();
+                    </script>";
             }
         } catch (PDOException $e) {
             echo "Lỗi kết nối CSDL: " . $e->getMessage();
@@ -222,11 +229,19 @@
             }
             $sql .= " WHERE iduser = :iduser";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            echo "<script> 
-                    alert('Thêm thành công!');
-                    window.location.href = 'trangchuadmin.php';
+            if ($stmt->execute($params)) {
+                echo "<script src='../trangchuadmin.js'></script>";
+                echo "<script> 
+                        alert('Cập nhật thành công!');
+                        goBack();
                     </script>";
+            } else {
+                echo "<script src='../trangchuadmin.js'></script>";
+                echo "<script> 
+                        alert('Cập nhật không thành công!');
+                        goBack();
+                    </script>";
+            }
         } catch (PDOException $e) {
             return "Lỗi cập nhật: " . $e->getMessage();
         }
@@ -283,10 +298,11 @@
                 'mota' => $mota
             ]);
     
+            echo "<script src='../trangchuadmin.js'></script>";
             echo "<script> 
                     alert('Thêm thành công!');
-                    window.location.href = 'trangchuadmin.php';
-                    </script>";
+                    goBack();
+                  </script>";
         } catch (PDOException $e) {
             echo "<script>alert('Lỗi: " . $e->getMessage() . "');</script>";
         }
@@ -352,9 +368,17 @@
             $stmt->bindParam(':iddm', $iddm);
 
             if ($stmt->execute()) {
-                echo "<script>alert('Cập nhật danh mục thành công!'); window.location.href='danhmuc/capnhatdanhmuc.php';</script>";
+                echo "<script src='../trangchuadmin.js'></script>";
+                echo "<script> 
+                        alert('Xóa thành công!');
+                        goBack();
+                      </script>";
             } else {
-                echo "Lỗi cập nhật danh mục.";
+                echo "<script src='../trangchuadmin.js'></script>";
+            echo "<script> 
+                    alert('Lỗi cập nhật!');
+                    goBack();
+                  </script>";
             }
         }
     
@@ -376,7 +400,11 @@
             // Xóa danh mục
             $stmt = $pdo->prepare("DELETE FROM danhmucsp WHERE iddm = ?");
             if ($stmt->execute([$iddm])) {
-                echo "<script>alert('Xóa danh mục thành công!'); window.location.href='danhmuc/capnhatdanhmuc.php';</script>";
+                echo "<script src='../trangchuadmin.js'></script>";
+                echo "<script> 
+                        alert('Xóa thành công!');
+                        goBack();
+                      </script>";
             } else {
                 echo "<script>alert('Xóa danh mục thất bại!');</script>";
             }
@@ -405,9 +433,17 @@
             $stmt->bindParam(':ngayketthuc', $ngayketthuc, PDO::PARAM_STR);
             
             if ($stmt->execute()) {
-                echo "<script>alert('Thêm mã giảm giá thành công!'); window.location.href='khuyenmai/hienthimgg.php';</script>";
+                echo "<script src='../trangchuadmin.js'></script>";
+                echo "<script> 
+                        alert('Thêm thành công!');
+                        goBack();
+                      </script>";            
             } else {
-                echo "Lỗi khi thêm mã giảm giá!";
+                echo "<script src='../trangchuadmin.js'></script>";
+                echo "<script> 
+                        alert('Thêm không thành công!');
+                        goBack();
+                    </script>";
             }
         } catch (PDOException $e) {
             echo "Lỗi: " . $e->getMessage();
@@ -435,10 +471,17 @@
             'id' => $idmgg
         ]);
         if ($stmt->rowCount() > 0) {
-            echo "<script>alert('Cập nhật mã giảm giá thành công!'); 
-                window.location.href='khuyenmai/hienthimgg.php';</script>";
+            echo "<script src='../trangchuadmin.js'></script>";
+            echo "<script> 
+                    alert('Cập nhật thành công!');
+                    goBack();
+                  </script>";
         } else {
-            echo "<script>alert('Không thể cập nhật!'); </script>";
+            echo "<script src='../trangchuadmin.js'></script>";
+            echo "<script> 
+                    alert('Lỗi cập nhật!');
+                    goBack();
+                  </script>";
         }
     }
     if ($_SERVER["REQUEST_METHOD"] == "POST") {

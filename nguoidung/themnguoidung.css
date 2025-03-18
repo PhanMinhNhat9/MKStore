@@ -1,95 +1,108 @@
+/* Tổng thể */
 body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(to right, #4facfe, #00f2fe);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
 }
-.snow {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: -1;
-}
+
+/* Container */
 .nd-container {
     background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     text-align: center;
-    width: 400px;
-    animation: fadeIn 1s;
+    width: 350px;
+    animation: fadeIn 0.8s;
 }
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
 .nd-container h2 {
     color: #007bff;
-    margin-bottom: 15px;
-    font-size: 20px;
+    margin-bottom: 10px;
+    font-size: 18px;
 }
+
+/* Form */
 .nd-form-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
 }
+
 .nd-input-group {
-    position: relative;
     display: flex;
     align-items: center;
+    position: relative;
+    width: 100%;
 }
+
 .nd-input-group input,
 .nd-input-group select {
     width: 100%;
-    padding: 10px;
-    padding-left: 40px;
+    padding: 8px;
+    padding-left: 35px;
     border: 1px solid #ccc;
-    border-radius: 6px;
+    border-radius: 5px;
+    font-size: 12px;
     transition: 0.3s;
-    font-size: 14px;
 }
+
 .nd-input-group input:focus,
 .nd-input-group select:focus {
     border-color: #007bff;
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
-}
-.nd-input-group i {
-    position: absolute;
-    left: 12px;
-    color: #007bff;
-    font-size: 16px;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
 }
 
+.nd-input-group i {
+    position: absolute;
+    left: 10px;
+    color: #007bff;
+    font-size: 14px;
+}
+
+/* Ảnh và quyền chiếm hết dòng */
+.full-width {
+    grid-column: span 2;
+}
+
+/* Nút bấm */
 .nhomnut-nd {
     display: flex;
     justify-content: space-between;
-    margin-top: 15px;
+    margin-top: 10px;
 }
+
 .nhomnut-nd input {
     width: 48%;
-    padding: 10px;
+    padding: 8px;
     border: none;
-    border-radius: 6px;
+    border-radius: 5px;
+    font-size: 12px;
     cursor: pointer;
     transition: 0.3s;
-    font-size: 14px;
 }
+
 #nd-themnd {
     background: #007bff;
     color: white;
 }
+
 #nd-themnd:hover {
     background: #0056b3;
 }
+
 #nd-trove {
     background: #ccc;
 }
+
 #nd-trove:hover {
     background: #999;
 }

@@ -10,9 +10,7 @@ if (isset($_GET['id'])) {
             $sql = "DELETE FROM sanpham WHERE idsp = :idsp";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':idsp', $id, PDO::PARAM_INT);
-            $stmt->execute();
-
-            if ($stmt->rowCount() > 0) {
+            if ($stmt->execute()) {
                 echo "<script src='../trangchuadmin.js'></script>";
                 echo "<script> 
                         alert('Xóa thành công!');

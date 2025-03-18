@@ -38,9 +38,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     
     if ($stmt->execute()) {
-        echo "<script> alert('Cập nhật thành công!');
-        window.location.replace('trangchuadmin.php?');</script>";
+        echo "<script src='../trangchuadmin.js'></script>";
+        echo "<script> 
+                alert('Cập nhật không thành công!');
+                goBack();
+            </script>";
     } else {
-        echo "Lỗi cập nhật.";
+        echo "<script src='../trangchuadmin.js'></script>";
+        echo "<script> 
+                alert('Cập nhật không thành công!');
+                goBack();
+            </script>";
     }
 }

@@ -44,7 +44,7 @@ function loadPhanHoi() {
 
 
 function themnguoidung() {
-    window.location.href = "nguoidung/themnguoidung.html";
+    window.location.href = "themnguoidung.php";
 }
 
 function capnhatnguoidung(iduser) {

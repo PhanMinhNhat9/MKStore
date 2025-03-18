@@ -37,7 +37,7 @@ if ($query != '') {
         SUM(CASE WHEN c.daxem = 0 AND c.idnhan = :current_user_id THEN 1 ELSE 0 END) AS chua_doc
     FROM user u
     LEFT JOIN chattructuyen c ON (u.iduser = c.idgui OR u.iduser = c.idnhan)
-    WHERE u.iduser <> :current_user_id2
+    WHERE u.iduser <> :current_user_id2 AND u.quyen <> 0
     GROUP BY u.iduser, u.hoten, u.tendn, u.anh
     ORDER BY chua_doc DESC, u.hoten ASC";
     $stmt = $pdo->prepare($sql);

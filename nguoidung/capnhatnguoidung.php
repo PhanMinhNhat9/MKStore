@@ -12,72 +12,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../trangchuadmin.js"></script>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            background: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            width: 600px;
-            text-align: center;
-            border: 2px solid #007bff;
-        }
-        h2 {
-            color: #007bff;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-        .input-group {
-            margin-bottom: 10px;
-        }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            outline: none;
-            transition: 0.3s;
-            font-size: 14px;
-            height: 38px;
-            margin: 5px 0px;
-        }
-        input:focus, select:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
-        .btn-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 8px;
-            width: 48%;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-    </style>
+    <link rel="stylesheet" href="capnhatnguoidung.css?v=<?= time(); ?>">
 </head>
 <body>
     <div class="container">
