@@ -195,7 +195,7 @@ $cartProducts = getCartProducts();
     }
 </script>
 <!--Start of Tawk.to Script-->
-<script type="text/javascript">
+<!-- <script type="text/javascript">
     var Tawk_API = Tawk_API || {},
         Tawk_LoadStart = new Date();
     (function() {
@@ -207,7 +207,7 @@ $cartProducts = getCartProducts();
         s1.setAttribute('crossorigin', '*');
         s0.parentNode.insertBefore(s1, s0);
     })();
-</script>
+</script> -->
 <!--End of Tawk.to Script-->
 
 <body>
@@ -299,8 +299,103 @@ $cartProducts = getCartProducts();
         </div>
         </div>
     </main>
+    <style>
+        .chat-container {
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: white;
+        }
 
+        .chat-header {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
 
+        .chat-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .chat-input {
+            display: flex;
+            border-top: 1px solid #ccc;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+        }
+
+        .chat-input button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .chat-input button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h3>Trò chuyện với khách hàng</h3>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- Tin nhắn sẽ được tải ở đây -->
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Nhập tin nhắn...">
+            <button onclick="sendMessage()">Gửi</button>
+        </div>
+    </div>
+    <script>
+        function loadMessages() {
+            fetch('load_messages.php')
+                .then(response => response.json())
+                .then(data => {
+                    const chatMessages = document.getElementById('chatMessages');
+                    chatMessages.innerHTML = '';
+                    data.forEach(message => {
+                        const messageElement = document.createElement('div');
+                        messageElement.textContent = message.sender_id + ': ' + message.message;
+                        chatMessages.appendChild(messageElement);
+                    });
+                });
+        }
+
+        function sendMessage() {
+            const message = document.getElementById('chatInput').value;
+            fetch('send_message.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'message=' + encodeURIComponent(message)
+                })
+                .then(response => response.text())
+                .then(() => {
+                    document.getElementById('chatInput').value = '';
+                    loadMessages();
+                });
+        }
+
+        setInterval(loadMessages, 3000); // Tải lại tin nhắn mỗi 3 giây
+    </script>
 
     <footer>
         <p>&copy; 2025 Cửa Hàng Phụ Kiện. Tất cả quyền được bảo lưu.</p>
@@ -327,6 +422,7 @@ $cartProducts = getCartProducts();
             }
         });
     </script>
+
 </body>
 
 </html>
