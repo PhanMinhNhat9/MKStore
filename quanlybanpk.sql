@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 06, 2025 lúc 01:43 AM
+-- Thời gian đã tạo: Th3 18, 2025 lúc 12:58 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Cơ sở dữ liệu: `quanlybanpk`
 --
+CREATE DATABASE IF NOT EXISTS `quanlybanpk` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `quanlybanpk`;
 
 -- --------------------------------------------------------
 
@@ -50,21 +52,38 @@ CREATE TABLE `chattructuyen` (
   `idchat` int(11) NOT NULL,
   `idgui` int(11) NOT NULL,
   `idnhan` int(11) NOT NULL,
+  `cuoc_tro_chuyen` int(11) NOT NULL,
   `noidung` text NOT NULL,
-  `trangthai` int(11) NOT NULL,
-  `thoigian` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `loaithongdiep` enum('text','image','file') DEFAULT 'text',
+  `file_dinh_kem` varchar(255) DEFAULT NULL,
+  `trangthai` tinyint(1) DEFAULT 0,
+  `daxem` tinyint(1) DEFAULT 0,
+  `phan_loai` enum('admin','user') NOT NULL,
+  `thoigian` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `chattructuyen`
 --
 
-INSERT INTO `chattructuyen` (`idchat`, `idgui`, `idnhan`, `noidung`, `trangthai`, `thoigian`) VALUES
-(3, 4, 3, 'helo', 1, '2025-02-28 23:43:28'),
-(4, 4, 3, 'hi', 0, '2025-02-28 22:17:28'),
-(7, 3, 1, 'ko j', 0, '2025-02-28 21:58:35'),
-(8, 3, 1, 'có j ko', 0, '2025-02-28 21:58:43'),
-(9, 4, 1, 'alo', 0, '2025-03-01 00:22:30');
+INSERT INTO `chattructuyen` (`idchat`, `idgui`, `idnhan`, `cuoc_tro_chuyen`, `noidung`, `loaithongdiep`, `file_dinh_kem`, `trangthai`, `daxem`, `phan_loai`, `thoigian`) VALUES
+(1, 1, 3, 1001, 'Chào bạn, tôi có thể giúp gì?', 'text', NULL, 1, 0, 'admin', '2025-03-10 14:02:52'),
+(2, 3, 1, 1001, 'Tôi muốn hỏi về chính sách bảo hành.', 'text', NULL, 1, 1, 'user', '2025-03-10 14:02:52'),
+(3, 1, 5, 1002, 'Bạn cần hỗ trợ gì không?', 'text', NULL, 1, 0, 'admin', '2025-03-10 14:02:52'),
+(4, 5, 1, 1002, 'Sản phẩm này có khuyến mãi không ạ?', 'text', NULL, 1, 1, 'user', '2025-03-10 14:02:52'),
+(5, 1, 7, 1003, 'Xin chào! Bạn cần hỗ trợ về vấn đề gì?', 'text', NULL, 1, 0, 'admin', '2025-03-10 14:02:52'),
+(6, 7, 1, 1003, 'Tôi không nhận được mã xác nhận đơn hàng.', 'text', NULL, 1, 1, 'user', '2025-03-10 14:02:52'),
+(7, 1, 8, 1004, 'Đơn hàng của bạn đang được xử lý nhé.', 'text', NULL, 1, 1, 'admin', '2025-03-10 14:02:52'),
+(8, 8, 1, 1004, 'Cảm ơn, khi nào nhận được hàng ạ?', 'text', NULL, 1, 1, 'user', '2025-03-10 14:02:52'),
+(9, 1, 14, 1005, 'Bạn có thể gửi ảnh sản phẩm lỗi không?', 'text', NULL, 1, 0, 'admin', '2025-03-10 14:02:52'),
+(10, 14, 1, 1005, 'Đây là ảnh sản phẩm bị lỗi.', 'image', 'uploads/error.jpg', 1, 1, 'user', '2025-03-10 14:02:52'),
+(11, 1, 15, 1006, 'Bạn cần thêm thông tin gì không?', 'text', NULL, 1, 0, 'admin', '2025-03-10 14:02:52'),
+(12, 15, 1, 1006, 'Tôi muốn đổi sản phẩm.', 'text', NULL, 1, 1, 'user', '2025-03-10 14:02:52'),
+(13, 1, 16, 1007, 'Bên mình có nhiều ưu đãi hấp dẫn, bạn quan tâm sản phẩm nào?', 'text', NULL, 1, 0, 'admin', '2025-03-10 14:02:52'),
+(14, 16, 1, 1007, 'Có ưu đãi nào cho thành viên VIP không?', 'text', NULL, 1, 0, 'user', '2025-03-10 14:02:52'),
+(15, 1, 8, 0, 'khoảng 2 ngày nữa ạ', 'text', NULL, 0, 0, 'admin', '2025-03-10 14:45:58'),
+(16, 1, 3, 0, 'dạ', 'text', NULL, 1, 0, 'admin', '2025-03-15 18:17:18'),
+(17, 1, 3, 0, 'cụ thể ạ', 'text', NULL, 1, 0, 'admin', '2025-03-15 18:17:32');
 
 -- --------------------------------------------------------
 
@@ -85,8 +104,10 @@ CREATE TABLE `chitietdonhang` (
 --
 
 INSERT INTO `chitietdonhang` (`idctdh`, `iddh`, `idsp`, `soluong`, `gia`) VALUES
-(2, 1, 4, 1, 18000),
-(3, 4, 4, 2, 40000);
+(27, 18, 16, 1, 50400),
+(28, 18, 17, 1, 195000),
+(30, 19, 22, 1, 35640),
+(31, 19, 23, 1, 159000);
 
 -- --------------------------------------------------------
 
@@ -134,9 +155,9 @@ CREATE TABLE `danhmucsp` (
 --
 
 INSERT INTO `danhmucsp` (`iddm`, `tendm`, `loaidm`, `icon`, `mota`, `thoigian`) VALUES
-(1, 'Gấu bông', 0, 'icon\\bee.png', '', '2025-03-01 16:42:53'),
-(2, 'Balo - Tú - Ví', 0, 'icon\\lucky-bag.png', '', '2025-03-01 17:13:32'),
-(3, 'Balo thời trang Nam Nữ', 2, 'icon\\schoolbag.png', '', '2025-03-01 17:00:52'),
+(1, 'Gấu bông', 0, 'icon/bee.png', 'Chuyên các loại gấu bông mọi kích cỡ!', '2025-03-09 12:04:51'),
+(2, 'Balo - Tú - Ví', 0, 'icon/lucky-bag.png', '', '2025-03-16 03:07:03'),
+(3, 'Balo thời trang Nam Nữ', 2, 'icon/schoolbag.png', '', '2025-03-16 03:07:22'),
 (4, 'Túi Nam Nữ', 2, 'icon\\package.png', '', '2025-03-01 17:10:15'),
 (5, 'Ví thời trang cao cấp', 2, 'icon\\wallet.png', '', '2025-03-01 17:10:27'),
 (6, 'Đồng hồ', 0, 'icon\\wristwatch.png', '', '2025-03-01 17:20:16'),
@@ -150,8 +171,7 @@ INSERT INTO `danhmucsp` (`iddm`, `tendm`, `loaidm`, `icon`, `mota`, `thoigian`) 
 (14, 'Trang trí', 0, 'icon\\stars.png', '', '2025-03-01 20:57:04'),
 (15, 'Vòng/Lắc', 14, 'icon\\bracelet.png', '', '2025-03-01 20:54:06'),
 (16, 'Nhẫn', 14, 'icon\\wedding-ring.png', '', '2025-03-01 20:55:03'),
-(17, 'Hoa tai', 14, 'icon\\earrings.png', '', '2025-03-01 20:55:52'),
-(18, 'Khác', 18, 'icon\\other.png', 'Bán gì cũng được! chài ai', '2025-03-02 20:21:33');
+(17, 'Hoa tai', 14, 'icon\\earrings.png', '', '2025-03-01 20:55:52');
 
 -- --------------------------------------------------------
 
@@ -192,8 +212,19 @@ CREATE TABLE `donhang` (
 --
 
 INSERT INTO `donhang` (`iddh`, `idkh`, `tongtien`, `trangthai`, `phuongthuctt`, `thoigian`) VALUES
-(1, 3, 120000, 'Đã thanh toán', 'VNPay', '2025-02-25 07:46:39'),
-(4, 3, 20000, 'Đã thanh toán', 'momo', '2025-02-25 07:44:14');
+(17, 15, 657000, 'Chờ xử lý', 'Tiền mặt', '2025-03-16 01:19:56'),
+(18, 15, 245400, 'Chờ xử lý', 'Tiền mặt', '2025-03-16 01:22:27'),
+(19, 15, 194640, 'Chờ xử lý', 'Tiền mặt', '2025-03-16 01:24:15'),
+(20, 3, 20000, 'Đã xử lý', 'Tiền mặt', '2025-03-16 11:20:45'),
+(21, 3, 20000, 'Đã xử lý', 'Tiền mặt', '2025-03-16 11:20:45'),
+(22, 3, 20000, 'Đã xử lý', 'Tiền mặt', '2025-03-16 11:20:45'),
+(23, 3, 20000, 'Đã xử lý', 'Tiền mặt', '2025-03-16 11:20:45'),
+(24, 3, 20000, 'Đã xử lý', 'Tiền mặt', '2025-03-16 11:20:45'),
+(25, 3, 20000, 'Đã xử lý', 'Tiền mặt', '2025-03-16 11:20:45'),
+(26, 3, 20000, 'Đã xử lý', 'Tiền mặt', '2025-03-16 11:20:45'),
+(27, 3, 20000, 'Chưa thanh toán', 'Tiền mặt', '2025-03-18 09:22:07'),
+(28, 3, 20000, 'Đã xác nhận', 'Tiền mặt', '2025-03-16 12:20:31'),
+(29, 3, 20000, 'Đã thanh toán', 'Tiền mặt', '2025-03-16 12:21:35');
 
 -- --------------------------------------------------------
 
@@ -203,12 +234,22 @@ INSERT INTO `donhang` (`iddh`, `idkh`, `tongtien`, `trangthai`, `phuongthuctt`, 
 
 CREATE TABLE `giohang` (
   `idgh` int(11) NOT NULL,
-  `idkh` int(11) NOT NULL,
   `idsp` int(11) NOT NULL,
   `soluong` int(11) NOT NULL,
-  `thoigian` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `trangthai` varchar(10) NOT NULL
+  `tongtien` decimal(10,0) NOT NULL,
+  `thoigian` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `giohang`
+--
+
+INSERT INTO `giohang` (`idgh`, `idsp`, `soluong`, `tongtien`, `thoigian`) VALUES
+(0, 14, 4, 356000, '2025-03-16 12:50:02'),
+(0, 15, 9, 1755000, '2025-03-16 12:56:57'),
+(0, 16, 2, 100800, '2025-03-16 12:20:21'),
+(0, 17, 1, 195000, '2025-03-16 12:08:48'),
+(0, 18, 1, 249000, '2025-03-16 12:08:49');
 
 -- --------------------------------------------------------
 
@@ -219,10 +260,11 @@ CREATE TABLE `giohang` (
 CREATE TABLE `magiamgia` (
   `idmgg` int(11) NOT NULL,
   `code` varchar(50) NOT NULL,
-  `idsp` int(11) NOT NULL,
   `phantram` int(11) NOT NULL,
   `ngayhieuluc` date NOT NULL,
   `ngayketthuc` date NOT NULL,
+  `giaapdung` int(11) NOT NULL,
+  `soluong` int(11) NOT NULL,
   `thoigian` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -230,9 +272,12 @@ CREATE TABLE `magiamgia` (
 -- Đang đổ dữ liệu cho bảng `magiamgia`
 --
 
-INSERT INTO `magiamgia` (`idmgg`, `code`, `idsp`, `phantram`, `ngayhieuluc`, `ngayketthuc`, `thoigian`) VALUES
-(1, 'sale2025', 4, 10, '2025-02-01', '2025-03-02', '2025-02-28 19:07:11'),
-(2, 'salesp001', 5, 5, '2025-02-26', '2025-03-02', '2025-02-28 19:07:19');
+INSERT INTO `magiamgia` (`idmgg`, `code`, `phantram`, `ngayhieuluc`, `ngayketthuc`, `giaapdung`, `soluong`, `thoigian`) VALUES
+(1, 'sale2025new', 10, '2025-02-01', '2025-03-11', 100000, 10, '2025-03-17 14:44:06'),
+(2, 'salesp001', 5, '2025-02-26', '2025-03-02', 49000, 5, '2025-03-15 15:56:37'),
+(5, 'NEWYEAR30', 30, '2025-03-10', '2025-03-20', 209000, 5, '2025-03-15 15:56:57'),
+(7, 'VIP50', 50, '2025-03-15', '2025-03-25', 50000, 5, '2025-03-15 15:57:07'),
+(9, 'ta1', 12, '2025-03-17', '2025-03-19', 0, 10, '2025-03-18 09:22:28');
 
 -- --------------------------------------------------------
 
@@ -386,14 +431,13 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`iduser`, `hoten`, `tendn`, `anh`, `email`, `matkhau`, `sdt`, `diachi`, `quyen`, `thoigian`) VALUES
-(1, 'Nguyễn Tuấn Anh', 'anh', 'picture\\\\conkhi.png', 'anh@gmail.com', '$2y$10$t62HlfqhNVPXVf77xGzJbu961SwzI.1m2uzfDi7Ve2AqMB95CklPK', '0987654321', 'Cà Mau', '0', '2025-03-05 13:30:58'),
-(2, 'Trần Phương Thế', 'the', 'picture\\conkhi01.png', 'the@gmail.com', '$2b$12$NcJCQMHH9/PaALCMAsHvZetQ8kXlUqwUkMo0NZW98acki53OOSzU6\n', '0987654321', 'Vĩnh Long', '1', '2025-03-04 04:42:18'),
-(3, 'Nguyễn Thị Thùy Dương', 'duong', 'picture\\conkhi02.png', 'duong@gmail.com', '$2b$12$NcJCQMHH9/PaALCMAsHvZetQ8kXlUqwUkMo0NZW98acki53OOSzU6\n', '0987654321', 'Bạc Liêu', '2', '2025-03-04 04:42:23'),
-(5, 'Trần Ngọc Thắng', 'thang', 'picture\\conkhi.png', 'thang@gmail.com', '$2b$12$NcJCQMHH9/PaALCMAsHvZetQ8kXlUqwUkMo0NZW98acki53OOSzU6\n', '1234567890', 'Trà Vinh', '2', '2025-03-04 04:42:28'),
-(7, 'Trần Thanh Tâm', 'tam', 'picture\\conkhi01.png', 'tam@gmail.com', '$2b$12$NcJCQMHH9/PaALCMAsHvZetQ8kXlUqwUkMo0NZW98acki53OOSzU6', '0987654321', 'Đồng Nai', '2', '2025-03-04 09:06:20'),
-(8, 'Bùi Hữu Phước', 'phuoc', 'picture\\conkhi02.png', 'phuoc@gmail.com', '$2b$12$NcJCQMHH9/PaALCMAsHvZetQ8kXlUqwUkMo0NZW98acki53OOSzU6', '0987654321', 'Bình Dương', '2', '2025-03-04 09:06:25'),
-(12, 'nguyễn văn a', 'a', 'picture/logoMK.png', '22004335@st.vlute.edu.vn', '$2y$10$5k2xrh2a3ac/NDOzRU.U6.YclCBm3Qnmi1jLTuOP.yqFhWDXQteu.', '0702804594', 'vl', '1', '2025-03-05 18:02:42'),
-(13, 'nguyễn văn b', 'b', 'picture/logoMK.png', 'sinhvien@st.vlute.edu.vn', '$2y$10$ZbI6TsLRPg0aAT8GJE7kpuLe5vzkxCnU/c5cl5a9jm0cfrccnTMDO', '0702804594', 'vl', '1', '2025-03-05 18:03:57');
+(1, 'Nguyễn Tuấn Anh', 'anh', 'picture/conkhi.png', 'anh@gmail.com', '$2y$10$YbGRLgwr4RAAHleeMpc4NeBRFQzOBT7vMN89sIAPaeRsAirBSMmlu', '0987654321', 'Cà Mau', '0', '2025-03-13 11:10:13'),
+(2, 'Trần Phương Thế', 'the', 'picture/bee.png', 'the@gmail.com', '$2b$12$NcJCQMHH9/PaALCMAsHvZetQ8kXlUqwUkMo0NZW98acki53OOSzU6\n', '0987654321', 'Vĩnh Long', '0', '2025-03-16 00:51:40'),
+(3, 'Nguyễn Thị Thùy Dương', 'duong', 'picture/conkhi02.png', 'duong@gmail.com', '$2b$12$NcJCQMHH9/PaALCMAsHvZetQ8kXlUqwUkMo0NZW98acki53OOSzU6', '0987654321', 'Bạc Liêu', '1', '2025-03-13 11:10:01'),
+(5, 'Trần Ngọc Thắng', 'thang', 'picture/conkhi.png', 'thang@gmail.com', '$2b$12$NcJCQMHH9/PaALCMAsHvZetQ8kXlUqwUkMo0NZW98acki53OOSzU6\n', '1234567890', 'Trà Vinh', '1', '2025-03-13 11:09:56'),
+(7, 'Trần Thanh Tâm', 'tam', 'picture/conkhi01.png', 'tam@gmail.com', '$2b$12$NcJCQMHH9/PaALCMAsHvZetQ8kXlUqwUkMo0NZW98acki53OOSzU6', '0987654321', 'Đồng Nai', '1', '2025-03-13 11:09:51'),
+(8, 'Bùi Hữu Phước', 'phuoc', 'picture/conkhi02.png', 'phuoc@gmail.com', '$2b$12$NcJCQMHH9/PaALCMAsHvZetQ8kXlUqwUkMo0NZW98acki53OOSzU6', '0987654321', 'Bình Dương', '1', '2025-03-13 11:09:45'),
+(17, 'nguyễn văn a', 'a', 'picture/bee.png', 'a@gmail.com', '$2y$10$iuoYPJ7K8XPkyiOjQstp2ub/sT5L95xAefBtCmXQABUp/48.DxJx2', '0702804594', 'vl', '1', '2025-03-18 09:41:11');
 
 -- --------------------------------------------------------
 
@@ -467,14 +511,6 @@ ALTER TABLE `donhang`
   ADD KEY `fkkhachhang` (`idkh`);
 
 --
--- Chỉ mục cho bảng `giohang`
---
-ALTER TABLE `giohang`
-  ADD PRIMARY KEY (`idgh`),
-  ADD KEY `fkkh` (`idkh`),
-  ADD KEY `fksp` (`idsp`);
-
---
 -- Chỉ mục cho bảng `magiamgia`
 --
 ALTER TABLE `magiamgia`
@@ -484,8 +520,7 @@ ALTER TABLE `magiamgia`
 -- Chỉ mục cho bảng `sanpham`
 --
 ALTER TABLE `sanpham`
-  ADD PRIMARY KEY (`idsp`),
-  ADD KEY `fkdanhmuc` (`iddm`);
+  ADD PRIMARY KEY (`idsp`);
 
 --
 -- Chỉ mục cho bảng `spyeuthich`
@@ -527,13 +562,13 @@ ALTER TABLE `cauhinh_giohang`
 -- AUTO_INCREMENT cho bảng `chattructuyen`
 --
 ALTER TABLE `chattructuyen`
-  MODIFY `idchat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `idchat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT cho bảng `chitietdonhang`
 --
 ALTER TABLE `chitietdonhang`
-  MODIFY `idctdh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idctdh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT cho bảng `danhgia`
@@ -545,7 +580,7 @@ ALTER TABLE `danhgia`
 -- AUTO_INCREMENT cho bảng `danhmucsp`
 --
 ALTER TABLE `danhmucsp`
-  MODIFY `iddm` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `iddm` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT cho bảng `diachigiaohang`
@@ -557,19 +592,13 @@ ALTER TABLE `diachigiaohang`
 -- AUTO_INCREMENT cho bảng `donhang`
 --
 ALTER TABLE `donhang`
-  MODIFY `iddh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT cho bảng `giohang`
---
-ALTER TABLE `giohang`
-  MODIFY `idgh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `iddh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT cho bảng `magiamgia`
 --
 ALTER TABLE `magiamgia`
-  MODIFY `idmgg` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idmgg` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT cho bảng `sanpham`
@@ -593,7 +622,7 @@ ALTER TABLE `thanhtoan`
 -- AUTO_INCREMENT cho bảng `user`
 --
 ALTER TABLE `user`
-  MODIFY `iduser` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `iduser` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT cho bảng `vanchuyen`
