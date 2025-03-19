@@ -53,7 +53,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <!-- Modal hiển thị ảnh -->
-     <form action="config.php" method="POST" enctype="multipart/form-data">
+     <form action="../config.php" method="POST" enctype="multipart/form-data">
         <div id="imageModal" class="modal">
             <div class="modal-content">
                 <span class="close-btn" onclick="closeModal()">&times;</span>

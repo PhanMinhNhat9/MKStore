@@ -1,0 +1,80 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+body {
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.register-container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 450px;
+    text-align: center;
+    border: 2px solid #007bff;
+}
+h2 {
+    color: #007bff;
+    margin-bottom: 20px;
+}
+.input-group {
+    position: relative;
+    margin-bottom: 15px;
+    flex: 1;
+}
+.input-group i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #007bff;
+}
+input {
+    width: 100%;
+    padding: 10px 10px 10px 35px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: 0.3s;
+}
+input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+.input-row {
+    display: flex;
+    gap: 10px; /* Khoảng cách giữa các input */
+}
+input[type='submit'] {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+input[type='submit']:hover {
+    background: #0056b3;
+}
+.avatar-preview {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+.avatar-preview img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: none;
+}

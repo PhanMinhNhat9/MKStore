@@ -274,17 +274,11 @@
             $sql .= " WHERE iduser = :iduser";
             $stmt = $pdo->prepare($sql);
             if ($stmt->execute($params)) {
-                echo "<script src='../trangchuadmin.js'></script>";
                 echo "<script> 
                         alert('Cập nhật thành công!');
-                        goBack();
+                        window.location.href='../trangchuadmin.php';
                     </script>";
             } else {
-                echo "<script src='../trangchuadmin.js'></script>";
-                echo "<script> 
-                        alert('Cập nhật không thành công!');
-                        goBack();
-                    </script>";
             }
         } catch (PDOException $e) {
             return "Lỗi cập nhật: " . $e->getMessage();
@@ -375,9 +369,9 @@
                 'iduser' => $iduser
             ]);
             echo "<script> 
-                alert('Thêm thành công!');
-                window.location.href = 'trangchuadmin.php';
-                </script>";
+                        alert('Cập nhật thành công!');
+                        window.top.location.href='trangchuadmin.php';
+                    </script>";
     }
     function capnhatDanhMuc() {
         $pdo = connectDatabase();
