@@ -243,7 +243,7 @@
             $file    = $_FILES['anh'];
             // Xử lý ảnh nếu có tải lên
             if (!empty($file['name'])) {
-                $target_dir = "picture\\";
+                $target_dir = "picture/";
                 $anh = $target_dir . basename($file["name"]);
                 move_uploaded_file($file["tmp_name"], $anh);
                 $anh = addslashes($anh);
@@ -276,7 +276,7 @@
             if ($stmt->execute($params)) {
                 echo "<script> 
                         alert('Cập nhật thành công!');
-                        window.location.href='../trangchuadmin.php';
+                        window.top.location.href='trangchuadmin.php';
                     </script>";
             } else {
             }
@@ -319,8 +319,7 @@
                 echo "<script>alert('Chỉ chấp nhận các file JPG, JPEG, PNG, GIF!');</script>";
                 return;
             }
-            $new_file_name = uniqid("icon_") . '.' . $file_ext;
-            $target_file = $target_dir . $new_file_name;
+            $target_file = $target_dir . $file_name;
             if (!move_uploaded_file($_FILES["icon"]["tmp_name"], $target_file)) {
                 echo "<script>alert('Lỗi khi tải lên tệp!');</script>";
                 return;
@@ -336,10 +335,9 @@
                 'mota' => $mota
             ]);
     
-            echo "<script src='../trangchuadmin.js'></script>";
             echo "<script> 
                     alert('Thêm thành công!');
-                    goBack();
+                    window.top.location.href='trangchuadmin.php';
                   </script>";
         } catch (PDOException $e) {
             echo "<script>alert('Lỗi: " . $e->getMessage() . "');</script>";

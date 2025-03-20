@@ -1,7 +1,7 @@
 <?php
-    require 'PHPMailer-master\src\Exception.php';
-    require 'PHPMailer-master\src\PHPMailer.php';
-    require 'PHPMailer-master\src\SMTP.php';
+    require '..\PHPMailer-master\src\Exception.php';
+    require '..\PHPMailer-master\src\PHPMailer.php';
+    require '..\PHPMailer-master\src\SMTP.php';
     
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\Exception;
@@ -56,12 +56,14 @@
             $_SESSION['sdt_temp'] = $sdt;
             $_SESSION['diachi_temp'] = $diachi;
             $_SESSION['anh_temp'] = $anh;
-            if (sendVerificationEmail($email, $verificationCode)) {
-                echo "<script> alert('Mã xác thực đã được gửi!'); 
-                    window.location.href = 'xacthuc.php' </script>";
-            } else {
-                echo "Gửi email thất bại!";
-            }
+            echo "<script>
+                     window.location.href = 'xacthuc.php' </script>";
+            // if (sendVerificationEmail($email, $verificationCode)) {
+            //     echo "<script> alert('Mã xác thực đã được gửi!'); 
+            //         window.location.href = 'xacthuc.php' </script>";
+            // } else {
+            //     echo "Gửi email thất bại!";
+            // }
         } else {
             echo "<script> alert('Vui lòng nhập email!'); </script>";
         }
@@ -73,13 +75,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Ký Tài Khoản</title>
-    <link rel="stylesheet" href="fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="giaodiendangky.css">
 </head>
 <body>
     <div class="register-container">
         <h2>Đăng Ký</h2>
-        <form action="#" method="POST" enctype="multipart/form-data">
+        <form action="thuchiendk.php" method="POST" enctype="multipart/form-data">
             <div class="input-row">
                 <div class="input-group">
                     <i class="fa fa-user"></i>
@@ -93,7 +95,7 @@
             <div class="input-row">
                 <div class="input-group">
                     <i class="fa fa-envelope"></i>
-                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="email" name="email" placeholder="Email" >
                 </div>
                 <div class="input-group">
                     <i class="fa fa-lock"></i>

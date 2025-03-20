@@ -11,16 +11,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xác thực tài khoản</title>
-    <link rel="stylesheet" href="fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="xacthuc.css">
 </head>
 <body>
     <div class="verify-container">
         <h2>Xác thực tài khoản</h2>
-        <form action="thuchiendk.php" method="POST">
+        <form action="thuchiendk.php" method="POST"  enctype="multipart/form-data">
             <div class="input-group">
                 <i class="fa fa-key"></i>
-                <input type="text" name="verification_code" placeholder="Nhập mã xác thực" required>
+                <input type="text" name="verification_code" placeholder="Nhập mã xác thực" >
             </div>
             <button type="submit">Xác nhận</button>
         </form>

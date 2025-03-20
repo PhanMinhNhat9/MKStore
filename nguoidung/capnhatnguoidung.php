@@ -1,6 +1,6 @@
 <?php
     include '../config.php'; 
-    $iduser = isset($_GET['id']) ? intval($_GET['id']) : 0;
+    $iduser = isset($_GET['id']) ? intval(base64_decode($_GET['id'])) : 0;
     $user = getAllUsers($iduser); 
 ?>
 <!DOCTYPE html>
