@@ -12,12 +12,24 @@ function taoMaGiamGia() {
 
 // Lấy dữ liệu mã giảm giá hiện tại
 if ($idmgg > 0) {
-    $stmt = $pdo->prepare("SELECT code, phantram, ngayhieuluc, ngayketthuc, giaapdung, soluong FROM magiamgia WHERE idmgg = :id");
+    $stmt = $pdo->prepare("SELECT code, phantram, ngayhieuluc, ngayketthuc, giaapdung, soluong, iddm FROM magiamgia WHERE idmgg = :id");
     $stmt->execute(['id' => $idmgg]);
     $magiamgia = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+$sql_danhmuc = "
+SELECT dm.iddm, dm.tendm, dm.loaidm
+FROM danhmucsp dm
+WHERE 
+    dm.iddm NOT IN (SELECT iddm FROM magiamgia WHERE iddm IS NOT NULL)
+    OR dm.iddm IN (SELECT iddm FROM magiamgia WHERE idmgg = :idmgg)
+";
+$stmt_dm = $pdo->prepare($sql_danhmuc);
+$stmt_dm->execute(['idmgg' => $idmgg]);
+$danhmucs = $stmt_dm->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -26,7 +38,7 @@ if ($idmgg > 0) {
     <title>Cập Nhật Mã Giảm Giá</title>
     <script src="../trangchuadmin.js"></script>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="capnhatmgg.css">
+    <link rel="stylesheet" href="capnhatmgg.css?<?=time();?>">
 </head>
 <body>
 
@@ -38,7 +50,7 @@ if ($idmgg > 0) {
                 <label>Mã Code</label>
                 <div class="input-group">
                     <i class="fas fa-barcode"></i>
-                    <input type="text" name="code" value="<?= $magiamgia['code'] ?? 'MGGN500IM' ?>" required>
+                    <input type="text" name="code" value="<?= $magiamgia['code'] ?? taoMaGiamGia() ?>" required>
                 </div>
             </div>
             <div class="form-group">
@@ -82,6 +94,26 @@ if ($idmgg > 0) {
                     <input type="number" name="soluong" value="<?= $magiamgia['soluong'] ?? '' ?>" required>
                 </div>
             </div>
+        </div>
+
+        <div class="row">
+        <div class="form-group">
+    <label>Danh Mục Áp Dụng</label>
+    <div class="input-group">
+        <i class="fas fa-tags"></i>
+        <select name="iddm" required>
+            <option value="">Chọn danh mục</option>
+            <?php foreach ($danhmucs as $dm): ?>
+                <option value="<?= $dm['iddm'] ?>" style="<?= ($dm['loaidm'] == 0) ? 'color:red' : '' ?>"
+        <?= (isset($magiamgia['iddm']) && $magiamgia['iddm'] == $dm['iddm']) ? 'selected' : '' ?>
+        >
+    <?= htmlspecialchars($dm['tendm']) ?>
+</option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+</div>
+
         </div>
 
         <div class="btn-group">

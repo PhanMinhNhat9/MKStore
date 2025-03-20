@@ -201,12 +201,17 @@ function capnhatdanhmuc() {
     window.top.location.href = "capnhatdanhmuc.php";
 }
 
-function loadGioHang() {
-    window.location.href = "hienthigiohang.php";
-}
 
-function loadBCTK() {
-    alert ("hello");
+function loadGH() {
+    setTimeout(() => {
+        let iframe = document.getElementById("Frame");
+        if (iframe) {
+            iframe.src = "donhang/hienthigiohang.php";
+        } else {
+            console.error("Không tìm thấy iframe có ID 'Frame'");
+        }
+    }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+
 }
 // function showModal(id) {
 //     document.getElementById('modal-' + id).style.display = 'flex';

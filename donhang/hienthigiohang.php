@@ -2,15 +2,23 @@
 require_once '../config.php';
 $pdo = connectDatabase();
 
-// Lấy danh sách sản phẩm trong giỏ hàng
-$stmt = $pdo->prepare("SELECT gh.idgh, sp.idsp, sp.tensp, sp.anh, gh.soluong, sp.giaban, gh.tongtien
+// Lấy danh sách sản phẩm trong giỏ hàng, kết hợp với bảng magiamgia để lấy giá giảm
+$stmt = $pdo->prepare("SELECT gh.idgh, sp.idsp, sp.tensp, sp.anh, gh.soluong, sp.giaban,
+                              COALESCE(mg.phantram, 0) AS giamgia
                        FROM giohang gh 
-                       JOIN sanpham sp ON gh.idsp = sp.idsp");
+                       JOIN sanpham sp ON gh.idsp = sp.idsp
+                       LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm");
 $stmt->execute();
 $giohang = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Tính tổng tiền tất cả sản phẩm trong giỏ
-$tongtien = array_sum(array_column($giohang, 'tongtien'));
+// Tính tổng tiền sau khi áp dụng giảm giá
+$tongtien = 0;
+
+foreach ($giohang as &$item) {
+    $gia_sau_giam = ($item['giamgia'] > 0) ? round($item['giaban'] * (1 - $item['giamgia'] / 100), -3) : $item['giaban'];
+    $item['tongtien'] = $gia_sau_giam * $item['soluong'];
+    $tongtien += $item['tongtien'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -22,6 +30,26 @@ $tongtien = array_sum(array_column($giohang, 'tongtien'));
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="hienthigiohang.css?v=<?= time(); ?>">
     <script src="../trangchuadmin.js"></script>
+    <style>
+        .old-price {
+            text-decoration: line-through;
+            color: gray;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        .discount {
+            background-color: red;
+            color: white;
+            padding: 2px 5px;
+            font-size: 12px;
+            border-radius: 5px;
+        }
+        .new-price {
+            font-weight: bold;
+            font-size: 18px;
+            color: red;
+        }
+    </style>
 </head>
 <body>
 
@@ -29,12 +57,37 @@ $tongtien = array_sum(array_column($giohang, 'tongtien'));
     <h2><i class="fas fa-shopping-cart"></i> Giỏ Hàng</h2>
     <div class="cart-table-wrapper">
         <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Ảnh</th>
+                    <th>Sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
             <tbody>
-                <?php foreach ($giohang as $item) { ?>
+                <?php foreach ($giohang as $item): ?>
+                    <?php
+                        $giagoc = $item['giaban'];
+                        $phantram_giam = $item['giamgia'];
+                        $gia_sau_giam = ($phantram_giam > 0) ? round($giagoc * (1 - $phantram_giam / 100), -3) : $giagoc;
+                    ?>
                     <tr>
-                        <td><img src="../<?= htmlspecialchars($item['anh']) ?>" alt="<?= htmlspecialchars($item['tensp']) ?>"></td>
+                        <td><img src="../<?= htmlspecialchars($item['anh']) ?>" alt="<?= htmlspecialchars($item['tensp']) ?>" width="80"></td>
                         <td><?= htmlspecialchars($item['tensp']) ?></td>
-                        <td><?= number_format($item['giaban'], 0, ',', '.') ?> VND</td>
+                        <td>
+                            <?php if ($phantram_giam > 0): ?>
+                                <span class="old-price"><?= number_format($giagoc, 0, ',', '.') ?> VND</span>
+                                <span class="discount">-<?= (int)$phantram_giam ?>%</span>
+                                <span class="new-price">
+                                    <?= number_format($gia_sau_giam, 0, ',', '.') ?> VND
+                                </span>
+                            <?php else: ?>
+                                <span class="new-price"><?= number_format($giagoc, 0, ',', '.') ?> VND</span>
+                            <?php endif; ?>
+                        </td>
                         <td>
                             <button onclick="updateQuantity(<?= $item['idsp'] ?>, -1)"><i class="fas fa-minus"></i></button>
                             <input type="text" class="quantity-input" value="<?= $item['soluong'] ?>" readonly>
@@ -45,7 +98,7 @@ $tongtien = array_sum(array_column($giohang, 'tongtien'));
                             <button onclick="deleteItem(<?= $item['idsp'] ?>)"><i class="fas fa-trash-alt"></i></button>
                         </td>
                     </tr>
-                <?php } ?>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </div>
@@ -62,6 +115,7 @@ $tongtien = array_sum(array_column($giohang, 'tongtien'));
     function thanhtoan() {
         window.location.href = "thanhtoan.php";
     }
+
     function updateQuantity(idsp, change) {
         fetch("capnhatsp.php", {
             method: "POST",
@@ -95,3 +149,5 @@ $tongtien = array_sum(array_column($giohang, 'tongtien'));
     }
 </script>
 
+</body>
+</html>

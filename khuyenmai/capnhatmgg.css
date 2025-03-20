@@ -5,9 +5,9 @@ body {
 }
 .container {
     width: 420px;
-    margin: 40px auto;
+    margin: 10px auto;
     background: white;
-    padding: 20px;
+    padding: 10px;
     border-radius: 6px;
     box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.15);
 }
@@ -30,7 +30,15 @@ label {
     left: 10px;
     color: gray;
 }
+
 .input-group input {
+    width: 100%;
+    padding: 8px 32px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.input-group select {
     width: 100%;
     padding: 8px 32px;
     font-size: 13px;
@@ -47,7 +55,6 @@ label {
 .btn-group {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
 }
 .btn {
     flex: 1;

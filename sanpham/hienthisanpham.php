@@ -2,36 +2,23 @@
     require_once '../config.php';
     $pdo = connectDatabase();
     $query = isset($_POST['query']) ? trim($_POST['query']) : '';
-    if ($query != '') {
-        $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong,
-                COALESCE(SUM(ctdh.soluong), 0) AS soluong_daban,
-                COALESCE(AVG(dg.sosao), 0) AS trungbinhsao,
-                (sp.soluong - COALESCE(SUM(ctdh.soluong), 0)) AS soluong_conlai
-                FROM sanpham sp
-                LEFT JOIN chitietdonhang ctdh ON sp.idsp = ctdh.idsp
-                LEFT JOIN donhang dh ON ctdh.iddh = dh.iddh AND dh.trangthai = 'Đã thanh toán'
-                LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
-                WHERE sp.idsp LIKE :searchTerm OR sp.mota LIKE :searchTerm1
-                GROUP BY sp.idsp 
-                ORDER BY sp.thoigianthemsp ASC";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(['searchTerm' => "%{$query}%", 'searchTerm1' => "%{$query}%"]);
-        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } else {
-        $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong,
-                COALESCE(SUM(ctdh.soluong), 0) AS soluong_daban,
-                COALESCE(AVG(dg.sosao), 0) AS trungbinhsao,
-                (sp.soluong - COALESCE(SUM(ctdh.soluong), 0)) AS soluong_conlai
-                FROM sanpham sp
-                LEFT JOIN chitietdonhang ctdh ON sp.idsp = ctdh.idsp
-                LEFT JOIN donhang dh ON ctdh.iddh = dh.iddh AND dh.trangthai = 'Đã thanh toán'
-                LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
-                GROUP BY sp.idsp 
-                ORDER BY sp.thoigianthemsp ASC";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute();
-        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    
+    $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong, sp.iddm,
+                   COALESCE(SUM(ctdh.soluong), 0) AS soluong_daban,
+                   COALESCE(AVG(dg.sosao), 0) AS trungbinhsao,
+                   (sp.soluong - COALESCE(SUM(ctdh.soluong), 0)) AS soluong_conlai,
+                   mg.phantram AS giamgia
+            FROM sanpham sp
+            LEFT JOIN chitietdonhang ctdh ON sp.idsp = ctdh.idsp
+            LEFT JOIN donhang dh ON ctdh.iddh = dh.iddh AND dh.trangthai = 'Đã thanh toán'
+            LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
+            LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm
+            GROUP BY sp.idsp
+            ORDER BY sp.thoigianthemsp ASC";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -39,9 +26,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách sản phẩm</title>
-    <script src="../trangchuadmin.js"></script>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="hienthisanpham.css">   
+    <script src="../trangchuadmin.js"></script>
     <style>
     .alert-success, .alert-error {
         display: none;
@@ -110,52 +97,56 @@
 <div id="error-alert" class="alert-error"></div>
 <div class="product-wrapper">
     <div class="product-container">
-        <?php
-        if (count($products) > 0) {
-            foreach ($products as $row) {
+        <?php foreach ($products as $row): ?>
+            <?php
                 $soluong_conlai = max(0, $row['soluong'] - $row['soluong_daban']);
-                
-                // Kiểm tra sản phẩm hết hàng
                 $classOutOfStock = ($soluong_conlai <= 0) ? "out-of-stock" : "";
                 
-                echo '<div class="product-card ' . $classOutOfStock . '" style="position: relative;">';
-
-                echo '    <img src="../' . htmlspecialchars($row['anh']) . '" alt="' . htmlspecialchars($row['tensp']) . '">';
-                echo '    <h3>' . htmlspecialchars(mb_strimwidth($row['tensp'], 0, 20, "...")) . '</h3>';
-                echo '    <p class="desc">' . htmlspecialchars(mb_strimwidth($row['mota'], 0, 50, "...")) . '</p>';
+                // Tính toán giá sau giảm
+                $giagoc = $row['giaban'];
+                $phantram_giam = $row['giamgia'] ?? 0;
+                $gia_sau_giam = ($phantram_giam > 0) ? $giagoc * (1 - $phantram_giam / 100) : $giagoc;
+            ?>
+            <div class="product-card <?= $classOutOfStock ?>">
+                <img src="../<?= htmlspecialchars($row['anh']) ?>" alt="<?= htmlspecialchars($row['tensp']) ?>">
+                <h3><?= htmlspecialchars(mb_strimwidth($row['tensp'], 0, 20, "...")) ?></h3>
+                <p class="desc"><?= htmlspecialchars(mb_strimwidth($row['mota'], 0, 50, "...")) ?></p>
                 
-                // Giá sản phẩm
-                echo '    <div class="price">';
-                echo '    <span class="old-price">' . number_format($row['giaban'], 0, ",", ".") . 'đ</span>';
-                echo '    </div>';
+                <div class="price">
+                    <?php if ($phantram_giam > 0): ?>
+                        <span class="old-price"><?= number_format($giagoc, 0, ",", ".") ?>đ</span>
+                        <span class="discount">-<?= (int)$phantram_giam ?>%</span>
+                        <span class="new-price" style="color:red;">
+                            <?= number_format($gia_sau_giam, 0, ",", ".") ?>đ
+                        </span>
+                    <?php else: ?>
+                        <span class="new-price">
+                            <?= number_format($giagoc, 0, ",", ".") ?>đ
+                        </span>
+                    <?php endif; ?>
+                </div>
                 
-                // Thông tin số lượng và đánh giá
-                echo '    <div class="info">';
-                echo '        📦 Số lượng: <strong>' . (int)$row['soluong'] . '</strong>';
-                echo '        📦 Đã bán: <strong>' . (int)$row['soluong_daban'] . '</strong>';
-                echo '        📦 Còn lại: <strong>' . ($soluong_conlai > 0 ? $soluong_conlai : 'Hết hàng') . '</strong>';
-                echo '        ⭐ ' . round($row['trungbinhsao'], 1) . ' sao';
-                echo '    </div>';
+                <div class="info">
+                    📦 Số lượng: <strong><?= (int)$row['soluong'] ?></strong>
+                    📦 Đã bán: <strong><?= (int)$row['soluong_daban'] ?></strong>
+                    📦 Còn lại: <strong><?= ($soluong_conlai > 0 ? $soluong_conlai : 'Hết hàng') ?></strong>
+                    ⭐ <?= round($row['trungbinhsao'], 1) ?> sao
+                </div>
                 
-                // Nút hành động
-                echo '    <div class="btn-group-sp">';
-                echo '        <button class="btn btn-update" onclick="capnhatsanpham('.(int)$row['idsp'].')"> <i class="fas fa-sync-alt"></i> Sửa</button>';
-                echo '        <button class="btn btn-delete" onclick="xoasanpham('.(int)$row['idsp'].')"><i class="fas fa-trash"></i> Xóa</button>';
-
-                echo '        <button class="btn btn-giohang" onclick="themvaogiohang('.(int)$row['idsp'].')"><i class="fas fa-shopping-cart"></i> Thêm</button>';
-                
-                echo '    </div>';
-                
-                echo '</div>';
-            }
-        } else {
-            echo "<p>Không có sản phẩm nào.</p>";
-        }
-        ?>
+                <div class="btn-group-sp">
+                    <button class="btn btn-update" onclick="capnhatsanpham(<?= (int)$row['idsp'] ?>)">
+                        <i class="fas fa-sync-alt"></i> Sửa
+                    </button>
+                    <button class="btn btn-delete" onclick="xoasanpham(<?= (int)$row['idsp'] ?>)">
+                        <i class="fas fa-trash"></i> Xóa
+                    </button>
+                    <button class="btn btn-giohang" onclick="themvaogiohang(<?= (int)$row['idsp'] ?>)">
+                        <i class="fas fa-shopping-cart"></i> Thêm
+                    </button>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
 </div>
-<button class="floating-btn" onclick="themsanpham()">
-        <i class="fas fa-plus"></i>
-    </button>
 </body>
 </html>

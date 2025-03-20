@@ -29,21 +29,23 @@
             return "Vui lòng nhập đầy đủ thông tin";
         }
         $pdo = connectDatabase();
-        // Kiểm tra số lần đăng nhập thất bại
-    if (!isset($_SESSION['login_attempts'])) {
-        $_SESSION['login_attempts'] = 0;
-        $_SESSION['last_attempt_time'] = time();
-    }
-    if (!isset($_SESSION['lock_time'])) {
-        $_SESSION['lock_time'] = 0;
-    }
-    // Nếu đã quá 10 phút từ lần nhập sai đầu tiên, reset lại số lần nhập
-    if (time() - $_SESSION['last_attempt_time'] > 120) {
-        $_SESSION['login_attempts'] = 0;
-    }
-    if ($_SESSION['login_attempts'] >= 2 && time() < $_SESSION['lock_time']) {
-        return "Bạn đã nhập sai quá nhiều lần, hãy thử lại sau 2 phút.";
-    }
+        if (!isset($_SESSION['login_attempts'])) {
+            $_SESSION['login_attempts'] = 0;
+        }
+        if (!isset($_SESSION['last_attempt_time'])) {
+            $_SESSION['last_attempt_time'] = time();
+        }
+        if (!isset($_SESSION['lock_time'])) {
+            $_SESSION['lock_time'] = 0;
+        }
+        // Nếu đã quá 10 phút từ lần nhập sai đầu tiên, reset lại số lần nhập
+        if (time() - $_SESSION['last_attempt_time'] > 120) {
+            $_SESSION['login_attempts'] = 0;
+            $_SESSION['last_attempt_time'] = time();
+        }
+        if ($_SESSION['login_attempts'] >= 2 && time() < $_SESSION['lock_time']) {
+            return "Bạn đã nhập sai quá nhiều lần, hãy thử lại sau 2 phút.";
+        }
         $stmt = $pdo->prepare("SELECT * FROM user WHERE tendn = :tendn LIMIT 1");
         $stmt->bindParam(':tendn', $tendn, PDO::PARAM_STR);
         $stmt->execute();
@@ -533,9 +535,9 @@
         $ngayketthuc = $_POST['ngayketthuc'];
         $giaapdung = $_POST['giaapdung'];
         $soluong = $_POST['soluong'];
-
+        $iddm = $_POST['iddm'];
         $stmt = $pdo->prepare("UPDATE magiamgia SET code = :code, phantram = :phantram, ngayhieuluc = :ngayhieuluc, 
-                            ngayketthuc = :ngayketthuc, giaapdung = :giaapdung, soluong = :soluong WHERE idmgg = :id");
+                            ngayketthuc = :ngayketthuc, giaapdung = :giaapdung, iddm = :iddm, soluong = :soluong WHERE idmgg = :id");
         $stmt->execute([
             'code' => $code,
             'phantram' => $phantram,
@@ -543,19 +545,16 @@
             'ngayketthuc' => $ngayketthuc,
             'giaapdung' => $giaapdung,
             'soluong' => $soluong,
-            'id' => $idmgg
+            'id' => $idmgg,
+            'iddm' => $iddm
         ]);
         if ($stmt->rowCount() > 0) {
-            echo "<script src='../trangchuadmin.js'></script>";
             echo "<script> 
                     alert('Cập nhật thành công!');
-                    goBack();
                   </script>";
         } else {
-            echo "<script src='../trangchuadmin.js'></script>";
             echo "<script> 
                     alert('Lỗi cập nhật!');
-                    goBack();
                   </script>";
         }
     }

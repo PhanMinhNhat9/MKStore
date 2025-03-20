@@ -1,14 +1,16 @@
 <?php
-require_once '../config.php';
-$pdo = connectDatabase();
+    require_once '../config.php';
+    $pdo = connectDatabase();
 
-$sql = "SELECT mg.idmgg, mg.code, mg.phantram, mg.ngayhieuluc, mg.ngayketthuc, mg.giaapdung, mg.soluong, mg.thoigian 
-        FROM magiamgia mg";
+    $sql = "SELECT mg.idmgg, mg.code, mg.phantram, mg.ngayhieuluc, mg.ngayketthuc, 
+                mg.giaapdung, mg.iddm, mg.soluong, mg.thoigian, dm.tendm 
+            FROM magiamgia mg
+            LEFT JOIN danhmucsp dm ON mg.iddm = dm.iddm";
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-$coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$currentDate = date('Y-m-d');
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $currentDate = date('Y-m-d');
 ?>
 
 <!DOCTYPE html>
@@ -34,6 +36,7 @@ $currentDate = date('Y-m-d');
                     <th>Hết hạn</th>
                     <th>Giá tối thiểu áp dụng</th>
                     <th>Số lượng</th>
+                    <th>Danh mục áp dụng</th>
                     <th>Trạng thái</th>
                     <th>Hành động</th>
                 </tr>
@@ -47,6 +50,9 @@ $currentDate = date('Y-m-d');
                         <td><?= date('d-m-Y', strtotime($coupon['ngayketthuc'])) ?></td>
                         <td><?= number_format($coupon['giaapdung'], 0, ',', '.') ?> VND</td>
                         <td><?= (int) $coupon['soluong'] ?></td>
+                        <td>
+                            <?= !empty($coupon['tendm']) ? htmlspecialchars($coupon['tendm']) : 'Không có' ?>
+                        </td>
                         <td>
                             <?php
                             if ($coupon['ngayhieuluc'] > $currentDate) {

@@ -35,7 +35,7 @@
             <thead>
                 <tr>
                     <th>Mã ĐH
-                    <button class="pay-btn" onclick="loadGioHang()"><i class="fas fa-wallet"></i> Giỏ hàng</button>
+                    
                     </th>
                     <th>Khách hàng</th>
                     <th>Tổng tiền</th>

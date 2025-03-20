@@ -64,9 +64,22 @@ h3 {
     font-size: 14px;
 }
 
-
 .old-price {
-    color: red;
+    text-decoration: line-through;
+    color: gray;
+    font-size: 14px;
+    margin-right: 5px;
+}
+.discount {
+    background-color: red;
+    color: white;
+    padding: 2px 5px;
+    font-size: 12px;
+    border-radius: 5px;
+}
+.new-price {
+    font-weight: bold;
+    font-size: 18px;
 }
 
 .info {
