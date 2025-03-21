@@ -5,7 +5,7 @@ body {
 }
 
 .cart-container {
-    max-width: 700px; /* Giảm chiều rộng container */
+    max-width: 800px; /* Giảm chiều rộng container */
     margin: 8px auto;
     background: white;
     border-radius: 10px;
@@ -26,7 +26,11 @@ body {
     color: #007bff;
     margin-bottom: 8px;
 }
-
+.cart-table thead {
+    position: sticky;
+    z-index: 10;
+    top: 0;
+}
 .cart-table {
     width: 100%;
     border-collapse: collapse;
@@ -122,4 +126,22 @@ body {
 
 .back-button:hover {
     background-color: #5a6268;
+}
+.old-price {
+    text-decoration: line-through;
+    color: gray;
+    font-size: 14px;
+    margin-right: 5px;
+}
+.discount {
+    background-color: red;
+    color: white;
+    padding: 2px 5px;
+    font-size: 12px;
+    border-radius: 5px;
+}
+.new-price {
+    font-weight: bold;
+    font-size: 14px;
+    color: red;
 }

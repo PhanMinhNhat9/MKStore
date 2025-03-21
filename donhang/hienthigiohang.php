@@ -31,24 +31,7 @@ foreach ($giohang as &$item) {
     <link rel="stylesheet" href="hienthigiohang.css?v=<?= time(); ?>">
     <script src="../trangchuadmin.js"></script>
     <style>
-        .old-price {
-            text-decoration: line-through;
-            color: gray;
-            font-size: 14px;
-            margin-right: 5px;
-        }
-        .discount {
-            background-color: red;
-            color: white;
-            padding: 2px 5px;
-            font-size: 12px;
-            border-radius: 5px;
-        }
-        .new-price {
-            font-weight: bold;
-            font-size: 18px;
-            color: red;
-        }
+        
     </style>
 </head>
 <body>

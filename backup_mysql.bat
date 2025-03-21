@@ -15,7 +15,7 @@ if not exist "%BACKUP_DIR%" mkdir "%BACKUP_DIR%"
 set DB_NAME=quanlybanpk
 
 :: Lệnh backup
-"%MYSQL_PATH%\mysqldump.exe" -u root -p --databases %DB_NAME% > "%BACKUP_DIR%\%DB_NAME%_%DATETIME%.sql"
+"%MYSQL_PATH%\mysqldump.exe" -u root --databases %DB_NAME% > "%BACKUP_DIR%\%DB_NAME%_%DATETIME%.sql"
 
 :: Hoàn tất
 echo Backup hoàn thành: %DB_NAME%_%DATETIME%.sql
