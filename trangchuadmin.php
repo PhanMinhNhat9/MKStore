@@ -100,6 +100,22 @@
         .dropdown .logout:hover {
             background:rgb(19, 10, 146);
         }
+        .mic-btn.listening {
+            color: red;
+            text-shadow: 0 0 40px red, 0 0 30px red;
+            animation: shake 1s infinite;
+            font: 1.2em sans-serif;
+        }
+
+        @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    50% { transform: translateX(2px); }
+    75% { transform: translateX(-2px); }
+    100% { transform: translateX(2px); }
+}
+
+
     </style>
 </head>
 <body>
@@ -116,6 +132,41 @@
                 <button class="search-btn"> Tìm kiếm</button>
             </div>
             <script>
+                document.addEventListener("DOMContentLoaded", function () {
+    const micButton = document.querySelector(".mic-btn");
+    const searchBar = document.querySelector(".search-bar");
+
+    if (!('webkitSpeechRecognition' in window)) {
+        alert("Trình duyệt của bạn không hỗ trợ tìm kiếm bằng giọng nói.");
+    } else {
+        const recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "vi-VN";
+
+        micButton.addEventListener("click", function () {
+            micButton.classList.add("listening"); // Thêm hiệu ứng khi mic hoạt động
+            recognition.start();
+        });
+
+        recognition.onresult = function (event) {
+            micButton.classList.remove("listening"); // Xóa hiệu ứng khi mic ngừng hoạt động
+            const speechResult = event.results[0][0].transcript;
+            searchBar.value = speechResult;
+            handleSearch(speechResult);
+        };
+
+        recognition.onerror = function (event) {
+            micButton.classList.remove("listening"); // Xóa hiệu ứng nếu có lỗi
+            console.error("Lỗi nhận dạng giọng nói: ", event.error);
+        };
+
+        recognition.onend = function () {
+            micButton.classList.remove("listening"); // Xóa hiệu ứng khi mic dừng hoạt động
+        };
+    }
+});
+
     function handleSearch(query) {
         query = query.trim();
         let activeMenu = getActiveMenu(); // Lấy menu hiện tại

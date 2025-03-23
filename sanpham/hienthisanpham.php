@@ -27,70 +27,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách sản phẩm</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="hienthisanpham.css">   
+    <link rel="stylesheet" href="hienthisanpham.css?v=<?= time(); ?>">   
     <script src="../trangchuadmin.js"></script>
-    <style>
-    .alert-success, .alert-error {
-        display: none;
-        position: fixed;
-        top: 20%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 10px 16px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: bold;
-        text-align: center;
-        z-index: 1000;
-        min-width: 180px;
-        transition: transform 0.3s ease, opacity 0.3s ease;
-        opacity: 0;
-    }
-
-    /* Thành công - màu xanh lá */
-    .alert-success {
-        background-color: white;
-        color: #28a745;
-        border: 2px solid #28a745;
-        box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
-    }
-
-    /* Lỗi - màu đỏ */
-    .alert-error {
-        background-color: white;
-        color: #dc3545;
-        border: 2px solid #dc3545;
-        box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
-    }
-
-    /* Hiệu ứng hiển thị */
-    .alert-success.show, .alert-error.show {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1.1);
-    }
-    .floating-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.floating-btn:hover {
-    background-color: #0056b3;
-}
-    </style>
 </head>
 <body>
 <div id="success-alert" class="alert-success"></div>

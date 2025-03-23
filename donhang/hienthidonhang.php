@@ -34,9 +34,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>Mã ĐH
-                    
-                    </th>
+                    <th>Mã ĐH</th>
                     <th>Khách hàng</th>
                     <th>Tổng tiền</th>
                     <th>Trạng thái</th>

@@ -14,11 +14,12 @@ $giohang = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Tính tổng tiền sau khi áp dụng giảm giá
 $tongtien = 0;
 
-foreach ($giohang as &$item) {
+foreach ($giohang as $index => $item) {  
     $gia_sau_giam = ($item['giamgia'] > 0) ? round($item['giaban'] * (1 - $item['giamgia'] / 100), -3) : $item['giaban'];
-    $item['tongtien'] = $gia_sau_giam * $item['soluong'];
-    $tongtien += $item['tongtien'];
+    $giohang[$index]['tongtien'] = $gia_sau_giam * $item['soluong']; // ✅ Gán lại vào mảng chính
+    $tongtien += $giohang[$index]['tongtien'];
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -100,35 +101,37 @@ foreach ($giohang as &$item) {
     }
 
     function updateQuantity(idsp, change) {
-        fetch("capnhatsp.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `idsp=${idsp}&change=${change}`
-        }).then(response => response.json())
-        .then(data => {
-            if (data.status === "success") {
-                location.reload();
-            } else {
-                alert("❌ " + data.message);
-            }
-        });
+        alert(idsp);
+        // fetch("capnhatsp.php", {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        //     body: `idsp=${idsp}&change=${change}`
+        // }).then(response => response.json())
+        // .then(data => {
+        //     if (data.status === "success") {
+        //         location.reload();
+        //     } else {
+        //         alert("❌ " + data.message);
+        //     }
+        // });
     }
 
     function deleteItem(idsp) {
-        if (confirm("Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?")) {
-            fetch("xoasp.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: `idsp=${idsp}`
-            }).then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    location.reload();
-                } else {
-                    alert("❌ " + data.message);
-                }
-            });
-        }
+        alert(idsp);
+        // if (confirm("Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?")) {
+        //     fetch("xoasp.php", {
+        //         method: "POST",
+        //         headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        //         body: `idsp=${idsp}`
+        //     }).then(response => response.json())
+        //     .then(data => {
+        //         if (data.status === "success") {
+        //             location.reload();
+        //         } else {
+        //             alert("❌ " + data.message);
+        //         }
+        //     });
+        // }
     }
 </script>
 

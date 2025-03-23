@@ -4,7 +4,7 @@ $pdo = connectDatabase();
 
 // Lấy ID người nhận từ URL
 $id_nhan = isset($_GET['id']) ? intval(base64_decode($_GET['id'])) : 0;
-$id_gui = 1; // Giả sử admin có ID 1
+$id_gui = $_SESSION['user']['iduser'];
 
 if ($id_nhan <= 0) {
     die("ID người nhận không hợp lệ!");
@@ -62,7 +62,7 @@ $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="../trangchuadmin.js"></script>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="chat.css">
+    <link rel="stylesheet" href="chat.css?v=<?= time(); ?>">
 </head>
 <body>
     <div class="chat-container">

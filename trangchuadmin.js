@@ -135,7 +135,7 @@ function capnhatsanpham(idsp) {
 
 function chat(iduser) {
     let encodedId = btoa(iduser);
-    window.location.href = "phanhoi/chat.php?id=" + encodeURIComponent(encodedId);
+    window.top.location.href = "chat.php?id=" + encodeURIComponent(encodedId);
 }
 
 function xoasanpham(idsp) {

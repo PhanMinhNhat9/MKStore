@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+</head>
+<body>
+    <button onclick="startScanner()">📷 Quét mã</button>
+    <div id="reader" style="width: 300px;"></div>
+    <p id="scan-result"></p>
+    
+<script>
+    function startScanner() {
+    let scanner = new Html5Qrcode("reader");
+    
+    scanner.start(
+        { facingMode: "environment" }, 
+        {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+        },
+        function (decodedText) {
+            document.getElementById("scan-result").innerText = "Mã SP: " + decodedText;
+            scanner.stop(); 
+            addToCart(decodedText);
+        },
+        function (errorMessage) {
+            console.warn(errorMessage);
+        }
+    ).catch(err => console.error("Lỗi camera:", err));
+}
+
+function addToCart(maSP) {
+    fetch("#", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `masp=${maSP}`
+    }).then(response => response.json())
+    .then(data => alert(data.message));
+}
+
+
+
+</script>
+</body>
+</html>

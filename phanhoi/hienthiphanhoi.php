@@ -2,7 +2,7 @@
 require_once '../config.php';
 $pdo = connectDatabase();
 
-$current_user_id = 1; // Thay bằng ID thực tế
+$current_user_id = $_SESSION['user']['iduser']; // Thay bằng ID thực tế
 $query = isset($_GET['query']) ? trim($_GET['query']) : ''; 
 if ($query != '') {
     $sql = "
