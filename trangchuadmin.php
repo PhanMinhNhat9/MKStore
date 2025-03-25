@@ -54,69 +54,6 @@
     <link rel="stylesheet" href="trangchuadmin.css?v=<?= time(); ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        .dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            width: 200px;
-            border-radius: 8px;
-            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
-            display: none;
-            flex-direction: column;
-            padding: 10px;
-            z-index: 10;
-            margin-top: 10px ;
-        }
-        .dropdown.active {
-            display: flex;
-        }
-        .dropdown .profile {
-            text-align: center;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        .dropdown .profile img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            margin-bottom: 5px;
-        }
-        .dropdown .profile p {
-            margin: 5px 0;
-            font-size: 14px;
-            color: #333;
-        }
-        .dropdown .logout {
-            background:rgb(40, 73, 218);
-            color: white;
-            padding: 8px;
-            text-align: center;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .dropdown .logout:hover {
-            background:rgb(19, 10, 146);
-        }
-        .mic-btn.listening {
-            color: red;
-            text-shadow: 0 0 40px red, 0 0 30px red;
-            animation: shake 1s infinite;
-            font: 1.2em sans-serif;
-        }
-
-        @keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-2px); }
-    50% { transform: translateX(2px); }
-    75% { transform: translateX(-2px); }
-    100% { transform: translateX(2px); }
-}
-
-
-    </style>
 </head>
 <body>
     <!-- Thanh navbar -->
@@ -126,108 +63,109 @@
             <span class="store-name"> M'K STORE</span>
         </div>
         
-            <div class="search-container">
-                <input type="text" class="search-bar" placeholder="Tìm kiếm..." onkeyup="handleSearch(this.value)">
-                <button class="mic-btn"><i class="fas fa-microphone"></i></button>
-                <button class="search-btn"> Tìm kiếm</button>
-            </div>
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Tìm kiếm..." onkeyup="handleSearch(this.value)">
+            <button class="mic-btn"><i class="fas fa-microphone"></i></button>
+            <button class="search-btn"> Tìm kiếm</button>
+        </div>
+
             <script>
                 document.addEventListener("DOMContentLoaded", function () {
-    const micButton = document.querySelector(".mic-btn");
-    const searchBar = document.querySelector(".search-bar");
+                const micButton = document.querySelector(".mic-btn");
+                const searchBar = document.querySelector(".search-bar");
 
-    if (!('webkitSpeechRecognition' in window)) {
-        alert("Trình duyệt của bạn không hỗ trợ tìm kiếm bằng giọng nói.");
-    } else {
-        const recognition = new webkitSpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.lang = "vi-VN";
+                if (!('webkitSpeechRecognition' in window)) {
+                    alert("Trình duyệt của bạn không hỗ trợ tìm kiếm bằng giọng nói.");
+                } else {
+                    const recognition = new webkitSpeechRecognition();
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
+                    recognition.lang = "vi-VN";
 
-        micButton.addEventListener("click", function () {
-            micButton.classList.add("listening"); // Thêm hiệu ứng khi mic hoạt động
-            recognition.start();
-        });
+                    micButton.addEventListener("click", function () {
+                        micButton.classList.add("listening"); // Thêm hiệu ứng khi mic hoạt động
+                        recognition.start();
+                    });
 
-        recognition.onresult = function (event) {
-            micButton.classList.remove("listening"); // Xóa hiệu ứng khi mic ngừng hoạt động
-            const speechResult = event.results[0][0].transcript;
-            searchBar.value = speechResult;
-            handleSearch(speechResult);
-        };
+                    recognition.onresult = function (event) {
+                        micButton.classList.remove("listening"); // Xóa hiệu ứng khi mic ngừng hoạt động
+                        const speechResult = event.results[0][0].transcript;
+                        searchBar.value = speechResult;
+                        handleSearch(speechResult);
+                    };
 
-        recognition.onerror = function (event) {
-            micButton.classList.remove("listening"); // Xóa hiệu ứng nếu có lỗi
-            console.error("Lỗi nhận dạng giọng nói: ", event.error);
-        };
+                    recognition.onerror = function (event) {
+                        micButton.classList.remove("listening"); // Xóa hiệu ứng nếu có lỗi
+                        console.error("Lỗi nhận dạng giọng nói: ", event.error);
+                    };
 
-        recognition.onend = function () {
-            micButton.classList.remove("listening"); // Xóa hiệu ứng khi mic dừng hoạt động
-        };
-    }
-});
+                    recognition.onend = function () {
+                        micButton.classList.remove("listening"); // Xóa hiệu ứng khi mic dừng hoạt động
+                    };
+                }
+            });
 
-    function handleSearch(query) {
-        query = query.trim();
-        let activeMenu = getActiveMenu(); // Lấy menu hiện tại
+            function handleSearch(query) {
+                query = query.trim();
+                let activeMenu = getActiveMenu(); // Lấy menu hiện tại
 
-        if (activeMenu === "menu-user") {
-            searchUsers(query);
-        } 
-        if (activeMenu === "menu-product") {
-            searchProducts(query);
-        }
-        if (activeMenu === "menu-order") {
-            searchDonHang(query);
-        }
-        if (activeMenu === "menu-support") {
-            searchPhanHoi(query);
-        }
-    }
-
-    function searchUsers(query) {
-        setTimeout(() => {
-            let iframe = document.getElementById("Frame");
-            if (iframe) {
-                iframe.src = "nguoidung/hienthinguoidung.php?query="+encodeURIComponent(query);
-            } else {
-                console.error("Không tìm thấy iframe có ID 'Frame'");
+                if (activeMenu === "menu-user") {
+                    searchUsers(query);
+                } 
+                if (activeMenu === "menu-product") {
+                    searchProducts(query);
+                }
+                if (activeMenu === "menu-order") {
+                    searchDonHang(query);
+                }
+                if (activeMenu === "menu-support") {
+                    searchPhanHoi(query);
+                }
             }
-        }, 100); // Đợi 100ms để đảm bảo iframe đã được render
-    }
 
-    function searchProducts(query) {
-        setTimeout(() => {
-            let iframe = document.getElementById("Frame");
-            if (iframe) {
-                iframe.src = "sanpham/hienthisanpham.php?query="+encodeURIComponent(query);
-            } else {
-                console.error("Không tìm thấy iframe có ID 'Frame'");
+            function searchUsers(query) {
+                setTimeout(() => {
+                    let iframe = document.getElementById("Frame");
+                    if (iframe) {
+                        iframe.src = "nguoidung/hienthinguoidung.php?query="+encodeURIComponent(query);
+                    } else {
+                        console.error("Không tìm thấy iframe có ID 'Frame'");
+                    }
+                }, 100); // Đợi 100ms để đảm bảo iframe đã được render
             }
-        }, 100); // Đợi 100ms để đảm bảo iframe đã được render
-    }
 
-    function searchDonHang(query) {
-        setTimeout(() => {
-            let iframe = document.getElementById("Frame");
-            if (iframe) {
-                iframe.src = "donhang/hienthidonhang.php?query="+encodeURIComponent(query);
-            } else {
-                console.error("Không tìm thấy iframe có ID 'Frame'");
+            function searchProducts(query) {
+                setTimeout(() => {
+                    let iframe = document.getElementById("Frame");
+                    if (iframe) {
+                        iframe.src = "sanpham/hienthisanpham.php?query="+encodeURIComponent(query);
+                    } else {
+                        console.error("Không tìm thấy iframe có ID 'Frame'");
+                    }
+                }, 100); // Đợi 100ms để đảm bảo iframe đã được render
             }
-        }, 100); // Đợi 100ms để đảm bảo iframe đã được render
-    }
-    function searchPhanHoi(query) {
-        setTimeout(() => {
-            let iframe = document.getElementById("Frame");
-            if (iframe) {
-                iframe.src = "phanhoi/hienthiphanhoi.php?query="+encodeURIComponent(query);
-            } else {
-                console.error("Không tìm thấy iframe có ID 'Frame'");
+
+            function searchDonHang(query) {
+                setTimeout(() => {
+                    let iframe = document.getElementById("Frame");
+                    if (iframe) {
+                        iframe.src = "donhang/hienthidonhang.php?query="+encodeURIComponent(query);
+                    } else {
+                        console.error("Không tìm thấy iframe có ID 'Frame'");
+                    }
+                }, 100); // Đợi 100ms để đảm bảo iframe đã được render
             }
-        }, 100); // Đợi 100ms để đảm bảo iframe đã được render
-    }
-</script>
+            function searchPhanHoi(query) {
+                setTimeout(() => {
+                    let iframe = document.getElementById("Frame");
+                    if (iframe) {
+                        iframe.src = "phanhoi/hienthiphanhoi.php?query="+encodeURIComponent(query);
+                    } else {
+                        console.error("Không tìm thấy iframe có ID 'Frame'");
+                    }
+                }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+            }
+            </script>
 
         <div class="nav-buttons">
             <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
@@ -237,7 +175,7 @@
                 <button class="btn taikhoan" onclick="ddadmin()">
                     <i class="fas fa-user"></i> <?= !empty($admin_name) ? $admin_name : "Admin"; ?>
                 </button>
-                <div class="dropdown" id="adminDropdown">
+                <div class="dropdowntk" id="adminDropdown">
                     <div class="profile">
                         <img src="<?= $admin_avatar ?>" alt="Avatar">
                         <p><strong><?= $admin_name ?></strong></p>

@@ -147,7 +147,7 @@ function xoasanpham(idsp) {
 
 function themvaogiohang(idsp) {
     let encodedId = btoa(idsp); // Mã hóa ID sản phẩm
-    fetch("../donhang/themvaogiohang.php?id=" + encodeURIComponent(encodedId))
+    fetch("themvaogiohang.php?id=" + encodeURIComponent(encodedId))
         .then(response => response.text()) // Lấy phản hồi từ PHP
         .then(data => {
             console.log("Server response:", data); // Kiểm tra phản hồi
@@ -206,7 +206,7 @@ function loadGH() {
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
-            iframe.src = "donhang/hienthigiohang.php";
+            iframe.src = "giohang/hienthigiohang.php";
         } else {
             console.error("Không tìm thấy iframe có ID 'Frame'");
         }

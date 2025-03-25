@@ -366,3 +366,62 @@ body {
     min-height: 410px;
     display: flex;
 }
+.dropdowntk {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    width: 200px;
+    border-radius: 8px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    flex-direction: column;
+    padding: 10px;
+    z-index: 10;
+    margin-top: 10px ;
+}
+.dropdowntk.active {
+    display: flex;
+}
+.dropdowntk .profile {
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+.dropdowntk .profile img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 5px;
+}
+.dropdowntk .profile p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #333;
+}
+.dropdowntk .logout {
+    background:rgb(40, 73, 218);
+    color: white;
+    padding: 8px;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.dropdowntk .logout:hover {
+    background:rgb(19, 10, 146);
+}
+.mic-btn.listening {
+    color: red;
+    text-shadow: 0 0 40px red, 0 0 30px red;
+    animation: shake 1s infinite;
+    font: 1.2em sans-serif;
+}
+
+@keyframes shake {
+0% { transform: translateX(0); }
+25% { transform: translateX(-2px); }
+50% { transform: translateX(2px); }
+75% { transform: translateX(-2px); }
+100% { transform: translateX(2px); }
+}

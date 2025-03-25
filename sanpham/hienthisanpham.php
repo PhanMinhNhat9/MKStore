@@ -1,9 +1,10 @@
 <?php
     require_once '../config.php';
     $pdo = connectDatabase();
-    $query = isset($_POST['query']) ? trim($_POST['query']) : '';
-    
-    $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong, sp.iddm,
+    $query = isset($_GET['query']) ? trim($_GET['query']) : '';
+    $products = [];
+    if ($query != '') {
+        $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong, sp.iddm,
                    COALESCE(SUM(ctdh.soluong), 0) AS soluong_daban,
                    COALESCE(AVG(dg.sosao), 0) AS trungbinhsao,
                    (sp.soluong - COALESCE(SUM(ctdh.soluong), 0)) AS soluong_conlai,
@@ -13,12 +14,31 @@
             LEFT JOIN donhang dh ON ctdh.iddh = dh.iddh AND dh.trangthai = 'Đã thanh toán'
             LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
             LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm
+            WHERE sp.tensp LIKE :searchTerm OR sp.mota LIKE :searchTerm1
             GROUP BY sp.idsp
             ORDER BY sp.thoigianthemsp ASC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['searchTerm' => "%{$query}%", 'searchTerm1' => "%{$query}%"]);
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+            $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong, sp.iddm,
+                        COALESCE(SUM(ctdh.soluong), 0) AS soluong_daban,
+                        COALESCE(AVG(dg.sosao), 0) AS trungbinhsao,
+                        (sp.soluong - COALESCE(SUM(ctdh.soluong), 0)) AS soluong_conlai,
+                        mg.phantram AS giamgia
+                    FROM sanpham sp
+                    LEFT JOIN chitietdonhang ctdh ON sp.idsp = ctdh.idsp
+                    LEFT JOIN donhang dh ON ctdh.iddh = dh.iddh AND dh.trangthai = 'Đã thanh toán'
+                    LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
+                    LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm
+                    GROUP BY sp.idsp
+                    ORDER BY sp.thoigianthemsp ASC";
+            
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute();
+            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
