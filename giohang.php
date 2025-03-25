@@ -210,6 +210,17 @@ $cartProducts = getCartProducts();
     .return-home a:hover {
         background-color: #2980b9;
     }
+
+    .thank-you-message {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 15px;
+        border: 1px solid #c3e6cb;
+        border-radius: 5px;
+        margin: 20px 0;
+        text-align: center;
+        font-size: 16px;
+    }
 </style>
 
 <!DOCTYPE html>
@@ -282,6 +293,9 @@ $cartProducts = getCartProducts();
             <p>Giỏ hàng của bạn đang trống.</p>
         <?php endif; ?>
     </form>
+    <div id="thank-you-message" class="thank-you-message" style="display: none;">
+        Cảm ơn bạn đã đặt hàng! Đơn hàng đang được xử lý.
+    </div>
 </main>
 
 
@@ -326,9 +340,9 @@ $cartProducts = getCartProducts();
     updateTotals();
 </script>
 
-    <?php if (isset($_GET['thank_you'])): ?>
+    <!-- <?php if (isset($_GET['thank_you'])): ?>
         <script>alert("Cảm ơn bạn đã đặt hàng! Đơn hàng đang được xử lý.");</script>
-    <?php endif; ?>
+    <?php endif; ?> -->
 
     <script>
     function updateGrandTotal() {
@@ -353,6 +367,25 @@ $cartProducts = getCartProducts();
     quantityInputs.forEach(input => {
         input.addEventListener('input', updateGrandTotal);
     });
+</script>
+
+<script>
+    // Kiểm tra nếu URL chứa tham số thank_you
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('thank_you')) {
+        const thankYouMessage = document.getElementById('thank-you-message');
+        if (thankYouMessage) {
+            thankYouMessage.style.display = 'block'; // Hiển thị thông báo
+        }
+    }
+
+    // Ẩn thông báo sau 5 giây
+    setTimeout(() => {
+        const thankYouMessage = document.getElementById('thank-you-message');
+        if (thankYouMessage) {
+            thankYouMessage.style.display = 'none';
+        }
+    }, 5000);
 </script>
 </body>
 </html>

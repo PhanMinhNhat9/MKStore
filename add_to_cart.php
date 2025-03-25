@@ -2,7 +2,7 @@
 require_once 'config.php';
 if (session_status() == PHP_SESSION_NONE) session_start();
 
-header('Content-Type: application/json'); // << BẮT BUỘC
+header('Content-Type: application/json');
 
 if (!isset($_POST['idsp'])) {
     echo json_encode(['status' => 'error', 'message' => 'Thiếu ID sản phẩm']);
