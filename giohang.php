@@ -379,13 +379,13 @@ $cartProducts = getCartProducts();
         }
     }
 
-    // Ẩn thông báo sau 5 giây
+    // Ẩn thông báo sau 10 giây
     setTimeout(() => {
         const thankYouMessage = document.getElementById('thank-you-message');
         if (thankYouMessage) {
             thankYouMessage.style.display = 'none';
         }
-    }, 5000);
+    }, 10000);
 </script>
 </body>
 </html>
