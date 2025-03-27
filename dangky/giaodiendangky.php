@@ -37,7 +37,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Ký Tài Khoản</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="giaodiendangky.css">
+    <link rel="stylesheet" href="giaodiendangky.css?v=<?= time(); ?>">
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <script src="../trangchuadmin.js"></script>
@@ -63,7 +63,7 @@
                 </div>
                 <div class="input-group">
                     <i class="fa fa-lock"></i>
-                    <input type="text" name="mk" id="password" placeholder="Mật khẩu" autocomplete="off" required>
+                    <input type="password" name="mk" id="password" placeholder="Mật khẩu" autocomplete="off" required>
                 </div>
             </div>
             <div class="input-row">
@@ -76,10 +76,25 @@
                     <input type="text" name="diachi" placeholder="Địa chỉ" autocomplete="off"  required>
                 </div>
             </div>
+            <div class="checkbox-container">
+                <input type="checkbox" id="showPassword">
+                <label for="showPassword">Hiển thị mật khẩu</label>
+                <a href="../GUI&dangnhap.php" class="">Đăng nhập</a>
+            </div>
+
             <input type="submit" name="dangkytkuser" value="Đăng ký">
         </form>
     </div>
     <script>
+        document.getElementById("showPassword").addEventListener("change", function () {
+    let passwordInput = document.getElementById("password");
+    if (this.checked) {
+        passwordInput.type = "text";
+    } else {
+        passwordInput.type = "password";
+    }
+});
+
         function isValidPassword(password) {
     // Kiểm tra độ dài tối thiểu
     if (password.length < 6) return false;
@@ -120,7 +135,6 @@
             let hoten = document.getElementById("hoten").value;
 
             let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-           // let passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])(?!.*[\p{L}&&[^\x00-\x7F]]).{6,}$/u;
             let phonePattern = /^(0\d{9,10})$/;
             let namePattern = /^[a-zA-ZÀ-ỹ\s]+$/;
 

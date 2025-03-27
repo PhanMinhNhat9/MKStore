@@ -67,14 +67,35 @@ input[type='submit'] {
 input[type='submit']:hover {
     background: #0056b3;
 }
-.avatar-preview {
+
+.checkbox-container {
     display: flex;
-    justify-content: center;
-    margin-bottom: 10px;
+    align-items: center;
+    margin-top: 5px;
 }
-.avatar-preview img {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: none;
+
+.checkbox-container input {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.checkbox-container label {
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    user-select: none;
+}
+.checkbox-container a {
+    margin-left: auto; /* Đẩy "Đăng nhập" về bên phải */
+    font-size: 14px;
+    text-decoration: none;
+    color: #007bff;
+    transition: color 0.3s ease-in-out;
+}
+
+.checkbox-container a:hover {
+    color: #0056b3;
+    text-decoration: none;
 }

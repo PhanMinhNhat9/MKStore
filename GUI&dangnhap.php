@@ -61,12 +61,30 @@ $lockTime = $_SESSION['lock_time']-time();
             </div>
             <div class="input-group">
                 <i class="fa fa-lock"></i>
-                <input type="password" name="matkhau" placeholder="Mật khẩu" required>
+                <input type="password" name="matkhau" id="password" placeholder="Mật khẩu" required>
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
             </div>
+            <div class="checkbox-container">
+                <input type="checkbox" id="showPassword">
+                <label for="showPassword">Hiển thị mật khẩu</label>
+            </div>
             <button type="submit"><i class="fa fa-sign-in-alt"></i> Đăng nhập</button>
-            <a href="GUI&quenMK.php" class="forgot-password">Quên mật khẩu?</a>
+            
+            <div class="auth-links">
+                <a href="GUI&quenMK.php" class="forgot-password">Quên mật khẩu?</a>
+                <a href="dangky/giaodiendangky.php" class="dangkynd">Đăng ký</a>
+            </div>
         </form>
     </div>
+    <script>
+        document.getElementById("showPassword").addEventListener("change", function () {
+    let passwordInput = document.getElementById("password");
+    if (this.checked) {
+        passwordInput.type = "text";
+    } else {
+        passwordInput.type = "password";
+    }
+});
+    </script>
 </body>
 </html>
