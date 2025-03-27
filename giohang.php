@@ -60,7 +60,8 @@ if (isset($_POST['checkout'])) {
 }
 
 // Lấy thông tin sản phẩm trong giỏ
-function getCartProducts() {
+function getCartProducts()
+{
     $pdo = connectDatabase();
     $cart = $_SESSION['cart'] ?? [];
     $products = [];
@@ -225,12 +226,14 @@ $cartProducts = getCartProducts();
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Giỏ hàng</title>
     <link rel="stylesheet" href="giohang.css">
     <link rel="stylesheet" href="trangchucss.css">
 </head>
+
 <body>
     <nav class="navbar">
         <div class="logo-container">
@@ -245,147 +248,146 @@ $cartProducts = getCartProducts();
     </nav>
 
     <main class="cart-container">
-    <h2 class="cart-title">Giỏ Hàng Của Bạn</h2>
-    <form method="post" id="cart-form">
-        <?php if (count($cartProducts) > 0): ?>
-            <?php foreach ($cartProducts as $product): ?>
-                <div class="cart-item" data-price="<?php echo $product['giaban']; ?>" data-idsp="<?php echo $product['idsp']; ?>">
-                    <img src="<?php echo $product['anh']; ?>" alt="<?php echo $product['tensp']; ?>">
-                    <div class="cart-details">
-                        <h4><?php echo $product['tensp']; ?></h4>
-                        <p>Đơn giá: <span class="unit-price"><?php echo number_format($product['giaban'], 0, ',', '.'); ?></span> VNĐ</p>
-                        <label>Số lượng: 
-                            <input type="number" class="quantity-input" name="quantities[<?php echo $product['idsp']; ?>]" value="<?php echo $product['quantity']; ?>" min="1">
-                        </label>
+        <h2 class="cart-title">Giỏ Hàng Của Bạn</h2>
+        <form method="post" id="cart-form">
+            <?php if (count($cartProducts) > 0): ?>
+                <?php foreach ($cartProducts as $product): ?>
+                    <div class="cart-item" data-price="<?php echo $product['giaban']; ?>" data-idsp="<?php echo $product['idsp']; ?>">
+                        <img src="<?php echo $product['anh']; ?>" alt="<?php echo $product['tensp']; ?>">
+                        <div class="cart-details">
+                            <h4><?php echo $product['tensp']; ?></h4>
+                            <p>Đơn giá: <span class="unit-price"><?php echo number_format($product['giaban'], 0, ',', '.'); ?></span> VNĐ</p>
+                            <label>Số lượng:
+                                <input type="number" class="quantity-input" name="quantities[<?php echo $product['idsp']; ?>]" value="<?php echo $product['quantity']; ?>" min="1">
+                            </label>
+                        </div>
+                        <div class="cart-actions">
+                            <a href="giohang.php?delete=<?php echo $product['idsp']; ?>" class="btn delete-btn">Xóa</a>
+                        </div>
+                        <div class="cart-details">
+                            <p>Tổng: <span class="item-total"><?php echo number_format($product['giaban'] * $product['quantity'], 0, ',', '.'); ?></span> VNĐ</p>
+                        </div>
                     </div>
-                    <div class="cart-actions">
-                        <a href="giohang.php?delete=<?php echo $product['idsp']; ?>" class="btn delete-btn">Xóa</a>
+                <?php endforeach; ?>
+
+                <!-- BẮT ĐẦU: Tổng tiền + phương thức thanh toán + nút thanh toán -->
+                <div class="checkout-section">
+                    <div class="payment-method">
+                        <label for="phuongthuctt">💳 Phương thức thanh toán:</label>
+                        <select name="phuongthuctt" id="phuongthuctt" required>
+                            <option value="" disabled selected>-- Chọn phương thức --</option>
+                            <option value="tienmat">Thanh toán khi nhận hàng</option>
+                            <option value="chuyenkhoan">Chuyển khoản ngân hàng</option>
+                            <option value="momo">Ví MoMo</option>
+                            <option value="zalopay">ZaloPay</option>
+                        </select>
                     </div>
-                    <div class="cart-details">
-                        <p>Tổng: <span class="item-total"><?php echo number_format($product['giaban'] * $product['quantity'], 0, ',', '.'); ?></span> VNĐ</p>
+
+                    <div class="grand-total">
+                        <strong>Tổng thanh toán: </strong><span id="grand-total">0</span> VNĐ
+                    </div>
+
+                    <div class="checkout-button">
+                        <button type="submit" name="checkout" class="checkout-btn">Thanh toán</button>
                     </div>
                 </div>
-            <?php endforeach; ?>
+                <!-- KẾT THÚC -->
+            <?php else: ?>
+                <p>Giỏ hàng của bạn đang trống.</p>
+            <?php endif; ?>
+        </form>
+        <div id="thank-you-message" class="thank-you-message" style="display: none;">
+            Cảm ơn bạn đã đặt hàng! Đơn hàng đang được xử lý.
+        </div>
+    </main>
 
-            <!-- BẮT ĐẦU: Tổng tiền + phương thức thanh toán + nút thanh toán -->
-            <div class="checkout-section">
-                <div class="payment-method">
-                    <label for="phuongthuctt">💳 Phương thức thanh toán:</label>
-                    <select name="phuongthuctt" id="phuongthuctt" required>
-                        <option value="" disabled selected>-- Chọn phương thức --</option>
-                        <option value="tienmat">Thanh toán khi nhận hàng</option>
-                        <option value="chuyenkhoan">Chuyển khoản ngân hàng</option>
-                        <option value="momo">Ví MoMo</option>
-                        <option value="zalopay">ZaloPay</option>
-                    </select>
-                </div>
-                
-                <div class="grand-total">
-                    <strong>Tổng thanh toán: </strong><span id="grand-total">0</span> VNĐ
-                </div>
-
-                <div class="checkout-button">
-                    <button type="submit" name="checkout" class="checkout-btn">Thanh toán</button>
-                </div>
-            </div>
-            <!-- KẾT THÚC -->
-        <?php else: ?>
-            <p>Giỏ hàng của bạn đang trống.</p>
-        <?php endif; ?>
-    </form>
-    <div id="thank-you-message" class="thank-you-message" style="display: none;">
-        Cảm ơn bạn đã đặt hàng! Đơn hàng đang được xử lý.
-    </div>
-</main>
-
-
-<script>
-    function formatCurrency(number) {
-        return new Intl.NumberFormat('vi-VN').format(number);
-    }
-
-    function updateTotals() {
-        let items = document.querySelectorAll('.cart-item');
-        let grandTotal = 0;
-
-        items.forEach(item => {
-            let price = parseInt(item.getAttribute('data-price'));
-            let quantityInput = item.querySelector('.quantity-input');
-            let quantity = parseInt(quantityInput.value);
-            let itemTotal = price * quantity;
-
-            item.querySelector('.item-total').textContent = formatCurrency(itemTotal);
-            grandTotal += itemTotal;
-        });
-
-        document.getElementById('grand-total').textContent = formatCurrency(grandTotal);
-    }
-
-    document.querySelectorAll('.quantity-input').forEach(input => {
-        input.addEventListener('change', () => {
-            updateTotals();
-            // Gửi AJAX để lưu session số lượng mới
-            let formData = new FormData(document.getElementById('cart-form'));
-            formData.append('update_cart', '1');
-            fetch('giohang.php', {
-                method: 'POST',
-                body: formData
-            }).then(response => {
-                if (!response.ok) console.error('Lỗi cập nhật giỏ hàng');
-            });
-        });
-    });
-
-    // Khởi động tính tổng khi trang tải
-    updateTotals();
-</script>
-
-    <!-- <?php if (isset($_GET['thank_you'])): ?>
-        <script>alert("Cảm ơn bạn đã đặt hàng! Đơn hàng đang được xử lý.");</script>
-    <?php endif; ?> -->
 
     <script>
-    function updateGrandTotal() {
-        let total = 0;
-        const items = document.querySelectorAll('.cart-item');
-        items.forEach(item => {
-            const price = parseInt(item.getAttribute('data-price'));
-            const quantity = item.querySelector('.quantity-input').value;
-            const itemTotal = price * quantity;
-            item.querySelector('.item-total').innerText = itemTotal.toLocaleString('vi-VN');
-            total += itemTotal;
+        function formatCurrency(number) {
+            return new Intl.NumberFormat('vi-VN').format(number);
+        }
+
+        function updateTotals() {
+            let items = document.querySelectorAll('.cart-item');
+            let grandTotal = 0;
+
+            items.forEach(item => {
+                let price = parseInt(item.getAttribute('data-price'));
+                let quantityInput = item.querySelector('.quantity-input');
+                let quantity = parseInt(quantityInput.value);
+                let itemTotal = price * quantity;
+
+                item.querySelector('.item-total').textContent = formatCurrency(itemTotal);
+                grandTotal += itemTotal;
+            });
+
+            document.getElementById('grand-total').textContent = formatCurrency(grandTotal);
+        }
+
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', () => {
+                updateTotals();
+                // Gửi AJAX để lưu session số lượng mới
+                let formData = new FormData(document.getElementById('cart-form'));
+                formData.append('update_cart', '1');
+                fetch('giohang.php', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (!response.ok) console.error('Lỗi cập nhật giỏ hàng');
+                });
+            });
         });
 
-        document.getElementById('grand-total').innerText = total.toLocaleString('vi-VN');
-    }
+        // Khởi động tính tổng khi trang tải
+        updateTotals();
+    </script>
 
-    // Tự động tính tổng khi trang tải
-    window.addEventListener('DOMContentLoaded', updateGrandTotal);
 
-    // Cập nhật lại khi thay đổi số lượng
-    const quantityInputs = document.querySelectorAll('.quantity-input');
-    quantityInputs.forEach(input => {
-        input.addEventListener('input', updateGrandTotal);
-    });
-</script>
+    <script>
+        function updateGrandTotal() {
+            let total = 0;
+            const items = document.querySelectorAll('.cart-item');
+            items.forEach(item => {
+                const price = parseInt(item.getAttribute('data-price'));
+                const quantity = item.querySelector('.quantity-input').value;
+                const itemTotal = price * quantity;
+                item.querySelector('.item-total').innerText = itemTotal.toLocaleString('vi-VN');
+                total += itemTotal;
+            });
 
-<script>
-    // Kiểm tra nếu URL chứa tham số thank_you
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('thank_you')) {
-        const thankYouMessage = document.getElementById('thank-you-message');
-        if (thankYouMessage) {
-            thankYouMessage.style.display = 'block'; // Hiển thị thông báo
+            document.getElementById('grand-total').innerText = total.toLocaleString('vi-VN');
         }
-    }
 
-    // Ẩn thông báo sau 10 giây
-    setTimeout(() => {
-        const thankYouMessage = document.getElementById('thank-you-message');
-        if (thankYouMessage) {
-            thankYouMessage.style.display = 'none';
+        // Tự động tính tổng khi trang tải
+        window.addEventListener('DOMContentLoaded', updateGrandTotal);
+
+        // Cập nhật lại khi thay đổi số lượng
+        const quantityInputs = document.querySelectorAll('.quantity-input');
+        quantityInputs.forEach(input => {
+            input.addEventListener('input', updateGrandTotal);
+        });
+    </script>
+
+    <script>
+        // Kiểm tra nếu URL chứa tham số thank_you
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('thank_you')) {
+            const thankYouMessage = document.getElementById('thank-you-message');
+            if (thankYouMessage) {
+                thankYouMessage.style.display = 'block'; // Hiển thị thông báo
+            }
         }
-    }, 10000);
-</script>
+
+        // Ẩn thông báo sau 10 giây
+        setTimeout(() => {
+            const thankYouMessage = document.getElementById('thank-you-message');
+            if (thankYouMessage) {
+                thankYouMessage.style.display = 'none';
+            }
+        }, 10000);
+    </script>
+
 </body>
+
 </html>
