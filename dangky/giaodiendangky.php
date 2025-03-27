@@ -40,6 +40,7 @@
     <link rel="stylesheet" href="giaodiendangky.css">
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
+    <script src="../trangchuadmin.js"></script>
 </head>
 <body>
     <div class="register-container">
@@ -62,7 +63,7 @@
                 </div>
                 <div class="input-group">
                     <i class="fa fa-lock"></i>
-                    <input type="password" name="mk" id="password" placeholder="Mật khẩu" autocomplete="off" required>
+                    <input type="text" name="mk" id="password" placeholder="Mật khẩu" autocomplete="off" required>
                 </div>
             </div>
             <div class="input-row">
@@ -79,6 +80,39 @@
         </form>
     </div>
     <script>
+        function isValidPassword(password) {
+    // Kiểm tra độ dài tối thiểu
+    if (password.length < 6) return false;
+
+    let hasLower = false;
+    let hasUpper = false;
+    let hasDigit = false;
+    let hasSpecial = false;
+    const specialChars = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/`~\\";
+
+    for (let i = 0; i < password.length; i++) {
+        let char = password[i];
+
+        if (char >= 'a' && char <= 'z') hasLower = true;
+        else if (char >= 'A' && char <= 'Z') hasUpper = true;
+        else if (char >= '0' && char <= '9') hasDigit = true;
+        else if (specialChars.includes(char)) hasSpecial = true;
+        
+        // Nếu phát hiện ký tự có dấu, trả về false ngay
+        if (char !== char.normalize("NFD")) {
+            return false;
+        }
+    }
+
+    // Nếu thiếu bất kỳ điều kiện nào, trả về false
+    if (!hasLower || !hasUpper || !hasDigit || !hasSpecial) {
+        return false;
+    }
+
+    return true;
+}
+
+
         document.getElementById("registerForm").addEventListener("submit", function (event) {
             let email = document.getElementById("email").value.trim();
             let password = document.getElementById("password").value;
@@ -86,41 +120,26 @@
             let hoten = document.getElementById("hoten").value;
 
             let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            let passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/;
+           // let passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])(?!.*[\p{L}&&[^\x00-\x7F]]).{6,}$/u;
             let phonePattern = /^(0\d{9,10})$/;
             let namePattern = /^[a-zA-ZÀ-ỹ\s]+$/;
 
             if (!emailPattern.test(email)) {
-                alert("Email không hợp lệ! Vui lòng nhập đúng định dạng.");
+                showCustomAlert("🐳 Oops!", "Email không hợp lệ! Vui lòng nhập đúng định dạng.", "warning");
                 event.preventDefault();
             }
 
-            if (!passwordPattern.test(password)) {
-                // Swal.fire({
-                //     title: "🐳 Oops!",
-                //     text: "Họ tên không hợp lệ! Không chứa số hoặc ký tự đặc biệt.",
-                //     icon: "warning",
-                //     confirmButtonText: "Okay nè! 💙",
-                //     confirmButtonColor: "#4a90e2", // Xanh dương pastel
-                //     background: "#e0f7fa", // Nền xanh nhạt
-                //     color: "#1565c0", // Màu chữ xanh đậm
-                //     width: "300px", // Thu nhỏ kích thước popup
-                //     padding: "10px", // Giảm padding
-                // });
-
-                //alert("Mật khẩu phải có ít nhất 6 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt!");
+            if (!isValidPassword(password)) {
+                showCustomAlert("🐳 Oops!", "Mật khẩu phải có ít nhất 6 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt!", "warning");
                 event.preventDefault();
             }
 
             if (!phonePattern.test(sdt)) {
-                
-                // alert("Số điện thoại không hợp lệ! Số điện thoại phải bắt đầu bằng số 0 và có 10 hoặc 11 số.");
+                showCustomAlert("🐳 Oops!", "Số điện thoại không hợp lệ! Số điện thoại phải bắt đầu bằng số 0 và có 10 hoặc 11 số.", "warning");
                 event.preventDefault();
             }
 
             if (!namePattern.test(hoten)) {
-                // alert("Họ tên không hợp lệ! Không chứa số hoặc ký tự đặc biệt.");
-                
                 event.preventDefault();
             }
         });
@@ -162,6 +181,16 @@
                 document.querySelector("input[name='tendn']").value = "";
             }
         });
+       
+        document.getElementById("password").addEventListener("input", function (event) {
+    
+});
+
+// Ngăn nhập dấu từ bàn phím, nhưng vẫn cho nhập chữ cái và số
+document.getElementById("password").addEventListener("keydown", function (event) {
+    
+});
+
 
     </script>
 </body>
