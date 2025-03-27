@@ -31,20 +31,21 @@
             ]);
 
             if ($stmt->rowCount() > 0) {
+                unset($_SESSION['verification_code']);
+                unset($_SESSION['email_temp']);
+                unset($_SESSION['hoten_temp']);
+                unset($_SESSION['tendn_temp']);
+                unset($_SESSION['mk_temp']);
+                unset($_SESSION['sdt_temp']);
+                unset($_SESSION['diachi_temp']);
+                unset($_SESSION['anh_temp']);
                 echo "<script>alert('Xác thực thành công! Tài khoản đã được tạo.'); 
                               window.location.href='../GUI&dangnhap.php';</script>";
             } else {
                 echo "<script>alert('Lỗi khi lưu dữ liệu vào CSDL.'); window.location.href='giaodiendk.php';</script>";
             }
 
-            unset($_SESSION['verification_code']);
-            unset($_SESSION['email_temp']);
-            unset($_SESSION['hoten_temp']);
-            unset($_SESSION['tendn_temp']);
-            unset($_SESSION['mk_temp']);
-            unset($_SESSION['sdt_temp']);
-            unset($_SESSION['diachi_temp']);
-            unset($_SESSION['anh_temp']);
+            
 
         } catch(PDOException $e) {
             echo "Lỗi khi lưu dữ liệu: " . $e->getMessage();

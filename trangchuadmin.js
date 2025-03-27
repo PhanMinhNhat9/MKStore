@@ -147,7 +147,7 @@ function xoasanpham(idsp) {
 
 function themvaogiohang(idsp) {
     let encodedId = btoa(idsp); // Mã hóa ID sản phẩm
-    fetch("../donhang/themvaogiohang.php?id=" + encodeURIComponent(encodedId))
+    fetch("themvaogiohang.php?id=" + encodeURIComponent(encodedId))
         .then(response => response.text()) // Lấy phản hồi từ PHP
         .then(data => {
             console.log("Server response:", data); // Kiểm tra phản hồi
@@ -170,6 +170,9 @@ function showSuccessMessage(message) {
     alertBox.innerText = message;
     alertBox.style.display = "flex";
     alertBox.classList.add("show");
+    // Phát âm thanh thông báo thành công
+    let audio = new Audio('../amthanh/thanhcong.mp3'); // Đặt đường dẫn file âm thanh
+    audio.play();
     setTimeout(() => {
         alertBox.classList.remove("show");
         setTimeout(() => {
@@ -191,6 +194,20 @@ function showErrorMessage(message) {
     }, 3000);
 }
 
+function showCustomAlert(title = "Thông báo!", text = "Nội dung thông báo.", icon = "info") {
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: icon, // "success", "error", "warning", "info"
+        confirmButtonText: "Okay nè! 💙",
+        confirmButtonColor: "#4a90e2", // Xanh dương pastel
+        background: "#e0f7fa", // Nền xanh nhạt
+        color: "#1565c0", // Màu chữ xanh đậm
+        width: "300px", // Thu nhỏ kích thước popup
+        padding: "10px", // Giảm padding
+    });
+}
+
 
 function themdmcon(id) {
     let encodedId = btoa(id);
@@ -206,7 +223,7 @@ function loadGH() {
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
-            iframe.src = "donhang/hienthigiohang.php";
+            iframe.src = "giohang/hienthigiohang.php";
         } else {
             console.error("Không tìm thấy iframe có ID 'Frame'");
         }
