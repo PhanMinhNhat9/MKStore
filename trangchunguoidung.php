@@ -1,4 +1,9 @@
 <?php
+// Thêm dòng này ở đầu tệp PHP
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once 'config.php'; // Kết nối cơ sở dữ liệu
 
 // Xử lý tìm kiếm sản phẩm
@@ -138,6 +143,24 @@ $cartProducts = getCartProducts();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cửa Hàng Phụ Kiện</title>
     <link rel="stylesheet" href="trangchucss.css">
+    <style>
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .message strong {
+            color: #007BFF;
+        }
+
+        .message small {
+            color: #888;
+            font-size: 12px;
+        }
+    </style>
 </head>
 
 <div id="toast" class="toast-message"></div>
@@ -351,10 +374,69 @@ $cartProducts = getCartProducts();
             background-color: #0056b3;
         }
     </style>
+    <style>
+        .chat-container {
+            max-width: 600px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .chat-messages {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #fff;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .chat-input button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .chat-input button:hover {
+            background-color: #0056b3;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f1f1f1;
+        }
+
+        .message strong {
+            color: #007BFF;
+        }
+
+        .message small {
+            color: #888;
+            font-size: 12px;
+        }
+    </style>
     <div class="chat-container">
-        <div class="chat-header">
-            <h3>Trò chuyện với khách hàng</h3>
-        </div>
+        <h2>Trò chuyện với Admin</h2>
         <div class="chat-messages" id="chatMessages">
             <!-- Tin nhắn sẽ được tải ở đây -->
         </div>
@@ -363,34 +445,73 @@ $cartProducts = getCartProducts();
             <button onclick="sendMessage()">Gửi</button>
         </div>
     </div>
+
     <script>
+        const userId = 1;
+        console.log('userId:', userId);
+
         function loadMessages() {
-            fetch('load_messages.php')
-                .then(response => response.json())
-                .then(data => {
-                    const chatMessages = document.getElementById('chatMessages');
-                    chatMessages.innerHTML = '';
-                    data.forEach(message => {
-                        const messageElement = document.createElement('div');
-                        messageElement.textContent = message.sender_id + ': ' + message.message;
-                        chatMessages.appendChild(messageElement);
+            if (userId) {
+                fetch('load_messages.php?user_id=' + userId)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Lỗi mạng: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Phản hồi từ API:', data); // Ghi log phản hồi từ API
+                        if (data.status === 'error') {
+                            console.error('Lỗi từ máy chủ:', data.message);
+                            return;
+                        }
+
+                        const chatMessages = document.getElementById('chatMessages');
+                        chatMessages.innerHTML = '';
+                        data.data.forEach(message => {
+                            const messageElement = document.createElement('div');
+                            messageElement.classList.add('message');
+                            messageElement.innerHTML = `
+                                <strong>${message.sender_name}:</strong> ${message.message}
+                                <br><small>${new Date(message.timestamp).toLocaleString()}</small>
+                            `;
+                            chatMessages.appendChild(messageElement);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi tải tin nhắn:', error);
                     });
-                });
+            } else {
+                console.error('userId không được xác định.');
+            }
         }
 
         function sendMessage() {
             const message = document.getElementById('chatInput').value;
+            if (!message.trim()) {
+                alert('Tin nhắn không được để trống!');
+                return;
+            }
+
             fetch('send_message.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: 'message=' + encodeURIComponent(message)
-                })
-                .then(response => response.text())
-                .then(() => {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'message=' + encodeURIComponent(message) + '&receiver_id=' + userId
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'error') {
+                        console.error('Lỗi từ máy chủ:', data.message);
+                        return;
+                    }
+
                     document.getElementById('chatInput').value = '';
                     loadMessages();
+                })
+                .catch(error => {
+                    console.error('Lỗi khi gửi tin nhắn:', error);
                 });
         }
 

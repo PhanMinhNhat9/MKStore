@@ -244,6 +244,40 @@ $cartProducts = getCartProducts();
             <button class="btn trangchu" onclick="window.location.href='trangchunguoidung.php'">
                 <i class="fas fa-home"></i> Trang chủ
             </button>
+            <button class="btn lichsu" onclick="window.location.href='lichsumuahang.php'">
+                <i class="fas fa-history"></i> Lịch sử mua hàng
+            </button>
+            <!-- Nút Tài khoản -->
+            <div style="position: relative;">
+                <button class="btn taikhoan" onclick="toggleAccountDropdown()">
+                    <i class="fas fa-user"></i>
+                    <?= htmlspecialchars($_SESSION['user']['hoten'], ENT_QUOTES, 'UTF-8'); ?>
+                </button>
+                <div class="dropdown" id="accountDropdown">
+                    <div class="logout" onclick="logout()">Đăng xuất</div>
+                </div>
+            </div>
+            <script>
+                function toggleAccountDropdown() {
+                    var dropdown = document.getElementById("accountDropdown");
+                    if (dropdown) {
+                        dropdown.classList.toggle("active");
+                    }
+                }
+
+                function logout() {
+                    window.location.href = "logout.php"; // Thay bằng trang xử lý đăng xuất
+                }
+
+                document.addEventListener("click", function(event) {
+                    var dropdown = document.getElementById("accountDropdown");
+                    var button = document.querySelector(".taikhoan");
+
+                    if (dropdown && !button.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.classList.remove("active");
+                    }
+                });
+            </script>
         </div>
     </nav>
 

@@ -1,50 +1,51 @@
 <?php
-    include "config.php";
+include "config.php";
 
-    // Bắt đầu session nếu chưa có
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
-    }
+// Bắt đầu session nếu chưa có
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-    // Kiểm tra xem admin đã đăng nhập chưa
-    if (!isset($_SESSION['user']) || $_SESSION['user']['quyen'] != 0) {
-        header("Location: GUI&dangnhap.php");
+// Kiểm tra xem admin đã đăng nhập chưa
+if (!isset($_SESSION['user']) || $_SESSION['user']['quyen'] != 0) {
+    header("Location: GUI&dangnhap.php");
+    exit();
+}
+
+define('SESSION_TIMEOUT', 1800);
+
+if (isset($_SESSION['last_activity'])) {
+    $inactive_time = time() - $_SESSION['last_activity'];
+    error_log("Session inactive time: $inactive_time seconds"); // Debug log
+
+    if ($inactive_time > SESSION_TIMEOUT) {
+        // Hủy session và chuyển hướng đến trang đăng nhập
+        session_unset();
+        session_destroy();
+        setcookie(session_name(), '', time() - 3600, '/'); // Xóa cookie session
+        echo "<script>window.location.href = 'GUI&dangnhap.php?timeout=1';</script>";
         exit();
     }
+}
+// Cập nhật lại thời gian hoạt động cuối cùng
+$_SESSION['last_activity'] = time();
+// Làm mới session ID để tăng cường bảo mật (kiểm tra session trước khi gọi)
+if (session_status() == PHP_SESSION_ACTIVE) {
+    session_regenerate_id(true);
+}
 
-    define('SESSION_TIMEOUT', 1800);
+session_write_close(); // Đảm bảo session được ghi lại ngay lập tức
 
-    if (isset($_SESSION['last_activity'])) {
-        $inactive_time = time() - $_SESSION['last_activity'];
-        error_log("Session inactive time: $inactive_time seconds"); // Debug log
-        
-        if ($inactive_time > SESSION_TIMEOUT) {
-            // Hủy session và chuyển hướng đến trang đăng nhập
-            session_unset();
-            session_destroy();
-            setcookie(session_name(), '', time() - 3600, '/'); // Xóa cookie session
-            echo "<script>window.location.href = 'GUI&dangnhap.php?timeout=1';</script>";
-            exit();
-        }
-    }
-    // Cập nhật lại thời gian hoạt động cuối cùng
-    $_SESSION['last_activity'] = time();
-    // Làm mới session ID để tăng cường bảo mật (kiểm tra session trước khi gọi)
-    if (session_status() == PHP_SESSION_ACTIVE) {
-        session_regenerate_id(true);
-    }
-
-    session_write_close(); // Đảm bảo session được ghi lại ngay lập tức
-
-    // Lấy thông tin admin từ session
-    $admin_name = htmlspecialchars($_SESSION['user']['hoten'], ENT_QUOTES, 'UTF-8');
-    $admin_email = htmlspecialchars($_SESSION['user']['email'], ENT_QUOTES, 'UTF-8');
-    $admin_phone = htmlspecialchars($_SESSION['user']['sdt'], ENT_QUOTES, 'UTF-8');
-    $admin_avatar = !empty($_SESSION['user']['anh']) ? htmlspecialchars($_SESSION['user']['anh'], ENT_QUOTES, 'UTF-8') : "https://i.pravatar.cc/100";
+// Lấy thông tin admin từ session
+$admin_name = htmlspecialchars($_SESSION['user']['hoten'], ENT_QUOTES, 'UTF-8');
+$admin_email = htmlspecialchars($_SESSION['user']['email'], ENT_QUOTES, 'UTF-8');
+$admin_phone = htmlspecialchars($_SESSION['user']['sdt'], ENT_QUOTES, 'UTF-8');
+$admin_avatar = !empty($_SESSION['user']['anh']) ? htmlspecialchars($_SESSION['user']['anh'], ENT_QUOTES, 'UTF-8') : "https://i.pravatar.cc/100";
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,6 +56,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
+
 <body>
     <!-- Thanh navbar -->
     <nav class="navbar">
@@ -62,15 +64,15 @@
             <img src="picture/logoTD.png" alt="Logo Cửa Hàng" class="logo">
             <span class="store-name"> M'K STORE</span>
         </div>
-        
+
         <div class="search-container">
             <input type="text" class="search-bar" placeholder="Tìm kiếm..." onkeyup="handleSearch(this.value)">
             <button class="mic-btn"><i class="fas fa-microphone"></i></button>
             <button class="search-btn"> Tìm kiếm</button>
         </div>
 
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
                 const micButton = document.querySelector(".mic-btn");
                 const searchBar = document.querySelector(".search-bar");
 
@@ -82,24 +84,24 @@
                     recognition.interimResults = false;
                     recognition.lang = "vi-VN";
 
-                    micButton.addEventListener("click", function () {
+                    micButton.addEventListener("click", function() {
                         micButton.classList.add("listening"); // Thêm hiệu ứng khi mic hoạt động
                         recognition.start();
                     });
 
-                    recognition.onresult = function (event) {
+                    recognition.onresult = function(event) {
                         micButton.classList.remove("listening"); // Xóa hiệu ứng khi mic ngừng hoạt động
                         const speechResult = event.results[0][0].transcript;
                         searchBar.value = speechResult;
                         handleSearch(speechResult);
                     };
 
-                    recognition.onerror = function (event) {
+                    recognition.onerror = function(event) {
                         micButton.classList.remove("listening"); // Xóa hiệu ứng nếu có lỗi
                         console.error("Lỗi nhận dạng giọng nói: ", event.error);
                     };
 
-                    recognition.onend = function () {
+                    recognition.onend = function() {
                         micButton.classList.remove("listening"); // Xóa hiệu ứng khi mic dừng hoạt động
                     };
                 }
@@ -111,7 +113,7 @@
 
                 if (activeMenu === "menu-user") {
                     searchUsers(query);
-                } 
+                }
                 if (activeMenu === "menu-product") {
                     searchProducts(query);
                 }
@@ -127,7 +129,7 @@
                 setTimeout(() => {
                     let iframe = document.getElementById("Frame");
                     if (iframe) {
-                        iframe.src = "nguoidung/hienthinguoidung.php?query="+encodeURIComponent(query);
+                        iframe.src = "nguoidung/hienthinguoidung.php?query=" + encodeURIComponent(query);
                     } else {
                         console.error("Không tìm thấy iframe có ID 'Frame'");
                     }
@@ -138,7 +140,7 @@
                 setTimeout(() => {
                     let iframe = document.getElementById("Frame");
                     if (iframe) {
-                        iframe.src = "sanpham/hienthisanpham.php?query="+encodeURIComponent(query);
+                        iframe.src = "sanpham/hienthisanpham.php?query=" + encodeURIComponent(query);
                     } else {
                         console.error("Không tìm thấy iframe có ID 'Frame'");
                     }
@@ -149,25 +151,30 @@
                 setTimeout(() => {
                     let iframe = document.getElementById("Frame");
                     if (iframe) {
-                        iframe.src = "donhang/hienthidonhang.php?query="+encodeURIComponent(query);
+                        iframe.src = "donhang/hienthidonhang.php?query=" + encodeURIComponent(query);
                     } else {
                         console.error("Không tìm thấy iframe có ID 'Frame'");
                     }
                 }, 100); // Đợi 100ms để đảm bảo iframe đã được render
             }
+
             function searchPhanHoi(query) {
                 setTimeout(() => {
                     let iframe = document.getElementById("Frame");
                     if (iframe) {
-                        iframe.src = "phanhoi/hienthiphanhoi.php?query="+encodeURIComponent(query);
+                        iframe.src = "phanhoi/hienthiphanhoi.php?query=" + encodeURIComponent(query);
                     } else {
                         console.error("Không tìm thấy iframe có ID 'Frame'");
                     }
                 }, 100); // Đợi 100ms để đảm bảo iframe đã được render
             }
-            </script>
+        </script>
 
         <div class="nav-buttons">
+            <button class="btn trangchu" onclick="window.location.href='admin_chat.php'">
+                <i class="fas fa-home"></i> Trò chuyện
+            </button>
+            
             <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
             <button class="btn thongbao"><i class="fas fa-bell"></i> Thông báo</button>
             <!-- Nút Admin với dropdown -->
@@ -222,7 +229,7 @@
         });
         handleSessionTimeout(<?= SESSION_TIMEOUT ?>);
     </script>
-    
+
     <!-- Nội dung trang web -->
     <div class="main-content" id="main-content">
         <iframe id="Frame" src="" scrolling="no"></iframe>
@@ -241,6 +248,7 @@
                 <a href="#" class="social-icon"><i class="fab fa-facebook"></i> Facebook</a>
             </div>
         </div>
-    </footer>   
+    </footer>
 </body>
+
 </html>
