@@ -4,27 +4,14 @@ body {
     font-size: 14px; /* Giảm kích thước font mặc định */
 }
 
-.cart-container {
-    max-width: 800px; /* Giảm chiều rộng container */
-    margin: 8px auto;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 3px 15px rgba(0, 123, 255, 0.2);
-    padding: 10px;
-}
-
 .cart-table-wrapper {
     max-height: 250px; /* Giảm chiều cao vùng cuộn */
     overflow-y: auto;
     border: 1px solid #d0e4ff;
     border-radius: 6px;
 }
-
-.cart-container h2 {
-    text-align: center;
-    font-size: 22px; /* Giảm font-size tiêu đề */
-    color: #007bff;
-    margin-bottom: 8px;
+.cart-table-wrapper::-webkit-scrollbar {
+    display: none;
 }
 .cart-table thead {
     position: sticky;

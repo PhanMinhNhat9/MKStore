@@ -171,9 +171,9 @@ $admin_avatar = !empty($_SESSION['user']['anh']) ? htmlspecialchars($_SESSION['u
         </script>
 
         <div class="nav-buttons">
-            <button class="btn trangchu" onclick="window.location.href='admin_chat.php'">
+            <!-- <button class="btn trangchu" onclick="window.location.href='admin_chat.php'">
                 <i class="fas fa-home"></i> Trò chuyện
-            </button>
+            </button> -->
             
             <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
             <button class="btn thongbao"><i class="fas fa-bell"></i> Thông báo</button>

@@ -147,7 +147,7 @@ function xoasanpham(idsp) {
 
 function themvaogiohang(idsp) {
     let encodedId = btoa(idsp); // Mã hóa ID sản phẩm
-    fetch("themvaogiohang.php?id=" + encodeURIComponent(encodedId))
+    fetch("../giohang/themvaogiohang.php?id=" + encodeURIComponent(encodedId))
         .then(response => response.text()) // Lấy phản hồi từ PHP
         .then(data => {
             console.log("Server response:", data); // Kiểm tra phản hồi
