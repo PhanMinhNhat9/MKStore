@@ -25,7 +25,7 @@ foreach ($categories as $category) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="hienthidanhmuc.css">
+    <link rel="stylesheet" href="hienthidanhmuc.css?v=<?php time(); ?>">
     <script src="../trangchuadmin.js"></script>
     <title></title>
 </head>
@@ -50,7 +50,7 @@ foreach ($categories as $category) {
                         <td><img src="../<?= $parent['icon'] ?>" class="icon" alt="Icon"></td>
                         <td><?= $parent['mota'] ?></td>
                         <td><?= $parent['thoigian'] ?></td>
-                        <td>
+                        <td style="text-align: center">
                             <i onclick="themdmcon(<?php echo $parent['iddm']; ?>)" class="fas fa-plus-circle action-icons btn-xoadm" title="Thêm"></i>
                             <i onclick="capnhatdanhmuc()" class="fas fa-edit action-icons btn-updatedm" title="Sửa"></i>
                         </td>

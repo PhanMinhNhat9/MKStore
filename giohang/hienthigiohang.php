@@ -3,8 +3,8 @@
     $pdo = connectDatabase();
 
     // Lấy danh sách sản phẩm trong giỏ hàng, kết hợp với bảng magiamgia để lấy giá giảm
-    $stmt = $pdo->prepare("SELECT gh.idgh, sp.idsp, sp.tensp, sp.anh, gh.soluong, sp.giaban, gh.thanhtien, 
-                                COALESCE(mg.phantram, 0) AS giamgia
+    $stmt = $pdo->prepare("SELECT gh.idgh, sp.idsp, sp.tensp, sp.anh, gh.soluong, sp.giaban, gh.thanhtien, gh.giagiam,
+                                COALESCE(mg.phantram, 0) AS phantram
                         FROM giohang gh 
                         JOIN sanpham sp ON gh.idsp = sp.idsp
                         LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm
@@ -181,8 +181,8 @@
                     <?php foreach ($giohang as $item): ?>
                         <?php
                             $giagoc = $item['giaban'];
-                            $phantram_giam = $item['giamgia'];
-                            $gia_sau_giam = ($phantram_giam > 0) ? round($giagoc * (1 - $phantram_giam / 100), -3) : $giagoc;
+                            $phantram_giam = $item['phantram'];
+                            $gia_sau_giam = ($phantram_giam > 0) ? $giagoc * (1 - $phantram_giam / 100) : $giagoc;
                         ?>
                         <tr>
                             <td><img src="../<?= htmlspecialchars($item['anh']) ?>" alt="<?= htmlspecialchars($item['tensp']) ?>" width="80"></td>
