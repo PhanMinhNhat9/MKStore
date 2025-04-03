@@ -2,6 +2,9 @@
     session_start();
     session_unset(); 
     session_destroy(); // Destroy the session
-    header("Location: GUI&dangnhap.php"); // Redirect to login page
+    setcookie(session_name(), '', time() - 3600, '/'); // Xóa cookie session nếu có
+
+    // Chuyển hướng về trang đăng nhập với thông báo timeout
+    header("Location: GUI&dangnhap.php?timeout=1");
     exit();
 ?>

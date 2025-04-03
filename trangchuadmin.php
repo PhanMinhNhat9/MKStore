@@ -1,46 +1,36 @@
 <?php
-include "config.php";
+    include "config.php";
 
-// Bắt đầu session nếu chưa có
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+    // Bắt đầu session nếu chưa có
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
 
-// Kiểm tra xem admin đã đăng nhập chưa
-if (!isset($_SESSION['user']) || $_SESSION['user']['quyen'] != 0) {
-    header("Location: GUI&dangnhap.php");
-    exit();
-}
-
-define('SESSION_TIMEOUT', 1800);
-
-if (isset($_SESSION['last_activity'])) {
-    $inactive_time = time() - $_SESSION['last_activity'];
-    error_log("Session inactive time: $inactive_time seconds"); // Debug log
-
-    if ($inactive_time > SESSION_TIMEOUT) {
-        // Hủy session và chuyển hướng đến trang đăng nhập
-        session_unset();
-        session_destroy();
-        setcookie(session_name(), '', time() - 3600, '/'); // Xóa cookie session
-        echo "<script>window.location.href = 'GUI&dangnhap.php?timeout=1';</script>";
+    // Kiểm tra xem admin đã đăng nhập chưa
+    if (!isset($_SESSION['user']) || $_SESSION['user']['quyen'] != 0) {
+        header("Location: GUI&dangnhap.php");
         exit();
     }
-}
-// Cập nhật lại thời gian hoạt động cuối cùng
-$_SESSION['last_activity'] = time();
-// Làm mới session ID để tăng cường bảo mật (kiểm tra session trước khi gọi)
-if (session_status() == PHP_SESSION_ACTIVE) {
-    session_regenerate_id(true);
-}
 
-session_write_close(); // Đảm bảo session được ghi lại ngay lập tức
+    define('SESSION_TIMEOUT', 60);
 
-// Lấy thông tin admin từ session
-$admin_name = htmlspecialchars($_SESSION['user']['hoten'], ENT_QUOTES, 'UTF-8');
-$admin_email = htmlspecialchars($_SESSION['user']['email'], ENT_QUOTES, 'UTF-8');
-$admin_phone = htmlspecialchars($_SESSION['user']['sdt'], ENT_QUOTES, 'UTF-8');
-$admin_avatar = !empty($_SESSION['user']['anh']) ? htmlspecialchars($_SESSION['user']['anh'], ENT_QUOTES, 'UTF-8') : "https://i.pravatar.cc/100";
+    if (isset($_SESSION['last_activity'])) {
+        $inactive_time = time() - $_SESSION['last_activity'];
+        error_log("Session inactive time: $inactive_time seconds"); // Debug log
+    }
+    // Cập nhật lại thời gian hoạt động cuối cùng
+    $_SESSION['last_activity'] = time();
+    // Làm mới session ID để tăng cường bảo mật (kiểm tra session trước khi gọi)
+    if (session_status() == PHP_SESSION_ACTIVE) {
+        session_regenerate_id(true);
+    }
+
+    session_write_close(); // Đảm bảo session được ghi lại ngay lập tức
+
+    // Lấy thông tin admin từ session
+    $admin_name = htmlspecialchars($_SESSION['user']['hoten'], ENT_QUOTES, 'UTF-8');
+    $admin_email = htmlspecialchars($_SESSION['user']['email'], ENT_QUOTES, 'UTF-8');
+    $admin_phone = htmlspecialchars($_SESSION['user']['sdt'], ENT_QUOTES, 'UTF-8');
 ?>
 
 <!DOCTYPE html>

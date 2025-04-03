@@ -296,7 +296,7 @@ function handleSessionTimeout(sessionTimeoutInSeconds) {
 
     // Chuyển hướng về trang đăng nhập khi hết hạn
     setTimeout(function() {
-        window.location.href = 'GUI&dangnhap.php?timeout=1';
+        window.location.href = 'logout.php?timeout=1';
     }, sessionTimeout);
 }
 
