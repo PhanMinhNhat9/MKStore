@@ -194,19 +194,19 @@ function showErrorMessage(message) {
     }, 3000);
 }
 
-function showCustomAlert(title = "Thông báo!", text = "Nội dung thông báo.", icon = "info") {
-    Swal.fire({
-        title: title,
-        text: text,
-        icon: icon, // "success", "error", "warning", "info"
-        confirmButtonText: "Okay nè! 💙",
-        confirmButtonColor: "#4a90e2", // Xanh dương pastel
-        background: "#e0f7fa", // Nền xanh nhạt
-        color: "#1565c0", // Màu chữ xanh đậm
-        width: "300px", // Thu nhỏ kích thước popup
-        padding: "10px", // Giảm padding
-    });
-}
+// function showCustomAlert(title = "Thông báo!", text = "Nội dung thông báo.", icon = "info") {
+//     Swal.fire({
+//         title: title,
+//         text: text,
+//         icon: icon, // "success", "error", "warning", "info"
+//         confirmButtonText: "Okay nè! 💙",
+//         confirmButtonColor: "#4a90e2", // Xanh dương pastel
+//         background: "#e0f7fa", // Nền xanh nhạt
+//         color: "#1565c0", // Màu chữ xanh đậm
+//         width: "300px", // Thu nhỏ kích thước popup
+//         padding: "10px", // Giảm padding
+//     });
+// }
 
 
 function themdmcon(id) {

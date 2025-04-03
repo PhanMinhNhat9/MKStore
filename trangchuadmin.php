@@ -12,7 +12,7 @@
         exit();
     }
 
-    define('SESSION_TIMEOUT', 60);
+    define('SESSION_TIMEOUT', 1800);
 
     if (isset($_SESSION['last_activity'])) {
         $inactive_time = time() - $_SESSION['last_activity'];
@@ -31,6 +31,7 @@
     $admin_name = htmlspecialchars($_SESSION['user']['hoten'], ENT_QUOTES, 'UTF-8');
     $admin_email = htmlspecialchars($_SESSION['user']['email'], ENT_QUOTES, 'UTF-8');
     $admin_phone = htmlspecialchars($_SESSION['user']['sdt'], ENT_QUOTES, 'UTF-8');
+    $admin_avatar = !empty($_SESSION['user']['anh']) ? htmlspecialchars($_SESSION['user']['anh'], ENT_QUOTES, 'UTF-8') : "https://i.pravatar.cc/100";
 ?>
 
 <!DOCTYPE html>

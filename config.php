@@ -4,6 +4,7 @@
     ini_set('session.cookie_secure', 1);
     ini_set('session.use_only_cookies', 1);
     session_start();
+    
     function connectDatabase(): PDO {
         $host = "localhost";  
         $dbname = "quanlybanpk"; 
@@ -29,23 +30,26 @@
             return "Vui lòng nhập đầy đủ thông tin";
         }
         $pdo = connectDatabase();
-        if (!isset($_SESSION['login_attempts'])) {
-            $_SESSION['login_attempts'] = 0;
-        }
+        // if (!isset($_SESSION['login_attempts'])) {
+        //     $_SESSION['login_attempts'] = 0;
+        // }
         if (!isset($_SESSION['last_attempt_time'])) {
             $_SESSION['last_attempt_time'] = time();
         }
-        if (!isset($_SESSION['lock_time'])) {
-            $_SESSION['lock_time'] = 0;
-        }
+        // if (!isset($_SESSION['lock_time'])) {
+        //     $_SESSION['lock_time'] = 0;
+        // }
         // Nếu đã quá 10 phút từ lần nhập sai đầu tiên, reset lại số lần nhập
-        if (time() - $_SESSION['last_attempt_time'] > 120) {
+        if (time() - $_SESSION['last_attempt_time'] > 10) {
             $_SESSION['login_attempts'] = 0;
             $_SESSION['last_attempt_time'] = time();
         }
-        if ($_SESSION['login_attempts'] >= 2 && time() < $_SESSION['lock_time']) {
+       
+        if ($_SESSION['login_attempts'] >= 2 && time() < $_SESSION['lock_time']) { 
             return "Bạn đã nhập sai quá nhiều lần, hãy thử lại sau 2 phút.";
         }
+       
+        
         $stmt = $pdo->prepare("SELECT * FROM user WHERE tendn = :tendn LIMIT 1");
         $stmt->bindParam(':tendn', $tendn, PDO::PARAM_STR);
         $stmt->execute();
@@ -75,11 +79,12 @@
             }
             
         } else {
-            $_SESSION['login_attempts']++;
+            $_SESSION['login_attempts'] = $_SESSION['login_attempts'] + 1;
             $_SESSION['last_attempt_time'] = time();
             if ($_SESSION['login_attempts'] >= 2) {
-                $_SESSION['lock_time'] = time() + 120; // Khóa trong 2 phút
+                $_SESSION['lock_time'] = time() + 10; // Khóa trong 2 phút
             }
+           
             return "Sai tài khoản hoặc mật khẩu";
         }
     }
@@ -281,23 +286,23 @@
             $diachi  = $_POST['diachi'];
             $matkhau  = $_POST['matkhau'];
             $quyen   = $_POST['quyen'];
-            $file    = $_FILES['anh'];
+            //$file    = $_FILES['anh'];
             // Xử lý ảnh nếu có tải lên
-            if (!empty($file['name'])) {
-                $target_dir = "picture/";
-                $anh = $target_dir . basename($file["name"]);
-                move_uploaded_file($file["tmp_name"], $anh);
-                $anh = addslashes($anh);
-            } else {
+            // if (!empty($file['name'])) {
+            //     $target_dir = "picture/";
+            //     $anh = $target_dir . basename($file["name"]);
+            //     move_uploaded_file($file["tmp_name"], $anh);
+            //     $anh = addslashes($anh);
+            // } else {
                 // Nếu không có ảnh mới, lấy ảnh cũ từ DB
-                $stmt = $pdo->prepare("SELECT anh FROM user WHERE iduser = ?");
-                $stmt->execute([$iduser]);
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $anh = addslashes($row['anh']) ?? '';
-            }
+                // $stmt = $pdo->prepare("SELECT anh FROM user WHERE iduser = ?");
+                // $stmt->execute([$iduser]);
+                // $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                // $anh = addslashes($row['anh']) ?? '';
+            // }
             $sql = "UPDATE user SET 
                     hoten = :hoten, tendn = :tendn, email = :email, 
-                    sdt = :sdt, diachi = :diachi, quyen = :quyen, anh = :anh";
+                    sdt = :sdt, diachi = :diachi, quyen = :quyen";
             $params = [
                 ':iduser'  => $iduser,
                 ':hoten'   => $hoten,
@@ -306,7 +311,7 @@
                 ':sdt'     => $sdt,
                 ':diachi'  => $diachi,
                 ':quyen'   => $quyen,
-                ':anh'     => $anh
+                // ':anh'     => $anh
             ];
             if (!empty($matkhau)) {
                 $sql .= ", matkhau = :matkhau"; 
@@ -315,8 +320,8 @@
             $sql .= " WHERE iduser = :iduser";
             $stmt = $pdo->prepare($sql);
             if ($stmt->execute($params)) {
+                
                 echo "<script> 
-                        alert('Cập nhật thành công!');
                         window.top.location.href='trangchuadmin.php';
                     </script>";
             } else {

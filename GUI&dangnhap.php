@@ -19,18 +19,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         die("Yêu cầu không hợp lệ");
     }
-    $tendn = trim($_POST['tendn'] ?? '');
-    $matkhau = trim($_POST['matkhau'] ?? '');
-    $error = dangnhap($tendn, $matkhau); 
+    $tendn = isset($_POST['tendn']) ? trim($_POST['tendn']) : '';
+    $matkhau = isset($_POST['matkhau']) ? trim($_POST['matkhau']) : '';
+    if (!empty($tendn) && !empty($matkhau)) {
+
+        $error = dangnhap($tendn, $matkhau);
+        if (!empty($error)) {
+            $_SESSION['login_error'] = $error;
+        header("Location: " . $_SERVER['PHP_SELF']); // Chuyển hướng để xóa dữ liệu POST
+            exit();
+        }
+        // Xóa dữ liệu nhập để tránh bị lưu lại khi reload
+    
+    } else {
+        $_SESSION['login_error'] = "";  
+        header("Location: " . $_SERVER['PHP_SELF']); 
+        exit();
+    }
+
+
 }
 
-// Kiểm tra nếu đã hết thời gian khóa, reset lỗi
-if ($_SESSION['login_attempts'] >= 2 && time() >= $_SESSION['lock_time']) {
+// // Kiểm tra nếu đã hết thời gian khóa, reset lỗi
+if ($_SESSION['login_attempts'] >= 2 && time() > $_SESSION['lock_time']) {
     $_SESSION['login_attempts'] = 0;
     $_SESSION['lock_time'] = 0;
     $error = ""; // Reset lỗi
+    $tendn = "";
+    $matkhau = "";
 }
-$lockTime = $_SESSION['lock_time']-time();
+$lockTime = $_SESSION['lock_time'] - time();
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -40,20 +58,11 @@ $lockTime = $_SESSION['lock_time']-time();
     <title>Đăng nhập</title>
     <link rel="stylesheet" href="fontawesome/css/all.min.css">
     <link rel="stylesheet" href="FMdangnhap.css">
-    <script>
-        let lockTime = <?= $lockTime; ?>;
-        if (lockTime > 0) {
-            setTimeout(() => {
-                alert("Bạn có thể đăng nhập lại ngay bây giờ.");
-                document.querySelector(".error").textContent = "";
-            }, lockTime * 1000);
-        }
-    </script>
 </head>
 <body>
     <div class="login-container">
         <h2>Đăng nhập</h2>
-        <p class='error'><?= !empty($error) ? $error : ""; ?></p>
+        <p class='error'><?= !empty($_SESSION['login_error']) ? $_SESSION['login_error'] : ""; unset($_SESSION['login_error']);?></p>
         <form method="POST">
             <div class="input-group">
                 <i class="fa fa-user"></i>
@@ -76,6 +85,33 @@ $lockTime = $_SESSION['lock_time']-time();
             </div>
         </form>
     </div>
+    <script>
+    let lockTime = <?= $lockTime; ?>;
+if (lockTime > 0) {
+    let countdownElement = document.createElement("p");
+    countdownElement.className = "countdown";
+    countdownElement.style.marginTop = "15px"; // Tạo khoảng cách với phần tử trên
+    document.querySelector(".login-container").appendChild(countdownElement);
+
+    function updateCountdown() {
+        let minutes = Math.floor(lockTime / 60);
+        let seconds = lockTime % 60;
+        countdownElement.innerHTML = `<strong style="color: red; font-size: 14px;">⏳ Bạn có thể đăng nhập lại sau: ${minutes} phút ${seconds} giây</strong>`;
+        
+        if (lockTime > 0) {
+            lockTime--;
+            setTimeout(updateCountdown, 1000);
+        } else {
+            countdownElement.innerHTML = `<strong style="color: green; font-size: 14px;">✅ Bạn có thể đăng nhập lại ngay bây giờ.</strong>`;
+            document.querySelector(".error").textContent = "";
+        }
+    }
+    
+    updateCountdown();
+}
+
+</script>
+
     <script>
         document.getElementById("showPassword").addEventListener("change", function () {
     let passwordInput = document.getElementById("password");

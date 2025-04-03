@@ -38,8 +38,8 @@
     <title>Đăng Ký Tài Khoản</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="giaodiendangky.css?v=<?= time(); ?>">
-    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
-    <script src="../sweetalert2/sweetalert2.min.js"></script>
+    <!-- <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
+    <script src="../sweetalert2/sweetalert2.min.js"></script> -->
     <script src="../trangchuadmin.js"></script>
 </head>
 <body>
@@ -139,17 +139,17 @@
             let namePattern = /^[a-zA-ZÀ-ỹ\s]+$/;
 
             if (!emailPattern.test(email)) {
-                showCustomAlert("🐳 Oops!", "Email không hợp lệ! Vui lòng nhập đúng định dạng.", "warning");
+                // showCustomAlert("🐳 Oops!", "Email không hợp lệ! Vui lòng nhập đúng định dạng.", "warning");
                 event.preventDefault();
             }
 
             if (!isValidPassword(password)) {
-                showCustomAlert("🐳 Oops!", "Mật khẩu phải có ít nhất 6 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt!", "warning");
+                // showCustomAlert("🐳 Oops!", "Mật khẩu phải có ít nhất 6 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt!", "warning");
                 event.preventDefault();
             }
 
             if (!phonePattern.test(sdt)) {
-                showCustomAlert("🐳 Oops!", "Số điện thoại không hợp lệ! Số điện thoại phải bắt đầu bằng số 0 và có 10 hoặc 11 số.", "warning");
+                // showCustomAlert("🐳 Oops!", "Số điện thoại không hợp lệ! Số điện thoại phải bắt đầu bằng số 0 và có 10 hoặc 11 số.", "warning");
                 event.preventDefault();
             }
 
