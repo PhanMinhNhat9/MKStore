@@ -9,7 +9,7 @@ if (isset($_GET['id'])) {
         $pdo->beginTransaction();
 
         // Kiểm tra sản phẩm có tồn tại không
-        $stmt = $pdo->prepare("SELECT giaban FROM sanpham WHERE idsp = :idsp");
+        $stmt = $pdo->prepare("SELECT tensp, giaban FROM sanpham WHERE idsp = :idsp");
         $stmt->execute(['idsp' => $idsp]);
         $sanpham = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -19,7 +19,8 @@ if (isset($_GET['id'])) {
         }
 
         $giaban = $sanpham['giaban'];
-
+        $tensp = $sanpham['tensp'];
+        
         // Kiểm tra sản phẩm có trong giỏ hàng chưa
         $stmt = $pdo->prepare("SELECT soluong FROM giohang WHERE idsp = :idsp");
         $stmt->execute(['idsp' => $idsp]);

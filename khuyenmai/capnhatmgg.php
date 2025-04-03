@@ -20,12 +20,9 @@ if ($idmgg > 0) {
 $sql_danhmuc = "
 SELECT dm.iddm, dm.tendm, dm.loaidm
 FROM danhmucsp dm
-WHERE 
-    dm.iddm NOT IN (SELECT iddm FROM magiamgia WHERE iddm IS NOT NULL)
-    OR dm.iddm IN (SELECT iddm FROM magiamgia WHERE idmgg = :idmgg)
-";
+WHERE dm.loaidm<>0";
 $stmt_dm = $pdo->prepare($sql_danhmuc);
-$stmt_dm->execute(['idmgg' => $idmgg]);
+$stmt_dm->execute();
 $danhmucs = $stmt_dm->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
@@ -102,11 +99,11 @@ $danhmucs = $stmt_dm->fetchAll(PDO::FETCH_ASSOC);
     <div class="input-group">
         <i class="fas fa-tags"></i>
         <select name="iddm" required>
-            <option value="">Chọn danh mục</option>
             <?php foreach ($danhmucs as $dm): ?>
-                <option value="<?= $dm['iddm'] ?>" style="<?= ($dm['loaidm'] == 0) ? 'color:red' : '' ?>"
-        <?= (isset($magiamgia['iddm']) && $magiamgia['iddm'] == $dm['iddm']) ? 'selected' : '' ?>
-        >
+                <option 
+                    value="<?= $dm['iddm'] ?>"
+                    <?= (isset($magiamgia['iddm']) && $magiamgia['iddm'] == $dm['iddm']) ? 'selected' : '' ?> 
+                >🌱
     <?= htmlspecialchars($dm['tendm']) ?>
 </option>
             <?php endforeach; ?>
