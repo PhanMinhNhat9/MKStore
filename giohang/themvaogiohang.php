@@ -9,7 +9,7 @@ if (isset($_GET['id'])) {
         $pdo->beginTransaction();
 
         // Kiểm tra sản phẩm có tồn tại không
-        $stmt = $pdo->prepare("SELECT tensp, giaban FROM sanpham WHERE idsp = :idsp");
+        $stmt = $pdo->prepare("SELECT tensp, giaban, iddm FROM sanpham WHERE idsp = :idsp");
         $stmt->execute(['idsp' => $idsp]);
         $sanpham = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -20,7 +20,21 @@ if (isset($_GET['id'])) {
 
         $giaban = $sanpham['giaban'];
         $tensp = $sanpham['tensp'];
-        
+
+        $iddm = $sanpham['iddm'];
+        $stmt = $pdo->prepare("SELECT `idmgg`, `code`, `phantram`, `ngayhieuluc`, `ngayketthuc`, 
+        `giaapdung`, `iddm`, `soluong`, `thoigian` FROM `magiamgia` WHERE iddm=:iddm");
+        $stmt->execute(['iddm' => $iddm]);
+        $mgg = $stmt->fetch(PDO::FETCH_ASSOC);
+        $giagiam = 0;
+        if (!$mgg) {
+            $giagiam = $giaban;
+        } else
+        {
+            $phantram = $mgg['phantram'];
+            $giagiam = $giaban * (1-$phantram/100);
+        }
+
         // Kiểm tra sản phẩm có trong giỏ hàng chưa
         $stmt = $pdo->prepare("SELECT soluong FROM giohang WHERE idsp = :idsp");
         $stmt->execute(['idsp' => $idsp]);
@@ -37,11 +51,14 @@ if (isset($_GET['id'])) {
             ]);
         } else {
             // Nếu chưa có, thêm mới vào giỏ hàng
-            $stmt = $pdo->prepare("INSERT INTO giohang (idsp, soluong, tongtien, thoigian) 
-                                   VALUES (:idsp, 1, :tongtien, NOW())");
+            $stmt = $pdo->prepare("INSERT INTO giohang (idsp, tensp, giagoc, giagiam, soluong, thanhtien) 
+                                   VALUES (:idsp, :tensp, :giagoc, :giagiam, 1, :thanhtien)");
             $stmt->execute([
                 'idsp' => $idsp,
-                'tongtien' => $giaban
+                'tensp' => $tensp,
+                'giagoc' => $giaban,
+                'giagiam' => $giagiam,
+                'thanhtien' => $giagiam
             ]);
         }
 
