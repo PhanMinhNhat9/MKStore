@@ -1,5 +1,5 @@
 <?php
-    include '../config.php'; 
+    require "../config.php";
     $iduser = isset($_GET['id']) ? intval(base64_decode($_GET['id'])) : 0;
     $user = getAllUsers($iduser); 
 ?>
@@ -11,13 +11,15 @@
     <title>Cập Nhật Người Dùng</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../trangchuadmin.js"></script>
     <link rel="stylesheet" href="capnhatnguoidung.css?v=<?= time(); ?>">
+    <script src="../trangchuadmin.js"></script>
+    <script src="../sweetalert2/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
 </head>
 <body>
     <div class="container">
         <h2>🔹 Cập Nhật Người Dùng 🔹</h2>
-        <form action="../config.php" method="POST" enctype="multipart/form-data">
+        <form action="#" method="POST" enctype="multipart/form-data">
             <div class="mb-2">
                 <img src="../<?= htmlspecialchars($user[0]['anh']) ?>" alt="Ảnh người dùng" class="rounded-circle border" width="80" height="80">
             </div>
@@ -54,6 +56,35 @@
                 <button type="submit" name="capnhatnd">💾 Cập Nhật</button>
                 <button type="button" onclick="goBack()">⬅ Trở Về</button>
             </div>
+            <?php
+                 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                     if (isset($_POST['capnhatnd'])) {
+                        $iduser  = intval($_POST['iduser']);
+                        $hoten   = $_POST['hoten'];
+                        $tendn   = $_POST['tendn'];
+                        $email   = $_POST['email'];
+                        $sdt     = $_POST['sdt'];
+                        $diachi  = $_POST['diachi'];
+                        $matkhau = password_hash($_POST['matkhau'], PASSWORD_BCRYPT);
+                        $quyen   = $_POST['quyen'];
+                        $kq = capnhatNguoiDung($iduser, $hoten, $tendn, $email, $sdt, $diachi, $quyen, $matkhau);
+                        if ($kq) {
+                            echo "
+                            <script>
+                                showCustomAlert('🐳 Cập Nhật Thành Công!', 'Thông tin người dùng đã được cập nhật thành công!', 'success');
+                                setTimeout(function() {
+                                    goBack();
+                                }, 3000); 
+                            </script>";
+                        } else {
+                            echo "
+                            <script>
+                                showCustomAlert('🐳 Cập Nhật Thất Bại!', '$kq', 'error');
+                            </script>";
+                        }
+                    }
+                }
+            ?>
         </form>
     </div>
 </body>

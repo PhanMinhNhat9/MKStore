@@ -182,21 +182,36 @@ function showErrorMessage(message) {
     }, 3000);
 }
 
-function showCustomAlert(title = "Thông báo!", text = "Nội dung thông báo.", icon = "info") {
-    Swal.fire({
-        title: `<strong>${title}</strong>`,
-        text: text,
-        icon: icon, // "success", "error", "warning", "info"
-        confirmButtonText: "Okay nè! 💙",
-        confirmButtonColor: "#4a90e2", // Xanh dương pastel
-        background: "#e0f7fa", // Nền xanh nhạt
-        color: "#1565c0", // Màu chữ xanh đậm
-        width: "250px", // Thu nhỏ kích thước popup
-
-        padding: "10px", // Giảm padding
-    });
+    function showCustomAlert(title = "Thông báo!", text = "Nội dung thông báo.", icon = "info") {
+        Swal.fire({
+            title: `<strong style="font-size:18px;">${title}</strong>`,
+            html: `<p style="font-size:16px; margin:0;">${text}</p>`, // dùng html để tùy chỉnh font nhỏ
+            // icon: icon, // "success", "error", "warning", "info"
+            iconHtml: '<img src="picture/bee.png" style="width: 50px; height: 50px; border: none;"/>', // Thêm hình ảnh tùy chỉnh vào đây
+    
+            background: "#e0f7fa",
+            color: "#1565c0",
+            width: "300px", // Rất nhỏ
+            padding: "5px",
+            customClass: {
+                confirmButton: "swal-custom-button",
+            }
+        });
+    }
+    const style = document.createElement("style");
+    style.innerHTML = `
+        .swal-custom-button {
+            width: auto !important;
+            padding: 10px 20px !important;
+            font-size: 16px !important;
+            background-color: #4a90e2 !important;
+            border-radius: 5px !important;
+            display: none !important; /* Ẩn nút xác nhận */
+        }
 }
-
+    `;
+    document.head.appendChild(style);
+    
   
 function themdmcon(id) {
     let encodedId = btoa(id);

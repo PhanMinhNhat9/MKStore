@@ -24,7 +24,7 @@
                     showCustomAlert('🐳 Xóa Thành Công!', 'Người dùng đã được xóa khỏi danh sách!', 'success');
                     setTimeout(function() {
                         goBack();
-                    }, 5000); 
+                    }, 3000); 
                 </script>";
             } else {
                 throw new Exception('Lỗi khi xóa người dùng!');

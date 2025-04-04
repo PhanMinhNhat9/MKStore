@@ -169,37 +169,9 @@
         }
     }
 
-    function themNguoiDung() {
+    function themNguoiDung($fullname, $username, $email, $password, $phone, $address, $role, $target_file) {
         $pdo = connectDatabase();
         try {
-            // Lấy dữ liệu từ form
-            $fullname = $_POST['fullname'];
-            $username = $_POST['username'];
-            $email = $_POST['email'];
-            $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
-            $phone = $_POST['phone'];
-            $address = $_POST['address'];
-            $role = $_POST['role'];
-            // Xử lý file ảnh
-            if (isset($_FILES['anh']) && $_FILES['anh']['error'] == 0) {
-                $target_dir = "picture/";
-                $target_file = $target_dir . basename($_FILES["anh"]["name"]);
-                $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-                // Kiểm tra định dạng ảnh
-                $allowTypes = ['jpg', 'png', 'jpeg', 'gif'];
-                if (!in_array($imageFileType, $allowTypes)) {
-                    echo "Chỉ chấp nhận file ảnh định dạng JPG, PNG, JPEG, GIF.";
-                    return;
-                }
-                // Di chuyển file vào thư mục lưu trữ
-                if (!move_uploaded_file($_FILES["anh"]["tmp_name"], $target_file)) {
-                    echo "Lỗi khi tải lên ảnh.";
-                    return;
-                }
-            } else {
-                echo "Vui lòng chọn ảnh hợp lệ.";
-                return;
-            }
             // Chuẩn bị truy vấn SQL
             $sql = "INSERT INTO `user`(`hoten`, `tendn`, `anh`, `email`, `matkhau`, `sdt`, `diachi`, `quyen`)
                     VALUES (:fullname, :username, :avatar, :email, :password, :phone, :address, :role )";
@@ -213,21 +185,14 @@
             $stmt->bindParam(':address', $address);
             $stmt->bindParam(':role', $role);
             $stmt->bindParam(':avatar', $target_file);
+
             if ($stmt->execute()) {
-                echo "<script src='../trangchuadmin.js'></script>";
-                echo "<script> 
-                        alert('Thêm thành công!');
-                        goBack();
-                    </script>";
+                return true;
             } else {
-                echo "<script src='../trangchuadmin.js'></script>";
-                echo "<script> 
-                        alert('Thêm không thành công!');
-                        goBack();
-                    </script>";
+                return false;
             }
         } catch (PDOException $e) {
-            echo "Lỗi kết nối CSDL: " . $e->getMessage();
+            return $e->getMessage();
         }
     }
     function themSanPham() {
@@ -275,31 +240,9 @@
             echo "Lỗi: " . $e->getMessage();
         }
     }
-    function capnhatNguoiDung() {
+    function capnhatNguoiDung($iduser, $hoten, $tendn, $email, $sdt, $diachi, $quyen, $matkhau) {
         $pdo = connectDatabase(); // Kết nối PDO
         try {
-            $iduser  = intval($_POST['iduser']);
-            $hoten   = $_POST['hoten'];
-            $tendn   = $_POST['tendn'];
-            $email   = $_POST['email'];
-            $sdt     = $_POST['sdt'];
-            $diachi  = $_POST['diachi'];
-            $matkhau  = $_POST['matkhau'];
-            $quyen   = $_POST['quyen'];
-            //$file    = $_FILES['anh'];
-            // Xử lý ảnh nếu có tải lên
-            // if (!empty($file['name'])) {
-            //     $target_dir = "picture/";
-            //     $anh = $target_dir . basename($file["name"]);
-            //     move_uploaded_file($file["tmp_name"], $anh);
-            //     $anh = addslashes($anh);
-            // } else {
-                // Nếu không có ảnh mới, lấy ảnh cũ từ DB
-                // $stmt = $pdo->prepare("SELECT anh FROM user WHERE iduser = ?");
-                // $stmt->execute([$iduser]);
-                // $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                // $anh = addslashes($row['anh']) ?? '';
-            // }
             $sql = "UPDATE user SET 
                     hoten = :hoten, tendn = :tendn, email = :email, 
                     sdt = :sdt, diachi = :diachi, quyen = :quyen";
@@ -311,7 +254,6 @@
                 ':sdt'     => $sdt,
                 ':diachi'  => $diachi,
                 ':quyen'   => $quyen,
-                // ':anh'     => $anh
             ];
             if (!empty($matkhau)) {
                 $sql .= ", matkhau = :matkhau"; 
@@ -320,14 +262,12 @@
             $sql .= " WHERE iduser = :iduser";
             $stmt = $pdo->prepare($sql);
             if ($stmt->execute($params)) {
-                
-                echo "<script> 
-                        window.top.location.href='trangchuadmin.php';
-                    </script>";
+                return true;
             } else {
+                return false;
             }
         } catch (PDOException $e) {
-            return "Lỗi cập nhật: " . $e->getMessage();
+            return $e->getMessage();
         }
     }
 
@@ -564,12 +504,12 @@
         }
     }
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (isset($_POST['themnd'])) {
-            themNguoiDung();
-        }
-        if (isset($_POST['capnhatnd'])) {
-            capnhatNguoiDung();
-        }
+        // if (isset($_POST['themnd'])) {
+        //     themNguoiDung();
+        // }
+        // if (isset($_POST['capnhatnd'])) {
+        //     capnhatNguoiDung();
+        // }
         if (isset($_POST['themdmcon'])) {
             themDMcon();
         }

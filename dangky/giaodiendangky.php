@@ -85,6 +85,7 @@
             <input type="submit" name="dangkytkuser" value="Đăng ký">
         </form>
     </div>
+
     <script>
         document.getElementById("showPassword").addEventListener("change", function () {
     let passwordInput = document.getElementById("password");
@@ -195,17 +196,6 @@
                 document.querySelector("input[name='tendn']").value = "";
             }
         });
-       
-        document.getElementById("password").addEventListener("input", function (event) {
-    
-});
-
-// Ngăn nhập dấu từ bàn phím, nhưng vẫn cho nhập chữ cái và số
-document.getElementById("password").addEventListener("keydown", function (event) {
-    
-});
-
-
-    </script>
+        </script>
 </body>
 </html>
