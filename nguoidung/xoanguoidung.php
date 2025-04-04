@@ -21,7 +21,7 @@
             if (xoaNguoiDung($id)) {
                 echo "
                 <script>
-                    showCustomAlert('🐳 Xóa Thành Công!', 'Người dùng đã được xóa khỏi danh sách!', 'success');
+                    showCustomAlert('🐳 Xóa Thành Công!', 'Người dùng đã được xóa khỏi danh sách!', '../picture/success.png');
                     setTimeout(function() {
                         goBack();
                     }, 3000); 
@@ -33,7 +33,7 @@
             $errorMsg = addslashes($e->getMessage()); // Chống lỗi JS injection
             echo "
             <script>
-                showCustomAlert('🐳 Xóa Không Thành Công!', '$errorMsg', 'error');
+                showCustomAlert('🐳 Xóa Không Thành Công!', '$errorMsg', '../picture/error.png');
             </script>";
         }
     }

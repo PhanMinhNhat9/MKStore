@@ -69,7 +69,7 @@
                         if ($kq) {
                             echo "
                             <script>
-                                showCustomAlert('🐳 Thêm Thành Công!', 'Người dùng đã được thêm vào danh sách!', 'success');
+                                showCustomAlert('🐳 Thêm Thành Công!', 'Người dùng đã được thêm vào danh sách!', '../picture/success.png');
                                 setTimeout(function() {
                                     goBack();
                                 }, 3000); 
@@ -77,7 +77,7 @@
                         } else {
                             echo "
                             <script>
-                                showCustomAlert('🐳 Thêm Không Thành Công!', '$kq', 'error');
+                                showCustomAlert('🐳 Thêm Không Thành Công!', '$kq', '../picture/error.png');
                             </script>";
                         }
                     }

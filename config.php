@@ -24,7 +24,7 @@
             die("Lỗi kết nối CSDL: " . $e->getMessage());
         }
     }
-    // Đăng nhâp
+    
     function dangnhap($tendn, $matkhau) {
         if (empty($tendn) || empty($matkhau)) {
             return "Vui lòng nhập đầy đủ thông tin";
@@ -49,7 +49,6 @@
             return "Bạn đã nhập sai quá nhiều lần, hãy thử lại sau 2 phút.";
         }
        
-        
         $stmt = $pdo->prepare("SELECT * FROM user WHERE tendn = :tendn LIMIT 1");
         $stmt->bindParam(':tendn', $tendn, PDO::PARAM_STR);
         $stmt->execute();
@@ -84,7 +83,6 @@
             if ($_SESSION['login_attempts'] >= 2) {
                 $_SESSION['lock_time'] = time() + 10; // Khóa trong 2 phút
             }
-           
             return "Sai tài khoản hoặc mật khẩu";
         }
     }
@@ -147,6 +145,11 @@
             return false;
         }
     }
+    
+
+    
+    
+
     // Hàm lấy danh sách người dùng
     function getAllUsers($iduser) {
         $pdo = connectDatabase();
@@ -195,6 +198,84 @@
             return $e->getMessage();
         }
     }
+
+    function capnhatNguoiDung($iduser, $hoten, $tendn, $email, $sdt, $diachi, $quyen, $matkhau) {
+        $pdo = connectDatabase(); // Kết nối PDO
+        try {
+            $sql = "UPDATE user SET 
+                    hoten = :hoten, tendn = :tendn, email = :email, 
+                    sdt = :sdt, diachi = :diachi, quyen = :quyen";
+            $params = [
+                ':iduser'  => $iduser,
+                ':hoten'   => $hoten,
+                ':tendn'   => $tendn,
+                ':email'   => $email,
+                ':sdt'     => $sdt,
+                ':diachi'  => $diachi,
+                ':quyen'   => $quyen,
+            ];
+            if (!empty($matkhau)) {
+                $sql .= ", matkhau = :matkhau"; 
+                $params[':matkhau'] = $matkhau; 
+            }
+            $sql .= " WHERE iduser = :iduser";
+            $stmt = $pdo->prepare($sql);
+            if ($stmt->execute($params)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (PDOException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    function xoaNguoiDung($id) {
+        $pdo = connectDatabase(); 
+        try {
+            $sql = "DELETE FROM user WHERE iduser = :id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Lỗi khi xóa tài khoản: " . $e->getMessage()); 
+            return false;
+        }
+    } 
+
+    function capnhatAnhUser() {
+        $pdo = connectDatabase();
+        $iduser = intval($_POST['iduser']);
+        // File tồn tại và không có lỗi
+        $file = $_FILES['fileInput'];
+        // // Xử lý ảnh nếu có tải lên
+        if (!empty($file['name'])) {
+            $td = "../";
+            $target_dir = "picture/";
+            $anh = $td . $target_dir . basename($file["name"]);
+            move_uploaded_file($file["tmp_name"], $anh);
+            $anh = addslashes($target_dir . basename($file["name"]));
+        } 
+        else {
+            // Nếu không có ảnh mới, lấy ảnh cũ từ DB
+            $stmt = $pdo->prepare("SELECT anh FROM user WHERE iduser = ?");
+            $stmt->execute([$iduser]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $anh = addslashes($row['anh']) ?? '';
+        }
+        $updateSql = "UPDATE user SET anh = :anh WHERE iduser = :iduser";
+        $stmt = $pdo->prepare($updateSql);
+        $success = $stmt->execute([
+            'anh' => $anh,
+            'iduser' => $iduser
+        ]);
+        if ($success) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     function themSanPham() {
         $tensp = $_POST['tensp'];
         $mota = $_POST['mota'];
@@ -240,50 +321,7 @@
             echo "Lỗi: " . $e->getMessage();
         }
     }
-    function capnhatNguoiDung($iduser, $hoten, $tendn, $email, $sdt, $diachi, $quyen, $matkhau) {
-        $pdo = connectDatabase(); // Kết nối PDO
-        try {
-            $sql = "UPDATE user SET 
-                    hoten = :hoten, tendn = :tendn, email = :email, 
-                    sdt = :sdt, diachi = :diachi, quyen = :quyen";
-            $params = [
-                ':iduser'  => $iduser,
-                ':hoten'   => $hoten,
-                ':tendn'   => $tendn,
-                ':email'   => $email,
-                ':sdt'     => $sdt,
-                ':diachi'  => $diachi,
-                ':quyen'   => $quyen,
-            ];
-            if (!empty($matkhau)) {
-                $sql .= ", matkhau = :matkhau"; 
-                $params[':matkhau'] = $matkhau; 
-            }
-            $sql .= " WHERE iduser = :iduser";
-            $stmt = $pdo->prepare($sql);
-            if ($stmt->execute($params)) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (PDOException $e) {
-            return $e->getMessage();
-        }
-    }
-
-    function xoaNguoiDung($id) {
-        $pdo = connectDatabase(); 
-        try {
-            $sql = "DELETE FROM user WHERE iduser = :id";
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Lỗi khi xóa tài khoản: " . $e->getMessage()); 
-            return false;
-        }
-    } 
-
+    
     function themDMcon() {
         $pdo = connectDatabase(); 
         $tendm = trim($_POST['tendm'] ?? '');
@@ -329,34 +367,8 @@
             echo "<script>alert('Lỗi: " . $e->getMessage() . "');</script>";
         }
     }
-    function capnhatAnhUser() {
-        $pdo = connectDatabase();
-            $iduser = intval($_POST['iduser']);
-            $file = $_FILES['fileInput'];
-            // Xử lý ảnh nếu có tải lên
-            if (!empty($file['name'])) {
-                $target_dir = "picture/";
-                $anh = $target_dir . basename($file["name"]);
-                move_uploaded_file($file["tmp_name"], $anh);
-                $anh = addslashes($anh);
-            } else {
-                // Nếu không có ảnh mới, lấy ảnh cũ từ DB
-                $stmt = $pdo->prepare("SELECT anh FROM user WHERE iduser = ?");
-                $stmt->execute([$iduser]);
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $anh = addslashes($row['anh']) ?? '';
-            }
-            $updateSql = "UPDATE user SET anh = :anh WHERE iduser = :iduser";
-            $stmt = $pdo->prepare($updateSql);
-            $stmt->execute([
-                'anh' => $anh,
-                'iduser' => $iduser
-            ]);
-            echo "<script> 
-                        alert('Cập nhật thành công!');
-                        window.top.location.href='trangchuadmin.php';
-                    </script>";
-    }
+
+    
     function capnhatDanhMuc() {
         $pdo = connectDatabase();
             $iddm = $_POST['iddm'];
@@ -503,6 +515,7 @@
                   </script>";
         }
     }
+    
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // if (isset($_POST['themnd'])) {
         //     themNguoiDung();
@@ -525,9 +538,9 @@
         if (isset($_POST['capnhatmgg'])) {
             capnhatMGG();
         }
-        if (isset($_POST['capnhatanhuser'])) {
-            capnhatAnhUser();
-        }
+        // if (isset($_POST['capnhatanhuser'])) {
+        //     capnhatAnhUser();
+        // }
         if (isset($_POST['themsp'])) {
             themSanPham();
         }

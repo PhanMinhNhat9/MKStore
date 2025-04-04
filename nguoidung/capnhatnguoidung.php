@@ -71,7 +71,7 @@
                         if ($kq) {
                             echo "
                             <script>
-                                showCustomAlert('🐳 Cập Nhật Thành Công!', 'Thông tin người dùng đã được cập nhật thành công!', 'success');
+                                showCustomAlert('🐳 Cập Nhật Thành Công!', 'Thông tin người dùng đã được cập nhật thành công!', '../picture/success.png');
                                 setTimeout(function() {
                                     goBack();
                                 }, 3000); 
@@ -79,7 +79,7 @@
                         } else {
                             echo "
                             <script>
-                                showCustomAlert('🐳 Cập Nhật Thất Bại!', '$kq', 'error');
+                                showCustomAlert('🐳 Cập Nhật Thất Bại!', '$kq', '../picture/error.png');
                             </script>";
                         }
                     }

@@ -21,18 +21,6 @@
         $stmt->execute(['searchTerm' => "%{$query}%", 'searchTerm1' => "%{$query}%"]);
         $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } else {
-            // $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong, sp.iddm,
-            //             COALESCE(SUM(ctdh.soluong), 0) AS soluong_daban,
-            //             COALESCE(AVG(dg.sosao), 0) AS trungbinhsao,
-            //             (sp.soluong - COALESCE(SUM(ctdh.soluong), 0)) AS soluong_conlai,
-            //             mg.phantram AS giamgia
-            //         FROM sanpham sp
-            //         LEFT JOIN chitietdonhang ctdh ON sp.idsp = ctdh.idsp
-            //         LEFT JOIN donhang dh ON ctdh.iddh = dh.iddh AND dh.trangthai = 'Đã thanh toán'
-            //         LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
-            //         LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm
-            //         GROUP BY sp.idsp
-            //         ORDER BY sp.thoigianthemsp ASC";
             $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong, sp.iddm,
                         COALESCE(SUM(ctdh.soluong), 0) AS soluong_daban,
                         COALESCE(AVG(dg.sosao), 0) AS trungbinhsao,

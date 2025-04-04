@@ -187,8 +187,7 @@ function showErrorMessage(message) {
             title: `<strong style="font-size:18px;">${title}</strong>`,
             html: `<p style="font-size:16px; margin:0;">${text}</p>`, // dùng html để tùy chỉnh font nhỏ
             // icon: icon, // "success", "error", "warning", "info"
-            iconHtml: '<img src="picture/bee.png" style="width: 50px; height: 50px; border: none;"/>', // Thêm hình ảnh tùy chỉnh vào đây
-    
+            iconHtml: `<img src="${icon}" style="width: 50px; height: 50px; border: none;"/>`,
             background: "#e0f7fa",
             color: "#1565c0",
             width: "300px", // Rất nhỏ
@@ -319,6 +318,19 @@ let selectedUserId = null;
             document.getElementById('imageModal').style.display = "none";
         }
 
+        
+        function loadanh() {
+            const fileInput = document.getElementById('fileInput');
+            const modalImage = document.getElementById('modalImage');
+        
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    modalImage.src = e.target.result; // Cập nhật ảnh hiển thị
+                };
+                reader.readAsDataURL(fileInput.files[0]); // Đọc file ảnh
+            }
+        }
         function uploadNewImage() {
             const fileInput = document.getElementById('fileInput');
             if (fileInput.files.length === 0) {
@@ -341,18 +353,3 @@ let selectedUserId = null;
             })
             .catch(error => console.error('Lỗi:', error));
         }
-
-        
-        function loadanh() {
-            const fileInput = document.getElementById('fileInput');
-            const modalImage = document.getElementById('modalImage');
-        
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    modalImage.src = e.target.result; // Cập nhật ảnh hiển thị
-                };
-                reader.readAsDataURL(fileInput.files[0]); // Đọc file ảnh
-            }
-        }
-        
