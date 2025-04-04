@@ -4,15 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
-        .m {
-            margin-top: 10px;
-        }
-    </style>
+    <script src="sweetalert2/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2/sweetalert2.min.css">
+    <script src="trangchuadmin.js"></script>
+ 
+   <style>
+
+   </style>
 </head>
 <body>
-    <script>
-        console.log("Kiểm tra console có hoạt động không");
-    </script>
+    
 </body>
 </html>
+<script>
+showCustomAlert('🐳 Xóa Thành Công!', 'Người dùng đã được xóa khỏi danh sách!', 'success');
+function showCustomAlert(title = "Thông báo!", text = "Nội dung thông báo.", icon = "info") {
+    Swal.fire({
+        title: `<strong>${title}</strong>`,
+        text: text,
+        icon: icon, // "success", "error", "warning", "info"
+        confirmButtonText: "Okay nè! 💙",
+        confirmButtonColor: "#4a90e2", // Xanh dương pastel
+        background: "#e0f7fa", // Nền xanh nhạt
+        color: "#1565c0", // Màu chữ xanh đậm
+        width: "270px", // Thu nhỏ kích thước popup
+        padding: "5px", // Giảm padding
+    });
+}
+</script>

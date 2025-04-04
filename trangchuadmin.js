@@ -60,18 +60,6 @@ function xoanguoidung(iduser) {
     }
 }
 
-// Chức năng quản lý sản phẩm
-// function loadDLSanpham() {
-//     let xhr = new XMLHttpRequest();
-//     xhr.open("GET", "sanpham/hienthisanpham.php", true);
-//     xhr.onreadystatechange = function () {
-//         if (xhr.readyState == 4 && xhr.status == 200) {
-//             document.getElementById("main-content").innerHTML = xhr.responseText;
-//             reloadCSS("sanpham/hienthisanpham.css");
-//         }
-//     };
-//     xhr.send();
-// }
 function loadDLUser() {
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
@@ -194,21 +182,22 @@ function showErrorMessage(message) {
     }, 3000);
 }
 
-// function showCustomAlert(title = "Thông báo!", text = "Nội dung thông báo.", icon = "info") {
-//     Swal.fire({
-//         title: title,
-//         text: text,
-//         icon: icon, // "success", "error", "warning", "info"
-//         confirmButtonText: "Okay nè! 💙",
-//         confirmButtonColor: "#4a90e2", // Xanh dương pastel
-//         background: "#e0f7fa", // Nền xanh nhạt
-//         color: "#1565c0", // Màu chữ xanh đậm
-//         width: "300px", // Thu nhỏ kích thước popup
-//         padding: "10px", // Giảm padding
-//     });
-// }
+function showCustomAlert(title = "Thông báo!", text = "Nội dung thông báo.", icon = "info") {
+    Swal.fire({
+        title: `<strong>${title}</strong>`,
+        text: text,
+        icon: icon, // "success", "error", "warning", "info"
+        confirmButtonText: "Okay nè! 💙",
+        confirmButtonColor: "#4a90e2", // Xanh dương pastel
+        background: "#e0f7fa", // Nền xanh nhạt
+        color: "#1565c0", // Màu chữ xanh đậm
+        width: "250px", // Thu nhỏ kích thước popup
 
+        padding: "10px", // Giảm padding
+    });
+}
 
+  
 function themdmcon(id) {
     let encodedId = btoa(id);
     window.location.href = "themdmcon.php?id=" + encodeURIComponent(encodedId);

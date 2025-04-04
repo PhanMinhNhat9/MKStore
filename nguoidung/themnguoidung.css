@@ -43,7 +43,9 @@ body {
     position: relative;
     width: 100%;
 }
-
+.nd-input-group input {
+    outline: none;
+}
 .nd-input-group input,
 .nd-input-group select {
     width: 100%;

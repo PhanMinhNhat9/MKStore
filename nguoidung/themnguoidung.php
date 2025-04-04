@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thêm Người Dùng</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="themnguoidung.css">
+    <link rel="stylesheet" href="themnguoidung.css?v=<?php time(); ?>">
     <script src="../trangchuadmin.js"></script>
 </head>
 <body>
