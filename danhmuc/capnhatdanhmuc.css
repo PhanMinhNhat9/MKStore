@@ -10,16 +10,17 @@ body {
 }
 .table-container { 
     overflow-x: auto; 
-    border-radius: 5px;
-    max-height: 385px;
+    max-height: 410px;
     overflow-y: auto;
     border: 1px solid #ddd;
+}
+.table-container::-webkit-scrollbar {
+    display: none;
 }
 table { 
     width: 100%; 
     border-collapse: collapse; 
     background: #fff; 
-    border-radius: 8px; 
 }
 th, td { 
     padding: 12px; 
