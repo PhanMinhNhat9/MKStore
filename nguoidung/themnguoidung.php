@@ -53,7 +53,6 @@
                 <input type="button" id="nd-trove" onclick="goBack()" value="Trở về">
             </div>
             <?php
-                require "../config.php";
                 if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     if (isset($_POST['themnd'])) {
                         // Lấy dữ liệu từ form

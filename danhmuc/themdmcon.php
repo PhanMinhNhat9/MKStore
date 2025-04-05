@@ -14,13 +14,15 @@
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../trangchuadmin.js"></script>
+    <script src="../sweetalert2/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
     <link rel="stylesheet" href="themdmcon.css">
 </head>
 <body>
 
 <div class="form-container">
     <h2><i class="fas fa-plus-circle"></i> Thêm danh mục con</h2>
-    <form action="../config.php" method="POST" enctype="multipart/form-data">
+    <form action="#" method="POST" enctype="multipart/form-data">
         
         <!-- Dòng 1: Tên danh mục + Loại danh mục -->
         <div class="row">
@@ -38,7 +40,7 @@
         <div class="row">
             <div class="col-md-6 mb-2">
                 <label for="icon"><i class="fas fa-image"></i> Chọn Icon</label>
-                <input type="file" id="icon" name="icon" class="form-control">
+                <input type="file" id="icon" name="icon" class="form-control" accept="image/*">
             </div>
             <div class="col-md-6 mb-2">
                 <label for="mota"><i class="fas fa-edit"></i> Mô tả</label>
@@ -50,6 +52,28 @@
         <button type="submit" name="themdmcon" class="btn-custom">
             <i class="fas fa-plus-circle"></i> Thêm danh mục
         </button>
+        <?php
+            if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                if (isset($_POST['themdmcon'])) {
+                    $kq = themDMcon();
+                    if ($kq['success']) {
+                        echo "
+                            <script>
+                                showCustomAlert('🐳 Thêm Thành Công!', 'Danh mục đã được thêm vào danh sách!', '../picture/success.png');
+                                setTimeout(function() {
+                                    goBack();
+                                }, 3000); 
+                            </script>";
+                    } else {
+                        echo "
+                            <script>
+                                showCustomAlert('🐳 Thêm Không Thành Công!', '{$kq['message']}', '../picture/error.png');
+                            </script>";
+                        }
+                    }
+
+                }
+        ?>
     </form>
 </div>
 

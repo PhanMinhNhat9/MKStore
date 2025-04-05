@@ -351,11 +351,12 @@
         $tendm = trim($_POST['tendm'] ?? '');
         $mota = trim($_POST['mota'] ?? '');
         $loaidm = trim($_POST['loaidm'] ?? '');
+    
         // Kiểm tra dữ liệu đầu vào
         if (empty($tendm) || empty($loaidm)) {
-            echo "<script>alert('Tên danh mục và loại danh mục không được để trống!');</script>";
-            return;
+            return ['success' => false, 'message' => 'Tên danh mục và loại danh mục không được để trống!'];
         }
+    
         // Xử lý upload icon
         $icon = '';
         if (!empty($_FILES['icon']['name'])) {
@@ -364,16 +365,15 @@
             $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
             $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
             if (!in_array($file_ext, $allowed_types)) {
-                echo "<script>alert('Chỉ chấp nhận các file JPG, JPEG, PNG, GIF!');</script>";
-                return;
+                return ['success' => false, 'message' => 'Chỉ chấp nhận các file JPG, JPEG, PNG, GIF!'];
             }
             $target_file = $target_dir . $file_name;
             if (!move_uploaded_file($_FILES["icon"]["tmp_name"], $target_file)) {
-                echo "<script>alert('Lỗi khi tải lên tệp!');</script>";
-                return;
+                return ['success' => false, 'message' => 'Lỗi khi tải lên tệp!'];
             }
             $icon = $target_file;
         }
+    
         try {
             $stmt = $pdo->prepare("INSERT INTO danhmucsp (tendm, loaidm, icon, mota) VALUES (:tendm, :loaidm, :icon, :mota)");
             $stmt->execute([
@@ -383,62 +383,52 @@
                 'mota' => $mota
             ]);
     
-            echo "<script> 
-                    alert('Thêm thành công!');
-                    window.top.location.href='trangchuadmin.php';
-                  </script>";
+            // Trả về thành công
+            return ['success' => true, 'message' => 'Thêm danh mục thành công!'];
         } catch (PDOException $e) {
-            echo "<script>alert('Lỗi: " . $e->getMessage() . "');</script>";
+            // Trả về lỗi PDO
+            return ['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()];
         }
     }
-
     
     function capnhatDanhMuc() {
         $pdo = connectDatabase();
-            $iddm = $_POST['iddm'];
-            $tendm = $_POST['tendm'];
-            $loaidm = $_POST['loaidm'] ?? 0; 
-            $mota = $_POST['mota'];
-            $icon = $_POST['icon']; 
+        $iddm = $_POST['iddm'];
+        $tendm = $_POST['tendm'];
+        $loaidm = $_POST['loaidm'] ?? 0; 
+        $mota = $_POST['mota'];
+        $icon = $_POST['icon']; 
 
-            if (!empty($_FILES['icon_new']['name'])) {
-                $targetDir = "icon/";
-                $fileName = basename($_FILES["icon_new"]["name"]);
-                $targetFilePath = $targetDir . $fileName;
-                $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
+        if (!empty($_FILES['icon_new']['name'])) {
+            $targetDir = "icon/";
+            $fileName = basename($_FILES["icon_new"]["name"]);
+            $targetFilePath = $targetDir . $fileName;
+            $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
 
-                // Chỉ cho phép các định dạng ảnh hợp lệ
-                $allowTypes = ['jpg', 'png', 'jpeg', 'gif'];
-                if (in_array($fileType, $allowTypes)) {
-                    if (move_uploaded_file($_FILES["icon_new"]["tmp_name"], $targetFilePath)) {
-                        $icon = "icon/" . $fileName; // Lưu đường dẫn ảnh mới vào DB
-                    }
+            // Chỉ cho phép các định dạng ảnh hợp lệ
+            $allowTypes = ['jpg', 'png', 'jpeg', 'gif'];
+            if (in_array($fileType, $allowTypes)) {
+                if (move_uploaded_file($_FILES["icon_new"]["tmp_name"], $targetFilePath)) {
+                    $icon = "icon/" . $fileName; // Lưu đường dẫn ảnh mới vào DB
                 }
             }
-
-            // Cập nhật dữ liệu vào cơ sở dữ liệu
-            $sql = "UPDATE danhmucsp SET tendm = :tendm, loaidm = :loaidm, icon = :icon, mota = :mota WHERE iddm = :iddm";
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':tendm', $tendm);
-            $stmt->bindParam(':loaidm', $loaidm);
-            $stmt->bindParam(':icon', $icon);
-            $stmt->bindParam(':mota', $mota);
-            $stmt->bindParam(':iddm', $iddm);
-
-            if ($stmt->execute()) {
-                echo "<script src='../trangchuadmin.js'></script>";
-                echo "<script> 
-                        alert('Xóa thành công!');
-                        goBack();
-                      </script>";
-            } else {
-                echo "<script src='../trangchuadmin.js'></script>";
-            echo "<script> 
-                    alert('Lỗi cập nhật!');
-                    goBack();
-                  </script>";
-            }
         }
+
+        // Cập nhật dữ liệu vào cơ sở dữ liệu
+        $sql = "UPDATE danhmucsp SET tendm = :tendm, loaidm = :loaidm, icon = :icon, mota = :mota WHERE iddm = :iddm";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':tendm', $tendm);
+        $stmt->bindParam(':loaidm', $loaidm);
+        $stmt->bindParam(':icon', $icon);
+        $stmt->bindParam(':mota', $mota);
+        $stmt->bindParam(':iddm', $iddm);
+
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     
     function xoaDanhMuc() {
         $pdo = connectDatabase();
@@ -458,13 +448,9 @@
             // Xóa danh mục
             $stmt = $pdo->prepare("DELETE FROM danhmucsp WHERE iddm = ?");
             if ($stmt->execute([$iddm])) {
-                echo "<script src='../trangchuadmin.js'></script>";
-                echo "<script> 
-                        alert('Xóa thành công!');
-                        goBack();
-                      </script>";
+                return true;
             } else {
-                echo "<script>alert('Xóa danh mục thất bại!');</script>";
+                return false;
             }
         }
     function themMGG() {
@@ -541,16 +527,6 @@
     }
     
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-        if (isset($_POST['themdmcon'])) {
-            themDMcon();
-        }
-        if (isset($_POST['capnhatdm'])) {
-            capnhatDanhMuc();
-        }
-        if (isset($_POST['xoadm'])) {
-            xoaDanhMuc();
-        }
         if (isset($_POST['themmgg'])) {
             themMGG();
         }

@@ -199,6 +199,7 @@ function showErrorMessage(message) {
             }
         });
     }
+
     const style = document.createElement("style");
     style.innerHTML = `
         .swal-custom-button {
@@ -209,8 +210,7 @@ function showErrorMessage(message) {
             border-radius: 5px !important;
             display: none !important; /* Ẩn nút xác nhận */
         }
-}
-    `;
+    }`;
     document.head.appendChild(style);
     
   
@@ -220,7 +220,7 @@ function themdmcon(id) {
 }
 
 function capnhatdanhmuc() {
-    window.top.location.href = "capnhatdanhmuc.php";
+    window.location.href = "capnhatdanhmuc.php";
 }
 
 
@@ -258,8 +258,10 @@ function resetIcon(button) {
 function goBack() {
     if (window.top !== window.self) {
         window.top.location.href = "../trangchuadmin.php"; // Điều hướng thoát khỏi iframe
+        
     } else {
-        window.location.href = "../trangchuadmin.php"; // Điều hướng thông thường
+       window.location.href = "../trangchuadmin.php"; // Điều hướng thông thường
+       
     }
 }
 
@@ -319,25 +321,25 @@ let selectedUserId = null;
                 reader.readAsDataURL(fileInput.files[0]); // Đọc file ảnh
             }
         }
-        function uploadNewImage() {
-            const fileInput = document.getElementById('fileInput');
-            if (fileInput.files.length === 0) {
-                alert("Vui lòng chọn một ảnh mới.");
-                return;
-            }
+        // function uploadNewImage() {
+        //     const fileInput = document.getElementById('fileInput');
+        //     if (fileInput.files.length === 0) {
+        //         alert("Vui lòng chọn một ảnh mới.");
+        //         return;
+        //     }
 
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-            formData.append('iduser', selectedUserId);
+        //     const formData = new FormData();
+        //     formData.append('file', fileInput.files[0]);
+        //     formData.append('iduser', selectedUserId);
 
-            fetch('upload.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(result => {
-                alert(result);
-                location.reload(); // Tải lại trang để cập nhật ảnh mới
-            })
-            .catch(error => console.error('Lỗi:', error));
-        }
+        //     fetch('upload.php', {
+        //         method: 'POST',
+        //         body: formData
+        //     })
+        //     .then(response => response.text())
+        //     .then(result => {
+        //         alert(result);
+        //         location.reload(); // Tải lại trang để cập nhật ảnh mới
+        //     })
+        //     .catch(error => console.error('Lỗi:', error));
+        // }

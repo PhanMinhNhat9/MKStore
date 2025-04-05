@@ -85,7 +85,7 @@
                         </span>
                     <?php endif; ?>
                 </div>
-                
+                <br>
                 <div class="info">
                     📦 Số lượng: <strong><?= (int)$row['soluong'] ?></strong>
                     📦 Đã bán: <strong><?= (int)$row['soluong_daban'] ?></strong>
@@ -100,10 +100,13 @@
                     <button class="btn btn-delete" onclick="xoasanpham(<?= (int)$row['idsp'] ?>)">
                         <i class="fas fa-trash"></i> Xóa
                     </button>
-                    <button class="btn btn-giohang" onclick="themvaogiohang(<?= (int)$row['idsp'] ?>)">
-                        <i class="fas fa-shopping-cart"></i> Thêm
-                    </button>
+                    <?php if ($soluong_conlai > 0): ?>
+                        <button class="btn btn-giohang" onclick="themvaogiohang(<?= (int)$row['idsp'] ?>)">
+                            <i class="fas fa-shopping-cart"></i> Thêm
+                        </button>
+                    <?php endif; ?>
                 </div>
+
             </div>
         </td>
 

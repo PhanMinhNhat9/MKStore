@@ -1,15 +1,17 @@
-/* Định dạng cho việc hiển thị bảng danh mục */
+* { 
+    margin: 0; 
+    padding: 0; 
+}
 .dm-table-container {
     max-width: 100%;
-    max-height: 395px;
+    max-height: 410px;
     padding: 0;
     margin: 0;
     overflow-y: auto;
     border-radius: 5px;
 }
-
 .dm-table-container::-webkit-scrollbar {
-    display: none; /* Ẩn thanh cuộn trên Chrome, Edge, Safari */
+    display: none;
 }
 .dm-table {
     width: 100%;
@@ -68,3 +70,36 @@
 
 .btn-xoadm { color: #28a745; } /* Xanh lá - Thêm */
 .btn-updatedm { color: #ffc107; } /* Vàng - Sửa */
+
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: max-content;
+    background-color: #007bff;
+    color: #fff;
+    text-align: center;
+    padding: 5px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+
+    /* Vị trí */
+    position: absolute;
+    z-index: 10;
+    bottom: 125%; /* phía trên hình ảnh */
+    left: 50%;
+    transform: translateX(-50%);
+    
+    /* Hiệu ứng */
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+}
+
+.tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}

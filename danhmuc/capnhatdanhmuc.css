@@ -1,67 +1,17 @@
-/* Reset mặc định */
 * { 
     margin: 0; 
     padding: 0; 
     box-sizing: border-box; 
-    font-family: 'Arial', sans-serif; 
 }
-
-/* Cấu trúc trang */
 body { 
     background: linear-gradient(to right, #4facfe, #00f2fe); 
-    padding: 20px; 
+    box-sizing: border-box; 
+    font-family: 'Arial', sans-serif; 
 }
-
-/* Tiêu đề */
-h2 { 
-    text-align: center; 
-    color: #ffffff; 
-    margin-bottom: 20px; 
-    font-size: 24px; 
-}
-
-/* Container chính */
-.container { 
-    max-width: 1200px; 
-    margin: auto; 
-    background: #fff; 
-    padding: 20px; 
-    border-radius: 8px; 
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
-}
-
-/* Thông tin chung */
-.info { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 15px; 
-}
-.info p { 
-    font-size: 16px; 
-    color: #ffffff; 
-}
-
-/* Nút trở về */
-.btn-back { 
-    background: #007bff; 
-    color: white; 
-    padding: 8px 12px; 
-    border: none; 
-    border-radius: 4px; 
-    cursor: pointer; 
-    font-size: 14px; 
-    transition: 0.3s; 
-}
-.btn-back:hover { 
-    background: #0056b3; 
-}
-
-/* Bảng dữ liệu */
 .table-container { 
     overflow-x: auto; 
     border-radius: 5px;
-    max-height: 450px;
+    max-height: 385px;
     overflow-y: auto;
     border: 1px solid #ddd;
 }
@@ -82,8 +32,6 @@ th {
     position: sticky; 
     top: 0; 
 }
-
-/* Input và Select */
 input, select { 
     width: 100%; 
     padding: 6px; 
@@ -95,8 +43,6 @@ input:focus, select:focus {
     border-color: #007bff; 
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); 
 }
-
-/* Hình ảnh xem trước */
 .icon-preview { 
     width: 40px; 
     height: 40px; 
@@ -105,8 +51,6 @@ input:focus, select:focus {
     margin: auto; 
     border-radius: 4px; 
 }
-
-/* Nút lưu */
 .btn-save { 
     background: #007bff; 
     color: white; 
@@ -120,8 +64,6 @@ input:focus, select:focus {
 .btn-save:hover { 
     background: #0056b3; 
 }
-
-/* Input file */
 .file-input { 
     display: flex; 
     align-items: center; 

@@ -2,6 +2,8 @@ body {
     background-color: #f0f8ff;
     font-family: Arial, sans-serif;
     font-size: 14px; /* Giảm kích thước font mặc định */
+    margin: 0; 
+    padding: 0; 
 }
 .container {
     height: 385px; 
