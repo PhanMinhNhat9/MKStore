@@ -32,7 +32,7 @@
                     LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
                     LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm
                     GROUP BY sp.idsp
-                    ORDER BY sp.thoigianthemsp ASC";
+                    ORDER BY sp.thoigianthemsp DESC";
             $stmt = $pdo->prepare($sql);
             $stmt->execute();
             $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -53,17 +53,20 @@
 <div id="success-alert" class="alert-success"></div>
 <div id="error-alert" class="alert-error"></div>
 <div class="product-wrapper">
-    <div class="product-container">
-        <?php foreach ($products as $row): ?>
-            <?php
-                $soluong_conlai = max(0, $row['soluong'] - $row['soluong_daban']);
-                $classOutOfStock = ($soluong_conlai <= 0) ? "out-of-stock" : "";
-                
-                // Tính toán giá sau giảm
-                $giagoc = $row['giaban'];
-                $phantram_giam = $row['giamgia'] ?? 0;
-                $gia_sau_giam = ($phantram_giam > 0) ? $giagoc * (1 - $phantram_giam / 100) : $giagoc;
-            ?>
+    <table class="product-table">
+    <tr>
+    <?php foreach ($products as $index => $row): ?> 
+        <?php
+            $soluong_conlai = max(0, $row['soluong'] - $row['soluong_daban']);
+            $classOutOfStock = ($soluong_conlai <= 0) ? "out-of-stock" : "";
+            
+            // Tính giá sau giảm
+            $giagoc = $row['giaban'];
+            $phantram_giam = $row['giamgia'] ?? 0;
+            $gia_sau_giam = ($phantram_giam > 0) ? $giagoc * (1 - $phantram_giam / 100) : $giagoc;
+        ?>
+
+        <td>
             <div class="product-card <?= $classOutOfStock ?>">
                 <img src="../<?= htmlspecialchars($row['anh']) ?>" alt="<?= htmlspecialchars($row['tensp']) ?>">
                 <h3><?= htmlspecialchars(mb_strimwidth($row['tensp'], 0, 20, "...")) ?></h3>
@@ -102,8 +105,17 @@
                     </button>
                 </div>
             </div>
-        <?php endforeach; ?>
-    </div>
+        </td>
+
+        <?php if (($index + 1) % 5 == 0): ?>
+            </tr><tr> <!-- Kết thúc hàng cũ và bắt đầu hàng mới sau mỗi 3 sản phẩm -->
+        <?php endif; ?>
+    <?php endforeach; ?>
+    </tr>
+</table>
 </div>
+<button class="floating-btn" onclick="themsanpham()">
+        <i class="fas fa-plus"></i>
+    </button>
 </body>
 </html>

@@ -276,6 +276,44 @@
         }
     }
 
+    function capnhatSanPham() {
+        $pdo = connectDatabase();
+
+        $idsp = intval($_POST["idsp"]);
+        $tensp = htmlspecialchars($_POST["tensp"]);
+        $mota = htmlspecialchars($_POST["mota"]);
+        $giaban = floatval($_POST["giaban"]);
+        $soluong = intval($_POST["soluong"]);
+        $iddm = intval($_POST["iddm"]);
+        $file = $_FILES['anh'];
+        // // Xử lý ảnh nếu có tải lên
+        if (!empty($file['name'])) {
+            $td = "../";
+            $target_dir = "picture/";
+            $anh = $td . $target_dir . basename($file["name"]);
+            move_uploaded_file($file["tmp_name"], $anh);
+            $anh = addslashes($target_dir . basename($file["name"]));
+            $sql = "UPDATE sanpham SET tensp = :tensp, mota = :mota, giaban = :giaban, soluong = :soluong, anh = :anh, iddm = :iddm WHERE idsp = :idsp";
+        } else {
+            $sql = "UPDATE sanpham SET tensp = :tensp, mota = :mota, giaban = :giaban, soluong = :soluong, iddm = :iddm WHERE idsp = :idsp";
+        }
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':tensp', $tensp, PDO::PARAM_STR);
+        $stmt->bindParam(':mota', $mota, PDO::PARAM_STR);
+        $stmt->bindParam(':giaban', $giaban, PDO::PARAM_STR);
+        $stmt->bindParam(':soluong', $soluong, PDO::PARAM_INT);
+        $stmt->bindParam(':iddm', $iddm, PDO::PARAM_INT);
+        $stmt->bindParam(':idsp', $idsp, PDO::PARAM_INT);
+        if (!empty($_FILES["anh"]["name"])) {
+            $stmt->bindParam(':anh', $anh, PDO::PARAM_STR);
+        }
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     function themSanPham() {
         $tensp = $_POST['tensp'];
         $mota = $_POST['mota'];
@@ -284,38 +322,24 @@
 
         $iddm = $_POST['iddm'];
 
-        // Xử lý upload ảnh
-        $anh = "";
-        if (!empty($_FILES['anh']['name'])) {
-            $targetDir = "picture/";
-            $fileName = time() . "_" . basename($_FILES["anh"]["name"]);
-            $targetFilePath = $targetDir . $fileName;
-
-            $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
-            $allowTypes = array('jpg', 'png', 'jpeg', 'gif');
-
-            if (in_array($fileType, $allowTypes)) {
-                if (move_uploaded_file($_FILES["anh"]["tmp_name"], $targetFilePath)) {
-                    $anh = "picture/".$fileName;
-                } else {
-                    echo "Lỗi khi tải ảnh lên!";
-                    exit;
-                }
-            } else {
-                echo "Chỉ hỗ trợ định dạng JPG, JPEG, PNG, GIF!";
-                exit;
-            }
-        }
+        $file = $_FILES['anh'];
+        // // Xử lý ảnh nếu có tải lên
+        if (!empty($file['name'])) {
+            $td = "../";
+            $target_dir = "picture/";
+            $anh = $td . $target_dir . basename($file["name"]);
+            move_uploaded_file($file["tmp_name"], $anh);
+            $anh = addslashes($target_dir . basename($file["name"]));
+        } 
         // Thêm vào database
         try {
             $pdo = connectDatabase();
             $stmt = $pdo->prepare("INSERT INTO sanpham (tensp, mota, giaban, soluong, anh, iddm) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->execute([$tensp, $mota, $giaban, $soluong, $anh, $iddm]);
             if ($stmt->rowcount()>0) {
-                echo "<script> 
-                        alert('Thêm thành công!');
-                        window.top.location.href = 'trangchuadmin.php';
-                      </script>";
+                return true;
+            } else {
+                return false;
             }
         } catch (PDOException $e) {
             echo "Lỗi: " . $e->getMessage();
@@ -517,12 +541,7 @@
     }
     
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // if (isset($_POST['themnd'])) {
-        //     themNguoiDung();
-        // }
-        // if (isset($_POST['capnhatnd'])) {
-        //     capnhatNguoiDung();
-        // }
+
         if (isset($_POST['themdmcon'])) {
             themDMcon();
         }
@@ -538,11 +557,6 @@
         if (isset($_POST['capnhatmgg'])) {
             capnhatMGG();
         }
-        // if (isset($_POST['capnhatanhuser'])) {
-        //     capnhatAnhUser();
-        // }
-        if (isset($_POST['themsp'])) {
-            themSanPham();
-        }
+        
     }
 ?>

@@ -28,12 +28,14 @@ if (isset($_GET['id'])) {
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../trangchuadmin.js"></script>
-    <link rel="stylesheet" href="update_product_form.css">
+    <script src="../sweetalert2/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
+    <link rel="stylesheet" href="capnhatsanpham.css?v=<?php time();?>">
 </head>
 <body>
     <div class="container">
         <h2><i class="fas fa-edit"></i> Cập Nhật Sản Phẩm</h2>
-        <form action="update_product.php" method="POST" enctype="multipart/form-data">
+        <form action="#" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="idsp" value="<?= $product['idsp'] ?>">
 
             <!-- 3 input trên 1 dòng -->
@@ -78,9 +80,30 @@ if (isset($_GET['id'])) {
                 </div>
             </div>
             <div class="button-group">
-                <button type="submit" class="update-button"><i class="fas fa-save"></i> Cập nhật</button>
+                <button type="submit" name="capnhatsanpham" class="update-button"><i class="fas fa-save"></i> Cập nhật</button>
                 <button type="button" class="back-button" onclick="goBack()"><i class="fas fa-arrow-left"></i> Trở về</button>
             </div>
+            <?php
+                if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                    if (isset($_POST['capnhatsanpham'])) {
+                        $kq = capnhatSanPham();
+                        if ($kq) {
+                            echo "
+                            <script>
+                                showCustomAlert('🐳 Cập Nhật Thành Công!', 'Thông tin sản phẩm đã được cập nhật thành công!', '../picture/success.png');
+                                setTimeout(function() {
+                                    goBack();
+                                }, 3000); 
+                            </script>";
+                        } else {
+                            echo "
+                            <script>
+                                showCustomAlert('🐳 Cập Nhật Thất Bại!', '$kq', '../picture/error.png');
+                            </script>";
+                        }
+                    }
+                }
+            ?>
         </form>
     </div>
 </body>

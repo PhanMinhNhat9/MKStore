@@ -118,12 +118,7 @@ function themsanpham() {
 
 function capnhatsanpham(idsp) {
     let encodedId = btoa(idsp);
-    window.location.href = "update_product_form.php?id=" + encodeURIComponent(encodedId);
-}
-
-function chat(iduser) {
-    let encodedId = btoa(iduser);
-    window.top.location.href = "chat.php?id=" + encodeURIComponent(encodedId);
+    window.location.href = "capnhatsanpham.php?id=" + encodeURIComponent(encodedId);
 }
 
 function xoasanpham(idsp) {
@@ -132,6 +127,13 @@ function xoasanpham(idsp) {
         window.location.href = "xoasanpham.php?id=" + encodeURIComponent(encodedId);
     }
 }
+
+function chat(iduser) {
+    let encodedId = btoa(iduser);
+    window.top.location.href = "chat.php?id=" + encodeURIComponent(encodedId);
+}
+
+
 
 function themvaogiohang(idsp) {
     let encodedId = btoa(idsp); // Mã hóa ID sản phẩm
@@ -233,12 +235,6 @@ function loadGH() {
     }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 
 }
-// function showModal(id) {
-//     document.getElementById('modal-' + id).style.display = 'flex';
-// }
-// function closeModal(id) {
-//     document.getElementById('modal-' + id).style.display = 'none';
-// }
 
 function themmgg() {
     window.location.href = "themmgg.php";
@@ -280,14 +276,6 @@ function goBackHome() {
     window.location.href = "trangchuadmin.php";
 }
 
-// function toggleDetails(orderId) {
-//     var details = document.getElementById('details-' + orderId);
-//     if (details.style.display === 'block') {
-//         details.style.display = 'none';
-//     } else {
-//         details.style.display = 'block';
-//     }
-// }
 function handleSessionTimeout(sessionTimeoutInSeconds) {
     let sessionTimeout = sessionTimeoutInSeconds * 1000; // Chuyển thành mili-giây
     let warningTime = sessionTimeout - 60000; // Cảnh báo trước 1 phút

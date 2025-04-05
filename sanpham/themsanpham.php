@@ -5,17 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thêm Sản Phẩm</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .form-container { max-width: 400px; margin: 30px auto; padding: 15px; background: #f8f9fa; border-radius: 8px; box-shadow: 0 0 8px rgba(0, 0, 0, 0.1); }
-        #previewContainer { display: none; text-align: center; }
-        #preview { max-width: 70px; max-height: 70px; border-radius: 6px; margin: 5px 0; }
-    </style>
+    <script src="../sweetalert2/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
+    <script src="../trangchuadmin.js"></script>
+    <link rel="stylesheet" href="themsanpham.css?v=<?php time();?>">
 </head>
 <body>
     <div class="container">
         <div class="form-container">
             <h4 class="text-center mb-3">Thêm Sản Phẩm</h4>
-            <form action="../config.php" method="POST" enctype="multipart/form-data">
+            <form action="#" method="POST" enctype="multipart/form-data">
                 <div class="row g-2 mb-2">
                     <div class="col-6">
                         <input type="text" class="form-control form-control-sm" name="tensp" placeholder="Tên sản phẩm" required>
@@ -58,6 +57,27 @@
                 </div>
 
                 <input type="submit" name="themsp" class="btn btn-primary w-100 btn-sm" value="Thêm sản phẩm">
+                <?php
+                    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                        if (isset($_POST['themsp'])) {
+                            $kq = themSanPham();
+                            if ($kq) {
+                                echo "
+                                <script>
+                                    showCustomAlert('🐳 Thêm Thành Công!', 'Sản phẩm đã được thêm thành công!', '../picture/success.png');
+                                    setTimeout(function() {
+                                        goBack();
+                                    }, 3000); 
+                                </script>";
+                            } else {
+                                echo "
+                                <script>
+                                    showCustomAlert('🐳 Thêm Thất Bại!', '$kq', '../picture/error.png');
+                                </script>";
+                            }
+                        }
+                    }
+                ?>
             </form>
         </div>
     </div>
