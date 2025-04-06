@@ -223,7 +223,6 @@ function capnhatdanhmuc() {
     window.location.href = "capnhatdanhmuc.php";
 }
 
-
 function loadGH() {
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
@@ -238,6 +237,14 @@ function loadGH() {
 
 function themmgg() {
     window.location.href = "themmgg.php";
+}
+function capnhatmgg(idmgg) {
+    let encodedId = btoa(idmgg);
+    window.location.href = "capnhatmgg.php?id=" + encodeURIComponent(encodedId);
+}
+function xoamgg(idmgg) {
+    let encodedId = btoa(idmgg);
+    window.location.href = "xoamgg.php?id=" + encodeURIComponent(encodedId);
 }
 // Hàm đăng xuất
 function logout() {

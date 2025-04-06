@@ -40,6 +40,7 @@ body {
     width: 220px;
     background-color: #f9f9f9;
     transition: transform 0.2s;
+    cursor: pointer;
 }
 
 .card:hover {

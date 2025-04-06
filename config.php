@@ -493,45 +493,34 @@
             echo "Lỗi: " . $e->getMessage();
         }
     }
-    function capnhatMGG() {
+    function capnhatMGG($code, $idmgg, $phantram, $ngayhieuluc, $ngayketthuc, $giaapdung, $soluong, $iddm) {
         $pdo = connectDatabase();
-        $code = !empty($_POST['code']) ? $_POST['code'] : taoMaGiamGia();
-        $idmgg = $_POST['idmgg'];
-        $phantram = $_POST['phantram'];
-        $ngayhieuluc = $_POST['ngayhieuluc'];
-        $ngayketthuc = $_POST['ngayketthuc'];
-        $giaapdung = $_POST['giaapdung'];
-        $soluong = $_POST['soluong'];
-        $iddm = $_POST['iddm'];
-        $stmt = $pdo->prepare("UPDATE magiamgia SET code = :code, phantram = :phantram, ngayhieuluc = :ngayhieuluc, 
-                            ngayketthuc = :ngayketthuc, giaapdung = :giaapdung, iddm = :iddm, soluong = :soluong WHERE idmgg = :id");
+        $stmt = $pdo->prepare("UPDATE magiamgia 
+            SET code = :code, phantram = :phantram, ngayhieuluc = :ngayhieuluc, 
+                ngayketthuc = :ngayketthuc, giaapdung = :giaapdung, 
+                iddm = :iddm, soluong = :soluong 
+            WHERE idmgg = :idmgg");
+
         $stmt->execute([
             'code' => $code,
             'phantram' => $phantram,
             'ngayhieuluc' => $ngayhieuluc,
             'ngayketthuc' => $ngayketthuc,
             'giaapdung' => $giaapdung,
+            'iddm' => $iddm,
             'soluong' => $soluong,
-            'id' => $idmgg,
-            'iddm' => $iddm
+            'idmgg' => $idmgg
         ]);
-        if ($stmt->rowCount() > 0) {
-            echo "<script> 
-                    alert('Cập nhật thành công!');
-                  </script>";
-        } else {
-            echo "<script> 
-                    alert('Lỗi cập nhật!');
-                  </script>";
-        }
+        if ($stmt->rowCount() > 0 || $stmt->errorCode() == '00000') {
+            return true;
+        } else return false;
+        
     }
+    
     
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_POST['themmgg'])) {
             themMGG();
-        }
-        if (isset($_POST['capnhatmgg'])) {
-            capnhatMGG();
         }
         
     }

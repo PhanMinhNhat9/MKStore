@@ -1,3 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../trangchuadmin.js"></script>
+    <script src="../sweetalert2/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>
 <?php
 require_once '../config.php';
 $pdo = connectDatabase();
@@ -11,14 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['iddh']) && isset($_POS
     $stmt->bindParam(':iddh', $iddh, PDO::PARAM_INT);
     
     if ($stmt->execute()) {
-        echo "<script src='../trangchuadmin.js'></script>";
         echo "<script> 
-                alert('Xác nhận đơn hàng thành công!');
                 goBack();
             </script>";
         exit();
-    } else {
-        echo "<script>alert('Cập nhật trạng thái thất bại!');</script>";
     }
 }
 ?>

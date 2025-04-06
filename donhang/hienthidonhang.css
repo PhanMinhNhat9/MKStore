@@ -1,24 +1,26 @@
-/* Container cho bảng */
-.table-container {
-    max-height: 395px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background: white;
+* {
+    font-family: 'Arial', sans-serif; 
     padding: 0;
     margin: 0;
+    cursor: pointer;
 }
+
+.table-container {
+    max-height: 405px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    background: white;
+}
+
 .table-container::-webkit-scrollbar {
     display: none;
 }
 
-/* Bảng */
 table {
     width: 100%;
     border-collapse: collapse;
 }
 
-/* Tiêu đề cột */
 th {
     background: #007bff;
     color: white;
@@ -29,32 +31,26 @@ th {
     border: 1px solid #ddd;
 }
 
-/* Ô dữ liệu */
 td {
     border: 1px solid #ddd;
     padding: 10px;
     text-align: center;
 }
 
-/* Trạng thái */
 .status-select {
     width: 100%;
     padding: 6px;
     border-radius: 4px;
     border: 1px solid #ccc;
     font-size: 14px;
-    cursor: pointer;
     background: white;
     outline: none;
 }
 
-/* Hover */
 .status-select:hover {
     border-color: #007bff;
-    
 }
 
-/* Nút giỏ hàng */
 .pay-btn {
     background: none;
     border: 1px solid #ffffff;

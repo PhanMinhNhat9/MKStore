@@ -65,10 +65,10 @@
                             ?>
                         </td>
                         <td class="actions">
-                            <a href="capnhatmgg.php?id=<?= $coupon['idmgg'] ?>" class="edit-btn">
+                            <a href="#" onclick="capnhatmgg(<?= $coupon['idmgg'] ?>)" class="edit-btn">
                                 <i class="fas fa-edit"></i> Cập nhật
                             </a>
-                            <a href="xoamgg.php?id=<?= $coupon['idmgg'] ?>" class="delete-btn" onclick="return confirm('Bạn có chắc chắn muốn xóa mã này không?');">
+                            <a href="#" onclick="xoamgg(<?= $coupon['idmgg'] ?>)" class="delete-btn">
                                 <i class="fas fa-trash"></i> Xóa
                             </a>
                         </td>

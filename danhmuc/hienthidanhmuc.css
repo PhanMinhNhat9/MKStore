@@ -1,18 +1,21 @@
 * { 
     margin: 0; 
     padding: 0; 
+    font-family: 'Arial', sans-serif; 
+    cursor: pointer;
 }
+
 .dm-table-container {
     max-width: 100%;
     max-height: 410px;
-    padding: 0;
-    margin: 0;
     overflow-y: auto;
     border-radius: 5px;
 }
+
 .dm-table-container::-webkit-scrollbar {
     display: none;
 }
+
 .dm-table {
     width: 100%;
     border-collapse: collapse;
@@ -53,14 +56,12 @@
 }
 
 .action-icons {
-    cursor: pointer;
     margin: 0 5px;
     transition: transform 0.2s, color 0.2s;
 }
 
 .action-icons:hover {
     transform: scale(1.2);
-    color: #0056b3;
 }
 
 @media (max-width: 768px) {
@@ -68,38 +69,12 @@
     .dm-table th, .dm-table td { font-size: 12px; padding: 6px; }
 }
 
-.btn-xoadm { color: #28a745; } /* Xanh lá - Thêm */
-.btn-updatedm { color: #ffc107; } /* Vàng - Sửa */
-
-.tooltip-container {
-    position: relative;
-    display: inline-block;
+.btn-xoadm { 
+    color: #28a745; 
 }
 
-.tooltip-text {
-    visibility: hidden;
-    width: max-content;
-    background-color: #007bff;
-    color: #fff;
-    text-align: center;
-    padding: 5px 8px;
-    border-radius: 5px;
-    font-size: 12px;
-
-    /* Vị trí */
-    position: absolute;
-    z-index: 10;
-    bottom: 125%; /* phía trên hình ảnh */
-    left: 50%;
-    transform: translateX(-50%);
-    
-    /* Hiệu ứng */
-    opacity: 0;
-    transition: opacity 0.3s;
-    white-space: nowrap;
+.btn-updatedm { 
+    color: #ffc107; 
 }
 
-.tooltip-container:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
-}
+
