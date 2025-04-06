@@ -477,17 +477,9 @@
             $stmt->bindParam(':ngayketthuc', $ngayketthuc, PDO::PARAM_STR);
             
             if ($stmt->execute()) {
-                echo "<script src='../trangchuadmin.js'></script>";
-                echo "<script> 
-                        alert('Thêm thành công!');
-                        goBack();
-                      </script>";            
+                return true;
             } else {
-                echo "<script src='../trangchuadmin.js'></script>";
-                echo "<script> 
-                        alert('Thêm không thành công!');
-                        goBack();
-                    </script>";
+                return false;
             }
         } catch (PDOException $e) {
             echo "Lỗi: " . $e->getMessage();
@@ -513,15 +505,8 @@
         ]);
         if ($stmt->rowCount() > 0 || $stmt->errorCode() == '00000') {
             return true;
-        } else return false;
-        
-    }
-    
-    
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (isset($_POST['themmgg'])) {
-            themMGG();
-        }
+        } else 
+            return false;
         
     }
 ?>

@@ -10,6 +10,14 @@ if ($id_nhan <= 0) {
     die("ID người nhận không hợp lệ!");
 }
 
+$sql = "SELECT idnhan, hoten
+FROM `chattructuyen` c, user u
+WHERE idnhan=iduser AND idnhan=:id_nhan";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([
+    'id_nhan' => $id_nhan
+]);
+$kq = $stmt->fetch(PDO::FETCH_ASSOC);
 // Nếu có dữ liệu gửi từ form, thực hiện lưu tin nhắn vào database
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['noidung'])) {
     $noidung = trim($_POST['noidung']);
@@ -67,10 +75,13 @@ $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <button class="back-btn" onclick="goBack()">
+            <button class="back-btn"
+                onclick="goBack()"
+                onmouseenter="changeIcon(this)"
+                onmouseleave="resetIcon(this)">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
-            📨 Chat với: <?= $id_nhan ?>
+            💌 <?php echo $kq['hoten'] ?>
         </div>
 
         <div class="chat-messages" id="chat-box">

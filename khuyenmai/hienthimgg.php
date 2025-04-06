@@ -21,7 +21,7 @@
     <title>Danh Sách Mã Giảm Giá</title>
     <script src="../trangchuadmin.js"></script>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="hienthimgg.css">
+    <link rel="stylesheet" href="hienthimgg.css?v=<?= time(); ?>">
 </head>
 <body>
     <div class="table-container">
@@ -77,5 +77,8 @@
             </tbody>
         </table>
     </div>
+    <button class="floating-btn" onclick="themmgg()">
+        <i class="fas fa-plus"></i>
+    </button>
 </body>
 </html>

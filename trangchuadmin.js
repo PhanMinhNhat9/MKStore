@@ -188,11 +188,10 @@ function showErrorMessage(message) {
         Swal.fire({
             title: `<strong style="font-size:18px;">${title}</strong>`,
             html: `<p style="font-size:16px; margin:0;">${text}</p>`, // dùng html để tùy chỉnh font nhỏ
-            // icon: icon, // "success", "error", "warning", "info"
             iconHtml: `<img src="${icon}" style="width: 50px; height: 50px; border: none;"/>`,
             background: "#e0f7fa",
             color: "#1565c0",
-            width: "300px", // Rất nhỏ
+            width: "300px", 
             padding: "5px",
             customClass: {
                 confirmButton: "swal-custom-button",
@@ -243,12 +242,14 @@ function capnhatmgg(idmgg) {
     window.location.href = "capnhatmgg.php?id=" + encodeURIComponent(encodedId);
 }
 function xoamgg(idmgg) {
-    let encodedId = btoa(idmgg);
-    window.location.href = "xoamgg.php?id=" + encodeURIComponent(encodedId);
+    if (confirm("Bạn có chắc chắn muốn xóa mã giảm giá này không?")) {
+        let encodedId = btoa(idmgg);
+        window.location.href = "xoamgg.php?id=" + encodeURIComponent(encodedId);
+    }
 }
 // Hàm đăng xuất
 function logout() {
-    window.location.href = "logout.php"; // Thay bằng trang xử lý đăng xuất
+    window.location.href = "logout.php"; 
 }
 
 // Đổi icon khi hover
@@ -262,6 +263,7 @@ function resetIcon(button) {
     button.querySelector("i").classList.remove("fa-check");
     button.querySelector("i").classList.add("fa-arrow-left");
 }
+
 function goBack() {
     if (window.top !== window.self) {
         window.top.location.href = "../trangchuadmin.php"; // Điều hướng thoát khỏi iframe
@@ -303,50 +305,28 @@ function handleSessionTimeout(sessionTimeoutInSeconds) {
 
 let selectedUserId = null;
 
-        function openModal(imageSrc, userId) {
-            document.getElementById('modalImage').src = imageSrc;
-            document.getElementById('imageModal').style.display = "flex";
-            selectedUserId = userId;
-            document.getElementById('iduser').value = selectedUserId;
+function openModal(imageSrc, userId) {
+    document.getElementById('modalImage').src = imageSrc;
+    document.getElementById('imageModal').style.display = "flex";
+    selectedUserId = userId;
+    document.getElementById('iduser').value = selectedUserId;
 
-        }
+}
 
-        function closeModal() {
-            document.getElementById('imageModal').style.display = "none";
-        }
+function closeModal() {
+    document.getElementById('imageModal').style.display = "none";
+}
 
-        
-        function loadanh() {
-            const fileInput = document.getElementById('fileInput');
-            const modalImage = document.getElementById('modalImage');
-        
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    modalImage.src = e.target.result; // Cập nhật ảnh hiển thị
-                };
-                reader.readAsDataURL(fileInput.files[0]); // Đọc file ảnh
-            }
-        }
-        // function uploadNewImage() {
-        //     const fileInput = document.getElementById('fileInput');
-        //     if (fileInput.files.length === 0) {
-        //         alert("Vui lòng chọn một ảnh mới.");
-        //         return;
-        //     }
 
-        //     const formData = new FormData();
-        //     formData.append('file', fileInput.files[0]);
-        //     formData.append('iduser', selectedUserId);
+function loadanh() {
+    const fileInput = document.getElementById('fileInput');
+    const modalImage = document.getElementById('modalImage');
 
-        //     fetch('upload.php', {
-        //         method: 'POST',
-        //         body: formData
-        //     })
-        //     .then(response => response.text())
-        //     .then(result => {
-        //         alert(result);
-        //         location.reload(); // Tải lại trang để cập nhật ảnh mới
-        //     })
-        //     .catch(error => console.error('Lỗi:', error));
-        // }
+    if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            modalImage.src = e.target.result; // Cập nhật ảnh hiển thị
+        };
+        reader.readAsDataURL(fileInput.files[0]); // Đọc file ảnh
+    }
+}

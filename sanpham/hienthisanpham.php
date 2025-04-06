@@ -13,7 +13,7 @@
             LEFT JOIN chitietdonhang ctdh ON sp.idsp = ctdh.idsp
             LEFT JOIN donhang dh ON ctdh.iddh = dh.iddh AND dh.trangthai = 'Đã thanh toán'
             LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
-            LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm
+            LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm AND CURDATE() BETWEEN mg.ngayhieuluc AND mg.ngayketthuc
             WHERE sp.tensp LIKE :searchTerm OR sp.mota LIKE :searchTerm1
             GROUP BY sp.idsp
             ORDER BY sp.thoigianthemsp ASC";
@@ -30,7 +30,8 @@
                     LEFT JOIN chitietdonhang ctdh ON sp.idsp = ctdh.idsp
                     LEFT JOIN donhang dh ON ctdh.iddh = dh.iddh AND dh.trangthai = 'Đã thanh toán'
                     LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
-                    LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm
+                    LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm AND 
+                                CURDATE() BETWEEN mg.ngayhieuluc AND mg.ngayketthuc
                     GROUP BY sp.idsp
                     ORDER BY sp.thoigianthemsp DESC";
             $stmt = $pdo->prepare($sql);
@@ -118,7 +119,7 @@
 </table>
 </div>
 <button class="floating-btn" onclick="themsanpham()">
-        <i class="fas fa-plus"></i>
-    </button>
+    <i class="fas fa-plus"></i>
+</button>
 </body>
 </html>

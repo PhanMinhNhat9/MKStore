@@ -53,31 +53,42 @@ if ($query != '') {
     <title>Danh Sách Người Dùng</title>
     <script src="../trangchuadmin.js"></script>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="hienthiphanhoi.css">
+    <link rel="stylesheet" href="hienthiphanhoi.css?v=<?= time(); ?>">
 </head>
 <body>
-<div class="product-wrapper">
-    <div class="product-container">
-        <?php foreach ($users as $user): ?>
-            <div class="product-card">
-                <div class="avatar-container">
-                    <img src="../<?= htmlspecialchars($user['anh']) ?>" alt="Ảnh đại diện">
-                </div>
-                <h3 class="user-name"> 🧑 <?= htmlspecialchars($user['hoten']) ?></h3>
-                <h3 class="user-name"> 📛 <?= htmlspecialchars($user['tendn']) ?></h3>
-                <p class="message-count"> ✉️ <?= $user['so_tin_nhan'] ?> tin nhắn </p>
-                <p class="<?= $user['chua_doc'] > 0 ? 'unread' : 'message-count' ?>"> 🔔
-                    <?= $user['chua_doc'] > 0 ? $user['chua_doc'] . ' tin chưa đọc' : 'Không có tin mới' ?>
-                </p>
-                <div class="btn-group">
-                    <a href="#" onclick="chat(<?= $user['iduser'] ?>)" class="btn btn-chat">
-                        <i class="fa-solid fa-comment"></i> Nhắn Tin
-                    </a>
-                </div>
-            </div>
-        <?php endforeach; ?>
+    <div class="product-scroll-container"> <!-- Thêm div này để cuộn -->
+        <table class="user-table" border="1" cellspacing="0" cellpadding="10">
+            <thead>
+                <tr>
+                    <th>Ảnh đại diện</th>
+                    <th>Họ tên</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Số tin nhắn</th>
+                    <th>Trạng thái tin nhắn</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($users as $user): ?>
+                <tr>
+                    <td>
+                        <img src="../<?= htmlspecialchars($user['anh']) ?>" alt="Ảnh đại diện" width="60" height="60" style="border-radius: 50%;">
+                    </td>
+                    <td>🧑 <?= htmlspecialchars($user['hoten']) ?></td>
+                    <td>📛 <?= htmlspecialchars($user['tendn']) ?></td>
+                    <td>✉️ <?= $user['so_tin_nhan'] ?> tin nhắn</td>
+                    <td class="<?= $user['chua_doc'] > 0 ? 'unread' : 'message-count' ?>">
+                        🔔 <?= $user['chua_doc'] > 0 ? $user['chua_doc'] . ' tin chưa đọc' : 'Không có tin mới' ?>
+                    </td>
+                    <td>
+                        <a href="#" onclick="chat(<?= $user['iduser'] ?>)" class="btn btn-chat">
+                            <i class="fa-solid fa-comment"></i> Nhắn Tin
+                        </a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
-</div>
-
 </body>
 </html>
