@@ -13,7 +13,7 @@
 </body>
 </html>
 <?php
-include '../config.php'; // Kết nối CSDL
+require_once '../config.php'; // Kết nối CSDL
 $conn = connectDatabase(); // Hàm kết nối trả về đối tượng PDO
 
 if (isset($_GET['id'])) {
@@ -21,21 +21,49 @@ if (isset($_GET['id'])) {
 
     if ($id > 0) {
         try {
+            $conn->beginTransaction(); // Bắt đầu transaction
+
+            // Lấy tên file QR code từ bảng qrcode
+            $qrSelect = "SELECT qrcode FROM qrcode WHERE idsp = :idsp";
+            $qrStmt = $conn->prepare($qrSelect);
+            $qrStmt->bindParam(':idsp', $id, PDO::PARAM_INT);
+            $qrStmt->execute();
+            $qrData = $qrStmt->fetch(PDO::FETCH_ASSOC);
+
+            // Nếu có QR code, xóa file vật lý
+            if ($qrData && isset($qrData['qrcode'])) {
+                $qrFilePath = "../qrcodes/" . $qrData['qrcode'];
+                if (file_exists($qrFilePath)) {
+                    unlink($qrFilePath); // Xóa file QR code
+                }
+            }
+
+            // Xóa QR record
+            $sqlQR = "DELETE FROM qrcode WHERE idsp = :idsp";
+            $stmtQR = $conn->prepare($sqlQR);
+            $stmtQR->bindParam(':idsp', $id, PDO::PARAM_INT);
+            $stmtQR->execute();
+
+            // Xóa sản phẩm
             $sql = "DELETE FROM sanpham WHERE idsp = :idsp";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':idsp', $id, PDO::PARAM_INT);
+
             if ($stmt->execute()) {
+                $conn->commit(); // Nếu mọi thao tác đều OK
                 echo "
                 <script>
-                    showCustomAlert('🐳 Xóa Thành Công!', 'Sản phẩm đã được xóa khỏi danh sách!', '../picture/success.png');
+                    showCustomAlert('🐳 Xóa Thành Công!', 'Sản phẩm, mã QR và ảnh QR đã được xóa!', '../picture/success.png');
                     setTimeout(function() {
                         goBack();
                     }, 3000); 
                 </script>";
             } else {
+                $conn->rollBack();
                 echo "Không tìm thấy sản phẩm để xóa!";
             }
         } catch (PDOException $e) {
+            $conn->rollBack();
             echo "Lỗi khi xóa: " . $e->getMessage();
         }
     } else {
@@ -45,3 +73,4 @@ if (isset($_GET['id'])) {
     echo "Không có ID sản phẩm!";
 }
 ?>
+

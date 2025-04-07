@@ -337,12 +337,71 @@
             $stmt = $pdo->prepare("INSERT INTO sanpham (tensp, mota, giaban, soluong, anh, iddm) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->execute([$tensp, $mota, $giaban, $soluong, $anh, $iddm]);
             if ($stmt->rowcount()>0) {
+                $idsp = $pdo->lastInsertId();
+                if (taoMaQR($idsp)) {
+                    $kq = themMaQR($idsp);
+                    if ($kq) return true; else return false;
+                } else return false;
+                
                 return true;
             } else {
                 return false;
             }
         } catch (PDOException $e) {
             echo "Lỗi: " . $e->getMessage();
+            return false;
+        }
+    }
+    function taoMaQR($idsp) {
+        require_once 'phpqrcode-master/qrlib.php'; // Import thư viện phpqrcode
+        $td = "../";
+        // Tạo thư mục lưu QR nếu chưa có
+        $qrDir = $td."qrcodes/";
+        if (!is_dir($qrDir)) {
+            mkdir($qrDir, 0777, true);
+        }
+
+        $file = $qrDir . "sp_$idsp.png"; // Tạo đường dẫn lưu QR
+
+        // Kiểm tra nếu chưa có thì tạo mới
+        if (!file_exists($file)) {
+            QRcode::png($idsp, $file, QR_ECLEVEL_L, 5);
+        }
+
+        // Kiểm tra lại xem file QR đã được tạo chưa
+        if (file_exists($file)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function themMaQR($idsp) {
+        try {
+            $pdo = connectDatabase(); // Kết nối CSDL
+            $qrcode = "sp_$idsp.png"; // Tên file QR (đã có sẵn)
+    
+            // Kiểm tra nếu idsp đã tồn tại trong bảng qrcode
+            $checkQuery = "SELECT idsp FROM qrcode WHERE idsp = ?";
+            $stmt = $pdo->prepare($checkQuery);
+            $stmt->execute([$idsp]);
+    
+            if ($stmt->rowCount() == 0) {
+                // Chèn dữ liệu vào bảng qrcode
+                $insertQuery = "INSERT INTO qrcode (qrcode, idsp) VALUES (?, ?)";
+                $stmt = $pdo->prepare($insertQuery);
+                $stmt->execute([$qrcode, $idsp]);
+    
+                if ($stmt->rowCount() > 0) {
+                    return true; // Chèn thành công
+                } else {
+                    return false; // Chèn thất bại
+                }
+            } else {
+                return true; // Đã tồn tại, không cần thêm nữa nhưng vẫn coi là thành công
+            }
+        } catch (PDOException $e) {
+            echo "Lỗi: " . $e->getMessage();
+            return false;
         }
     }
     

@@ -18,17 +18,6 @@
     $tt = $stmt->fetch(PDO::FETCH_ASSOC);
     $thanhtien = 0;
     $thanhtien = $tt['thanhtien'];
-    
-    // Tính tổng tiền sau khi áp dụng giảm giá
-    // foreach ($giohang as $item) {
-    //     $thanhtien += $item['thanhtien'];
-    // }
-
-    // foreach ($giohang as $index => $item) {  
-    //     $gia_sau_giam = ($item['giamgia'] > 0) ? round($item['giaban'] * (1 - $item['giamgia'] / 100), -3) : $item['giaban'];
-    //     $giohang[$index]['tongtien'] = $gia_sau_giam * $item['soluong']; // ✅ Gán lại vào mảng chính
-    //     $tongtien += $giohang[$index]['tongtien'];
-    // }
 ?>
 
 <!DOCTYPE html>
@@ -44,113 +33,12 @@
 </head>
 <body>
 
-    <!-- Khu vực quét mã
-    <div class="scan-container">
-        <button class="scan-button" onclick="startScanner()">📷 Bắt đầu quét</button>
-        <button class="stop-button" onclick="stopScanner()" style="display: none;">🛑 Dừng quét</button>
-        <div id="reader" style="display: none;"></div>
-        <p class="scan-text">Hãy đặt mã QR vào vùng quét...</p>
-        <ul id="scan-results"></ul> 
-    </div> -->
-
-    <script>
-        let scanner = null;
-        let isScanning = false; // Biến kiểm soát trạng thái quét
-
-        function startScanner() {
-            const readerElement = document.getElementById("reader");
-            readerElement.style.display = "block"; 
-            document.querySelector(".stop-button").style.display = "inline-block";
-            document.querySelector(".scan-button").style.display = "none"; // Ẩn nút bắt đầu
-
-            if (!scanner) {
-                scanner = new Html5Qrcode("reader");
-            }
-
-            isScanning = true;
-            sessionStorage.setItem("isScanning", "true"); // Lưu trạng thái quét
-
-            scanner.start(
-                { facingMode: "environment" }, // Dùng camera sau
-                { fps: 10, qrbox: { width: 250, height: 250 } },
-                function (decodedText) {
-                    addScannedProduct(decodedText);
-                },
-                function (errorMessage) {
-                    //console.warn("Lỗi quét:", errorMessage);
-                }
-            ).catch(err => {
-                console.error("Không thể khởi động máy quét:", err);
-            });
-        }
-
-        function stopScanner() {
-            if (scanner) {
-                scanner.stop().then(() => {
-                    document.getElementById("reader").style.display = "none";
-                    document.querySelector(".scan-button").style.display = "inline-block";
-                    document.querySelector(".stop-button").style.display = "none";
-                    isScanning = false;
-                    sessionStorage.removeItem("isScanning"); // Xóa trạng thái quét
-                }).catch(err => console.error("Lỗi dừng máy quét:", err));
-            }
-        }
-
-    function addScannedProduct(productCode) {
-            if (!isScanning) return;
-            
-            isScanning = false; // Tạm dừng quét
-            setTimeout(() => {
-                isScanning = true; // Tiếp tục quét sau 1 giây
-                location.reload();
-            }, 1000);
-
-            themvaogiohang(productCode);
-        }
-        window.onload = function() {
-            if (sessionStorage.getItem("isScanning") === "true") {
-                startScanner();
-            }
-        }
-    </script>
+    
 
     <div id="success-alert" class="alert-success"></div>
     <div id="error-alert" class="alert-error"></div>
     
-    <style>
-        .form-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin: 0 0 10px 1px;
-            gap: 20px;
-        }
-
-        .input-box {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-box input {
-            padding: 8px 35px 8px 35px; /* Chừa chỗ cho icon */
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            outline: none;
-            width: 200px;
-        }
-
-        .input-box i {
-            position: absolute;
-            left: 10px;
-            color: #777;
-        }
-
-        .input-box input:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
-    </style>
+    
     <div class="form-group">
         <div class="input-box">
             <i class="fas fa-phone-alt"></i>
@@ -161,10 +49,7 @@
             <input type="text" name="name" id="name" placeholder="Họ tên">
         </div>
     </div>
-    <script>
- 
 
-    </script>
         <div class="cart-table-wrapper">
             <table class="cart-table">
                 <thead>
@@ -219,6 +104,11 @@
                 <button class="checkout-button" onclick="thanhtoan()"><i class="fas fa-credit-card"></i> Thanh toán</button>
             </div>
         </div>
+
+<!-- Nút icon máy ảnh để bật/tắt quét -->
+<button class="floating-btn" onclick="themvaogiohang()">
+    <i class="fas fa-camera-retro"></i>
+</button>
 
 <script>
     function thanhtoan() {

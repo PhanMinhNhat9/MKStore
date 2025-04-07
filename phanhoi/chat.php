@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['noidung'])) {
     exit();
 }
 
-// Cập nhật trạng thái tin nhắn chưa đọc thành đã xem
+// Cập nhật trạng thái tin nhắn chưa đọc thành đã xem       
 $update_sql = "UPDATE chattructuyen SET daxem = 1 WHERE idgui = :id_nhan AND idnhan = :id_gui AND daxem = 0";
 $update_stmt = $pdo->prepare($update_sql);
 $update_stmt->execute([
