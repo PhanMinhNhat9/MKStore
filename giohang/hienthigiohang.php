@@ -7,7 +7,11 @@
                                 COALESCE(mg.phantram, 0) AS phantram
                         FROM giohang gh 
                         JOIN sanpham sp ON gh.idsp = sp.idsp
-                        LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm
+                        LEFT JOIN (
+                            SELECT iddm, phantram
+                            FROM magiamgia
+                            GROUP BY iddm
+                        ) mg ON sp.iddm = mg.iddm
                         GROUP BY gh.idgh, sp.idsp, sp.tensp, sp.anh, gh.soluong, sp.giaban, mg.phantram
                         ORDER BY gh.thoigian DESC");
     $stmt->execute();
@@ -33,12 +37,9 @@
 </head>
 <body>
 
-    
-
     <div id="success-alert" class="alert-success"></div>
     <div id="error-alert" class="alert-error"></div>
-    
-    
+        
     <div class="form-group">
         <div class="input-box">
             <i class="fas fa-phone-alt"></i>
@@ -106,7 +107,7 @@
         </div>
 
 <!-- Nút icon máy ảnh để bật/tắt quét -->
-<button class="floating-btn" onclick="themvaogiohang()">
+<button class="floating-btn" onclick="quetma()">
     <i class="fas fa-camera-retro"></i>
 </button>
 
@@ -135,20 +136,18 @@
     }
 
     function deleteItem(idsp) {
-        if (confirm("Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?")) {
-            fetch("xoasp.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: `idsp=${idsp}`
-            }).then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    location.reload();
-                } else {
-                    alert("❌ " + data.message);
-                }
-            });
-        }
+        fetch("xoasp.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `idsp=${idsp}`
+        }).then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                location.reload();
+            } else {
+                alert("❌ " + data.message);
+            }
+        });
     }
 </script>
 

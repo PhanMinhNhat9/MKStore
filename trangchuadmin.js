@@ -134,28 +134,47 @@ function chat(iduser) {
 }
 
 
-function themvaogiohang() {
+function quetma() {
     window.top.location.href = "quetmaqrcode.php";
 
 }
-// function themvaogiohang(idsp) {
-//     let encodedId = btoa(idsp); 
-//     fetch("../giohang/themvaogiohang.php?id=" + encodeURIComponent(encodedId))
-//         .then(response => response.text()) 
-//         .then(data => {
-//             console.log("Server response:", data); 
+function themsaukhiquet(idsp) {
+    let encodedId = btoa(idsp); 
+    fetch("../giohang/themvaogiohang.php?id=" + encodeURIComponent(encodedId))
+        .then(response => response.text()) 
+        .then(data => {
+            console.log("Server response:", data); 
 
-//             if (data.trim() === "success") {
-//                 showSuccessMessage("Thêm vào giỏ hàng thành công! 🛒");
-//             } else {
-//                 showErrorMessage("Lỗi khi thêm vào giỏ hàng!");
-//             }
-//         })
-//         .catch(error => {
-//             console.error("❌ Lỗi khi gửi yêu cầu:", error);
-//             showErrorMessage("Không thể kết nối đến server!");
-//         });
-// }
+            if (data.trim() === "success") {
+                return true;
+            } else {
+                return false;
+            }
+        })
+        .catch(error => {
+            console.error("❌ Lỗi khi gửi yêu cầu:", error);
+            showErrorMessage("Không thể kết nối đến server!");
+        });
+}
+
+function themvaogiohang(idsp) {
+    let encodedId = btoa(idsp); 
+    fetch("../giohang/themvaogiohang.php?id=" + encodeURIComponent(encodedId))
+        .then(response => response.text()) 
+        .then(data => {
+            console.log("Server response:", data); 
+
+            if (data.trim() === "success") {
+                showSuccessMessage("Thêm vào giỏ hàng thành công! 🛒");
+            } else {
+                showErrorMessage("Lỗi khi thêm vào giỏ hàng!");
+            }
+        })
+        .catch(error => {
+            console.error("❌ Lỗi khi gửi yêu cầu:", error);
+            showErrorMessage("Không thể kết nối đến server!");
+        });
+}
 
 
 function showSuccessMessage(message) {
