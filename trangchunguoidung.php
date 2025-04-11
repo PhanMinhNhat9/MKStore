@@ -280,11 +280,17 @@ $cartProducts = getCartProducts();
         <div class="product-list">
             <?php foreach ($products as $product): ?>
                 <div class="product-item">
-                    <img src="<?php echo $product['anh']; ?>" alt="<?php echo $product['tensp']; ?>">
-                    <h3><?php echo $product['tensp']; ?></h3>
-                    <p><?php echo $product['mota']; ?></p>
-                    <p class="price">Giá: <?php echo number_format($product['giaban'], 0, ',', '.'); ?> VNĐ</p>
-                    <button onclick="addToCart(<?php echo $product['idsp']; ?>)" class="buy-button">Thêm vào giỏ</button>
+                    <?php
+                    // Chuẩn hóa đường dẫn ảnh
+                    $imagePath = str_replace('\\', '/', $product['anh']);
+                    $fullImageUrl = "http://localhost/MKstore/" . $imagePath;
+                    ?>
+                    <img src="<?= htmlspecialchars($fullImageUrl) ?>" alt="<?= htmlspecialchars($product['tensp']) ?>">
+
+                    <h3><?= htmlspecialchars($product['tensp'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                    <p><?= htmlspecialchars($product['mota'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    <p class="price">Giá: <?= number_format($product['giaban'], 0, ',', '.'); ?> VNĐ</p>
+                    <button onclick="addToCart(<?= $product['idsp']; ?>)" class="buy-button">Thêm vào giỏ</button>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -494,12 +500,12 @@ $cartProducts = getCartProducts();
             }
 
             fetch('send_message.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: 'message=' + encodeURIComponent(message) + '&receiver_id=' + userId
-            })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'message=' + encodeURIComponent(message) + '&receiver_id=' + userId
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'error') {
