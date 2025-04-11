@@ -440,16 +440,16 @@ $cartProducts = getCartProducts();
             font-size: 12px;
         }
     </style>
-    <div class="chat-container">
+    <!-- <div class="chat-container">
         <h2>Trò chuyện với Admin</h2>
         <div class="chat-messages" id="chatMessages">
-            <!-- Tin nhắn sẽ được tải ở đây -->
+            
         </div>
         <div class="chat-input">
             <input type="text" id="chatInput" placeholder="Nhập tin nhắn...">
             <button onclick="sendMessage()">Gửi</button>
         </div>
-    </div>
+    </div> -->
 
     <script>
         const userId = 1;
