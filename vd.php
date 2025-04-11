@@ -2,282 +2,317 @@
 require_once 'config.php';
 $pdo = connectDatabase();
 
-// --- XỬ LÝ LỌC ---
-$query = isset($_GET['query']) ? trim($_GET['query']) : '';
-$quyen = isset($_GET['quyen']) ? trim($_GET['quyen']) : '';
+// Lấy danh mục
+$stmt_dm = $pdo->query("SELECT iddm, tendm, loaidm, icon, mota, thoigian FROM danhmucsp ORDER BY loaidm, iddm");
+$danhmucs = $stmt_dm->fetchAll(PDO::FETCH_ASSOC);
 
-// --- PHÂN TRANG ---
-$limit = 4;
-$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
+// Lấy sản phẩm có phân trang
+$query = isset($_GET['query']) ? trim($_GET['query']) : '';
+$products = [];
+$params = [];
+$limit = 3; // Số sản phẩm mỗi trang
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-$params = [];
-$conditions = [];
+$sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong, sp.iddm,
+               COALESCE(SUM(ctdh.soluong), 0) AS soluong_daban,
+               COALESCE(AVG(dg.sosao), 0) AS trungbinhsao,
+               (sp.soluong - COALESCE(SUM(ctdh.soluong), 0)) AS soluong_conlai,
+               mg.phantram AS giamgia
+        FROM sanpham sp
+        LEFT JOIN chitietdonhang ctdh ON sp.idsp = ctdh.idsp
+        LEFT JOIN donhang dh ON ctdh.iddh = dh.iddh AND dh.trangthai = 'Đã thanh toán'
+        LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
+        LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm AND CURDATE() BETWEEN mg.ngayhieuluc AND mg.ngayketthuc";
 
-if ($query != '') {
-    $conditions[] = "(email LIKE :searchTerm OR sdt LIKE :searchTerm1)";
-    $params['searchTerm'] = "%{$query}%";
-    $params['searchTerm1'] = "%{$query}%";
-}
-if ($quyen !== '') {
-    $conditions[] = "quyen = :quyen";
-    $params['quyen'] = $quyen;
+if ($query !== '') {
+    $sql .= " WHERE sp.tensp LIKE :searchTerm OR sp.mota LIKE :searchTerm1";
+    $params['searchTerm'] = "%$query%";
+    $params['searchTerm1'] = "%$query%";
 }
 
-$sql = "SELECT iduser, hoten, tendn, anh, email, sdt, diachi, quyen, thoigian FROM user";
-if (!empty($conditions)) {
-    $sql .= " WHERE " . implode(" AND ", $conditions);
-}
-$sql .= " LIMIT :limit OFFSET :offset";
+$sql .= " GROUP BY sp.idsp ORDER BY sp.thoigianthemsp DESC LIMIT :limit OFFSET :offset";
 
 $stmt = $pdo->prepare($sql);
-$stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
-$stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
-foreach ($params as $key => $val) {
-    $stmt->bindValue(":$key", $val);
-}
-$stmt->execute();
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// --- ĐẾM TỔNG USER ---
-$countSql = "SELECT COUNT(*) FROM user";
-if (!empty($conditions)) {
-    $countSql .= " WHERE " . implode(" AND ", $conditions);
+// Gán giá trị tham số
+foreach ($params as $key => $value) {
+    $stmt->bindValue(':' . $key, $value, PDO::PARAM_STR);
 }
-$countStmt = $pdo->prepare($countSql);
-foreach ($params as $key => $val) {
-    if ($key !== 'limit' && $key !== 'offset') {
-        $countStmt->bindValue(":$key", $val);
-    }
+$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
+
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Tính tổng số trang
+$count_sql = "SELECT COUNT(DISTINCT sp.idsp) FROM sanpham sp";
+if ($query !== '') {
+    $count_sql .= " WHERE sp.tensp LIKE :searchTerm OR sp.mota LIKE :searchTerm1";
 }
-$countStmt->execute();
-$totalUsers = $countStmt->fetchColumn();
-$totalPages = ceil($totalUsers / $limit);
+$count_stmt = $pdo->prepare($count_sql);
+if ($query !== '') {
+    $count_stmt->bindValue(':searchTerm', "%$query%");
+    $count_stmt->bindValue(':searchTerm1', "%$query%");
+}
+$count_stmt->execute();
+$total_products = $count_stmt->fetchColumn();
+$total_pages = ceil($total_products / $limit);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Danh Sách Người Dùng</title>
+    <title>Sản phẩm theo danh mục</title>
     <link rel="stylesheet" href="fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="sweetalert2/sweetalert2.min.css">
-    <script src="./trangchuadmin.js"></script>
-    <!-- <script src="../sweetalert2/sweetalert2.min.js"></script>
-    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css"> -->
+    
     <style>
-        * { box-sizing: border-box; }
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
-            margin: 0; padding: 0;
             display: flex;
         }
         .sidebar {
-            width: 250px;
+            width: 260px;
+            background-color: #f5f5f5;
             padding: 20px;
-            background-color: #f0f0f0;
             height: 100vh;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
         }
         .sidebar h3 {
             margin-top: 0;
         }
-        .sidebar form {
-            display: flex;
-            flex-direction: column;
-        }
-        .sidebar input, .sidebar select, .sidebar button {
+        .danhmuc-item {
+            background: #fff;
             margin-bottom: 10px;
-            padding: 8px;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-        .container {
-            flex: 1;
-            padding: 20px;
+        .danhmuc-item i {
+            margin-right: 8px;
+            color: #007bff;
         }
-        .user-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-        }
-        .card {
+        .product-wrapper {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center; /* ✅ Giúp căn giữa các card */
+}
+
+        .product-card {
+            width: 200px;
+            height: 300px;
             border: 1px solid #ddd;
+            padding: 10px;
             border-radius: 10px;
-            padding: 15px;
             text-align: center;
-            background-color: #fff;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-            height: 100%;
+            background-color: #fff;
         }
-        .card img {
+        .product-card img {
             width: 100px;
             height: 100px;
             object-fit: cover;
-            border-radius: 50%;
-            margin-bottom: 10px;
-            cursor: pointer;
+            border-radius: 6px;
         }
-        .card h3 {
-            margin: 5px 0;
+        .product-card h3 {
             font-size: 16px;
+            margin: 8px 0;
+            /* min-height: 40px; */
         }
-        .card p {
-            margin: 4px 0;
-            font-size: 14px;
+
+        .desc {
+            font-size: 13px;
+            color: #555;
+            min-height: 36px;
+            margin: 0;
         }
-        .btn-group {
-            margin-top: 10px;
+        .old-price {
+            text-decoration: line-through;
+            color: #999;
+            margin-right: 5px;
         }
-        .btn {
-            padding: 6px 10px;
-            margin: 0 3px;
+        .discount {
+            color: red;
+            font-weight: bold;
+        }
+        .info {
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        .btn-group-sp .btn {
+            margin: 5px 2px;
+            padding: 5px 8px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 13px;
         }
         .btn-update {
-            background-color: #4CAF50; color: white;
-            border: none; border-radius: 5px;
+            background-color: #28a745;
+            color: white;
         }
         .btn-delete {
-            background-color: #f44336; color: white;
-            border: none; border-radius: 5px;
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-giohang {
+            background-color: #007bff;
+            color: white;
         }
         .floating-btn {
-            margin-top: 10px;
-            padding: 10px;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
             background-color: #007BFF;
             color: white;
+            padding: 10px 15px;
             border: none;
-            border-radius: 6px;
+            border-radius: 50%;
+            font-size: 20px;
             cursor: pointer;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
         }
-        .pagination {
-            text-align: center;
-            margin-top: 20px;
+        .out-of-stock {
+            opacity: 0.6;
         }
-        .pagination a, .pagination span {
-            margin: 0 5px;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+            border-right: 1px solid #ccc;
+            font-size: 14px;
+        }
+        .tree {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .tree li {
+            margin: 6px 0;
+        }
+        .tree .folder > i {
+            margin-right: 6px;
+            color: #e69500;
+        }
+        .tree .file {
+            padding-left: 18px;
+        }
+        .tree .file i {
+            color: #007bff;
+            margin-right: 6px;
+        }
+        .tree a {
             text-decoration: none;
-        }
-        /* Modal hiển thị ảnh */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-}
-.modal-content {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    position: relative;
-    width: 320px; /* Giảm chiều rộng modal */
-    max-width: 90%;
-}
-        .modal-content img {
-            max-width: 200px;
-            border-radius: 10px;
-        }
-        .modal img {
-            width: 200px; /* Giảm kích thước ảnh */
-            height: 200px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-        .close-btn {
-            position: absolute;
-            top: 20px; right: 30px;
-            font-size: 30px;
             color: #333;
-            cursor: pointer;
         }
-        .close-btn {
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    font-size: 20px;
-    cursor: pointer;
-    color: red;
-}
+        .tree a:hover {
+            color: #007bff;
+            text-decoration: underline;
+        }
+        
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <h3>Lọc người dùng</h3>
-    <form method="GET">
-        <select name="quyen">
-            <option value="">-- Tất cả quyền --</option>
-            <option value="0" <?= $quyen === "0" ? "selected" : "" ?>>Admin</option>
-            <option value="1" <?= $quyen === "1" ? "selected" : "" ?>>User</option>
-        </select>
-        <button type="submit" class="btn-update">Lọc</button>
-    </form>
-    <button class="floating-btn" onclick="themnguoidung()"><i class="fas fa-plus"></i> Thêm người dùng</button>
+    <h3><i class="fas fa-sitemap"></i> Cây danh mục</h3>
+    <ul class="tree">
+        <?php
+        $grouped = [];
+        foreach ($danhmucs as $dm) {
+            $grouped[$dm['loaidm']][] = $dm;
+        }
+        foreach ($grouped as $loai => $dms): ?>
+            <li class="folder">
+                <i class="fas fa-folder"></i> <?= htmlspecialchars($loai) ?>
+                <ul>
+                    <?php foreach ($dms as $dm): ?>
+                        <li class="file">
+                            <a href="?iddm=<?= $dm['iddm'] ?>">
+                                <i class="<?= htmlspecialchars($dm['icon']) ?>"></i>
+                                <?= htmlspecialchars($dm['tendm']) ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </li>
+        <?php endforeach; ?>
+    </ul>
 </div>
 
-<div class="container">
-    <div class="user-grid">
-        <?php foreach ($users as $user): ?>
-            <div class="card">
-                <img src="<?= htmlspecialchars($user['anh']) ?>" alt="Ảnh người dùng"
-                     onclick="openModal('<?= htmlspecialchars($user['anh']) ?>', <?= $user['iduser'] ?>)">
-                <h3>🧑 <?= htmlspecialchars($user['hoten']) ?></h3>
-                <p>📧 <?= htmlspecialchars($user['tendn']) ?></p>
-                <p>✉️ <?= htmlspecialchars($user['email']) ?></p>
-                <p>📞 <?= htmlspecialchars($user['sdt']) ?></p>
-                <p>📍 <?= htmlspecialchars($user['diachi']) ?></p>
-                <p>🔒 Quyền: <?= htmlspecialchars($user['quyen']) ?></p>
-                <div class="btn-group">
-                    <button onclick="capnhatnguoidung(<?= $user['iduser'] ?>)" class="btn btn-update"><i class="fas fa-edit"></i></button>
-                    <button onclick="xoanguoidung(<?= $user['iduser'] ?>)" class="btn btn-delete"><i class="fas fa-trash-alt"></i></button>
+    <div class="product-wrapper">
+        <?php foreach ($products as $row): ?>
+            <?php
+                $soluong_conlai = max(0, $row['soluong_conlai']);
+                $classOutOfStock = ($soluong_conlai <= 0) ? "out-of-stock" : "";
+                $giagoc = $row['giaban'];
+                $phantram_giam = $row['giamgia'] ?? 0;
+                $gia_sau_giam = ($phantram_giam > 0) ? $giagoc * (1 - $phantram_giam / 100) : $giagoc;
+            ?>
+            <div class="product-card <?= $classOutOfStock ?>">
+                <img src="<?= htmlspecialchars($row['anh']) ?>" alt="<?= htmlspecialchars($row['tensp']) ?>">
+                <h3><?= htmlspecialchars(mb_strimwidth($row['tensp'], 0, 20, "...")) ?></h3>
+                <p class="desc"><?= htmlspecialchars(mb_strimwidth($row['mota'], 0, 50, "...")) ?></p>
+                <div class="price">
+                    <?php if ($phantram_giam > 0): ?>
+                        <span class="old-price"><?= number_format($giagoc, 0, ",", ".") ?>đ</span>
+                        <span class="discount">-<?= (int)$phantram_giam ?>%</span><br>
+                        <span class="new-price" style="color:red;">
+                            <?= number_format($gia_sau_giam, 0, ",", ".") ?>đ
+                        </span>
+                    <?php else: ?>
+                        <span class="new-price"><?= number_format($giagoc, 0, ",", ".") ?>đ</span>
+                    <?php endif; ?>
+                </div>
+                <div class="info">
+                    📦 SL: <strong><?= (int)$row['soluong'] ?></strong> | 
+                    Đã bán: <strong><?= (int)$row['soluong_daban'] ?></strong><br>
+                    Còn lại: <strong><?= ($soluong_conlai > 0 ? $soluong_conlai : 'Hết hàng') ?></strong><br>
+                    ⭐ <?= round($row['trungbinhsao'], 1) ?> sao
+                </div>
+                <div class="btn-group-sp">
+                    <button class="btn btn-update"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-delete"><i class="fas fa-trash-alt"></i></button>
+                    <?php if ($soluong_conlai > 0): ?>
+                        <button class="btn btn-giohang"><i class="fas fa-cart-plus"></i></button>
+                    <?php endif; ?>
                 </div>
             </div>
         <?php endforeach; ?>
-    </div>
-
-    <?php if ($totalPages > 1): ?>
-        <div class="pagination">
+        <div style="margin-top: 20px; text-align: center;">
             <?php if ($page > 1): ?>
-                <a href="?query=<?= urlencode($query) ?>&quyen=<?= $quyen ?>&page=<?= $page - 1 ?>" class="btn-update">← Trước</a>
+                <a href="?page=<?= $page - 1 ?>&query=<?= urlencode($query) ?>" class="btn btn-giohang">← Trước</a>
             <?php endif; ?>
-            <span>Trang <?= $page ?> / <?= $totalPages ?></span>
-            <?php if ($page < $totalPages): ?>
-                <a href="?query=<?= urlencode($query) ?>&quyen=<?= $quyen ?>&page=<?= $page + 1 ?>" class="btn-update">Sau →</a>
-            <?php endif; ?>
-        </div>
-    <?php endif; ?>
-</div>
 
-<!-- Modal cập nhật ảnh -->
-<form action="#" method="POST" enctype="multipart/form-data">
-    <div id="imageModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <img id="modalImage" src="" alt="Ảnh người dùng"><br><br>
-            <input type="hidden" name="iduser" id="iduser" value="">
-            <input type="file" id="fileInput" name="fileInput" accept="image/*" onchange="loadanh()"><br><br>
-            <input type="submit" value="Cập nhật ảnh" name="capnhatanhuser" class="btn btn-update">
+            <span style="margin: 0 10px;">Trang <?= $page ?> / <?= $total_pages ?></span>
+
+            <?php if ($page < $total_pages): ?>
+                <a href="?page=<?= $page + 1 ?>&query=<?= urlencode($query) ?>" class="btn btn-giohang">Sau →</a>
+            <?php endif; ?>
         </div>
     </div>
-    <?php
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (isset($_POST['capnhatanhuser'])) {
-            $kq = capnhatAnhUser();
-            if ($kq) {
-                echo "<script>showCustomAlert('🐳 Đổi Avt Thành Công!', 'Ảnh người dùng đã được đổi!', '../picture/success.png'); setTimeout(goBack, 3000);</script>";
-            } else {
-                echo "<script>showCustomAlert('🐳 Cài Đặt Avt Thất Bại!', '$kq', '../picture/error.png');</script>";
-            }
-        }
-    }
-    ?>
-</form>
+
+
+<button class="floating-btn" onclick="themsanpham()">
+    <i class="fas fa-plus"></i>
+</button>
 
 <script>
-    function themnguoidung() {
-        window.location.href = "themnguoidung.php";
+    function themsanpham() {
+        window.location.href = "themsanpham.php";
     }
 </script>
 </body>
