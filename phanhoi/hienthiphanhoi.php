@@ -90,5 +90,6 @@ if ($query != '') {
             </tbody>
         </table>
     </div>
+    
 </body>
 </html>
