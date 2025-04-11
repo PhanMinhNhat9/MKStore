@@ -229,10 +229,13 @@
     <!-- Chân web -->
     <footer class="footer">
         <div class="footer-content">
-            <p class="copyright">© 2025 M'K STORE - All rights reserved.</p>
+            <div class="copyright">
+                <span>© 2025 M'K STORE - All rights reserved.</span>
+            </div>
+
             <div class="contact-info">
-                <span><i class="fas fa-map-marker-alt"></i> 123 Đường ABC, TP.HCM</span>
-                <span><i class="fas fa-phone"></i> 0123 456 789</span>
+                <span><i class="fas fa-map-marker-alt"></i> Địa chỉ: 73 Nguyễn Huệ, phường 2, thành phố Vĩnh Long, tỉnh Vĩnh Long </span>
+                <span><i class="fas fa-phone"></i> 0702 8045 94</span>
             </div>
             <div class="social-links">
                 <a href="#" class="social-icon"><i class="fab fa-facebook-messenger"></i> Zalo</a>

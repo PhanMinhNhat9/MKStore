@@ -203,7 +203,9 @@ body {
     gap: 15px; 
     font-size: 14px;
 }
-
+.copyright {
+    padding: 8px;
+}
 .social-links {
     display: flex;
     gap: 10px; 
@@ -220,7 +222,7 @@ body {
     color: #ffcc00;
 }
 
-.footer .copyright {
+.footer  {
     font-size: 14px;
 }
 
