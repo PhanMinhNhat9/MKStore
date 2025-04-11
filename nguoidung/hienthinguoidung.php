@@ -19,7 +19,7 @@ if ($query != '') {
     $params['searchTerm'] = "%{$query}%";
     $params['searchTerm1'] = "%{$query}%";
 }
-if ($quyen !== '') {
+if ($quyen != '') {
     $conditions[] = "quyen = :quyen";
     $params['quyen'] = $quyen;
 }

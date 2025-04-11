@@ -8,6 +8,8 @@ $danhmucs = $stmt_dm->fetchAll(PDO::FETCH_ASSOC);
 
 // Lấy sản phẩm có phân trang
 $query = isset($_GET['query']) ? trim($_GET['query']) : '';
+$dm = isset($_GET['iddm']) ? trim($_GET['iddm']) : '';
+echo $dm;
 $products = [];
 $params = [];
 $limit = 4; // Số sản phẩm mỗi trang
@@ -25,19 +27,27 @@ $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong, sp.idd
         LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
         LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm AND CURDATE() BETWEEN mg.ngayhieuluc AND mg.ngayketthuc";
 
-if ($query !== '') {
+// Điều kiện lọc theo query và iddm
+if ($query !== '' && $dm !== '') {
+    $sql .= " WHERE (sp.tensp LIKE :searchTerm OR sp.mota LIKE :searchTerm1) AND sp.iddm = :iddm";
+    $params['searchTerm'] = "%$query%";
+    $params['searchTerm1'] = "%$query%";
+    $params['iddm'] = $dm;
+} elseif ($query !== '') {
     $sql .= " WHERE sp.tensp LIKE :searchTerm OR sp.mota LIKE :searchTerm1";
     $params['searchTerm'] = "%$query%";
     $params['searchTerm1'] = "%$query%";
+} elseif ($dm !== '') {
+    $sql .= " WHERE sp.iddm = :iddm";
+    $params['iddm'] = $dm;
 }
 
 $sql .= " GROUP BY sp.idsp ORDER BY sp.thoigianthemsp DESC LIMIT :limit OFFSET :offset";
 
+// Chuẩn bị và bind
 $stmt = $pdo->prepare($sql);
-
-// Gán giá trị tham số
 foreach ($params as $key => $value) {
-    $stmt->bindValue(':' . $key, $value, PDO::PARAM_STR);
+    $stmt->bindValue(':' . $key, $value, is_numeric($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
 }
 $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -47,18 +57,29 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Tính tổng số trang
 $count_sql = "SELECT COUNT(DISTINCT sp.idsp) FROM sanpham sp";
-if ($query !== '') {
+
+if ($query !== '' && $dm !== '') {
+    $count_sql .= " WHERE (sp.tensp LIKE :searchTerm OR sp.mota LIKE :searchTerm1) AND sp.iddm = :iddm";
+} elseif ($query !== '') {
     $count_sql .= " WHERE sp.tensp LIKE :searchTerm OR sp.mota LIKE :searchTerm1";
+} elseif ($dm !== '') {
+    $count_sql .= " WHERE sp.iddm = :iddm";
 }
+
 $count_stmt = $pdo->prepare($count_sql);
 if ($query !== '') {
     $count_stmt->bindValue(':searchTerm', "%$query%");
     $count_stmt->bindValue(':searchTerm1', "%$query%");
 }
+if ($dm !== '') {
+    $count_stmt->bindValue(':iddm', $dm);
+}
 $count_stmt->execute();
+
 $total_products = $count_stmt->fetchColumn();
 $total_pages = ceil($total_products / $limit);
 ?>
+
 
 
 <!DOCTYPE html>
@@ -105,7 +126,11 @@ $total_pages = ceil($total_products / $limit);
     justify-content: center; /* ✅ Giúp căn giữa các card */
     height: 200px;
 }
-
+.phantrang {
+    width: 100%;
+    text-align: center;
+    margin-top: 30px;
+}
         .product-card {
             width: 200px;
             height: 300px;
@@ -192,7 +217,7 @@ $total_pages = ceil($total_products / $limit);
             width: 250px;
             background-color: #f9f9f9;
             padding: 20px;
-            height: 400px;
+            height: 390px;
             overflow-y: auto;
             border-right: 1px solid #ccc;
             font-size: 14px;
@@ -233,24 +258,25 @@ $total_pages = ceil($total_products / $limit);
     <ul class="tree">
         <?php
         $grouped = [];
-        foreach ($danhmucs as $dm) {
-            $grouped[$dm['loaidm']][] = $dm;
+        foreach ($danhmucs as $dmsp) {
+            $grouped[$dmsp['loaidm']][] = $dmsp;
         }
         foreach ($grouped as $loai => $dms): ?>
             <li class="folder">
                 <i class="fas fa-folder"></i> <?= htmlspecialchars($loai) ?>
                 <ul>
-                    <?php foreach ($dms as $dm): ?>
+                    <?php foreach ($dms as $dm_item): ?>
                         <li class="file">
-                            <a href="?iddm=<?= $dm['iddm'] ?>">
-                                <i class="<?= htmlspecialchars($dm['icon']) ?>"></i>
-                                <?= htmlspecialchars($dm['tendm']) ?>
+                            <a href="?iddm=<?= $dm_item['iddm'] ?>">
+                                <i class="<?= htmlspecialchars($dm_item['icon']) ?>"></i>
+                                <?= htmlspecialchars($dm_item['tendm']) ?>
                             </a>
                         </li>
                     <?php endforeach; ?>
                 </ul>
             </li>
         <?php endforeach; ?>
+        
     </ul>
 </div>
 
@@ -293,17 +319,30 @@ $total_pages = ceil($total_products / $limit);
                 </div>
             </div>
         <?php endforeach; ?>
-        <div style="margin-top: 20px; text-align: center;">
+        
+        <div class="phantrang" style="margin-top: 20px; text-align: center;">
+            <?php
+            // Tạo chuỗi query giữ nguyên các tham số
+            $baseUrl = '?';  
+            if ($query !== '') {
+                $baseUrl .= 'query=' . urlencode($query) . '&';
+            }
+            if ($dm !== '') {
+                $baseUrl .= 'iddm=' . urlencode($dm) . '&';
+            }
+            ?>
+
             <?php if ($page > 1): ?>
-                <a href="?page=<?= $page - 1 ?>&query=<?= urlencode($query) ?>" class="btn btn-giohang">← Trước</a>
+                <a href="<?= $baseUrl ?>page=<?= $page - 1 ?>" class="btn btn-giohang">← Trước</a>
             <?php endif; ?>
 
             <span style="margin: 0 10px;">Trang <?= $page ?> / <?= $total_pages ?></span>
 
             <?php if ($page < $total_pages): ?>
-                <a href="?page=<?= $page + 1 ?>&query=<?= urlencode($query) ?>" class="btn btn-giohang">Sau →</a>
+                <a href="<?= $baseUrl ?>page=<?= $page + 1 ?>" class="btn btn-giohang">Sau →</a>
             <?php endif; ?>
         </div>
+
     </div>
 
 
