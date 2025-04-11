@@ -281,7 +281,6 @@ $cartProducts = getCartProducts();
             <?php foreach ($products as $product): ?>
                 <div class="product-item">
                     <?php
-                    // Chuẩn hóa đường dẫn ảnh
                     $imagePath = str_replace('\\', '/', $product['anh']);
                     $fullImageUrl = "http://localhost/MKstore/" . $imagePath;
                     ?>
