@@ -10,7 +10,7 @@ $danhmucs = $stmt_dm->fetchAll(PDO::FETCH_ASSOC);
 $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $products = [];
 $params = [];
-$limit = 3; // Số sản phẩm mỗi trang
+$limit = 4; // Số sản phẩm mỗi trang
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
@@ -103,6 +103,7 @@ $total_pages = ceil($total_products / $limit);
     flex-wrap: wrap;
     gap: 20px;
     justify-content: center; /* ✅ Giúp căn giữa các card */
+    height: 200px;
 }
 
         .product-card {
@@ -191,7 +192,7 @@ $total_pages = ceil($total_products / $limit);
             width: 250px;
             background-color: #f9f9f9;
             padding: 20px;
-            height: 100vh;
+            height: 400px;
             overflow-y: auto;
             border-right: 1px solid #ccc;
             font-size: 14px;
