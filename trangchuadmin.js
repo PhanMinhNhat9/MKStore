@@ -74,7 +74,7 @@ function loadDLSanpham() {
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
-            iframe.src = "sanpham/hienthisanpham.php";
+            iframe.src = "vd.php";
         } else {
             console.error("Không tìm thấy iframe có ID 'Frame'");
         }
