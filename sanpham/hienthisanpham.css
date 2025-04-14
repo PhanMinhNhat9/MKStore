@@ -3,17 +3,7 @@ body {
     font-family: Arial, sans-serif;
     display: flex;
 }
-.sidebar {
-    width: 260px;
-    background-color: #f5f5f5;
-    padding: 20px;
-    height: 100vh;
-    overflow-y: auto;
-    border-right: 1px solid #ddd;
-}
-.sidebar h3 {
-    margin-top: 0;
-}
+
 .danhmuc-item {
     background: #fff;
     margin-bottom: 10px;
@@ -58,7 +48,6 @@ margin-top: 30px;
 .product-card h3 {
     font-size: 16px;
     margin: 8px 0;
-    /* min-height: 40px; */
 }
 
 .desc {
@@ -120,47 +109,7 @@ margin-top: 30px;
 .out-of-stock {
     opacity: 0.6;
 }
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    display: flex;
-}
 
-/* .sidebar {
-    width: 250px;
-    background-color: #f9f9f9;
-    padding: 20px;
-    height: 390px;
-    overflow-y: auto;
-    border-right: 1px solid #ccc;
-    font-size: 14px;
-}
-.tree {
-    list-style-type: none;
-    padding-left: 0;
-}
-.tree li {
-    margin: 6px 0;
-}
-.tree .folder > i {
-    margin-right: 6px;
-    color: #e69500;
-}
-.tree .file {
-    padding-left: 18px;
-}
-.tree .file i {
-    color: #007bff;
-    margin-right: 6px;
-}
-.tree a {
-    text-decoration: none;
-    color: #333;
-}
-.tree a:hover {
-    color: #007bff;
-    text-decoration: underline;
-} */
 .sidebar {
     width: 260px;
     background: #fff;
@@ -232,19 +181,18 @@ body {
     text-decoration: underline;
 }
 
-/* Optional: Hover effect for folder */
+
 .tree .folder:hover {
     color: #007bff;
 }
 
-/* Optional: Collapse/expand effect (with JS) */
+
 .tree ul {
     padding-left: 16px;
     margin-top: 6px;
+    display: block;
 }
-.tree .folder ul {
-    display: none;
-}
+
 .alert-success, .alert-error {
     display: none;
     position: fixed;

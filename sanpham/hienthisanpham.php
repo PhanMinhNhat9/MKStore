@@ -4,12 +4,11 @@ $pdo = connectDatabase();
 
 // Lấy danh mục
 $stmt_dm = $pdo->query("SELECT iddm, tendm, loaidm, icon, mota, thoigian FROM danhmucsp ORDER BY loaidm, iddm");
-$danhmucs = $stmt_dm->fetchAll(PDO::FETCH_ASSOC);
+$categories = $stmt_dm->fetchAll(PDO::FETCH_ASSOC);
 
 // Lấy sản phẩm có phân trang
 $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $dm = isset($_GET['iddm']) ? trim($_GET['iddm']) : '';
-echo $dm;
 $products = [];
 $params = [];
 $limit = 4; // Số sản phẩm mỗi trang
@@ -99,39 +98,39 @@ $total_pages = ceil($total_products / $limit);
     <h3><i class="fas fa-sitemap"></i> Cây danh mục</h3>
     <ul class="tree">
         <?php
-        $grouped = [];
-        foreach ($danhmucs as $dmsp) {
-            $grouped[$dmsp['loaidm']][] = $dmsp;
-        }
-        foreach ($grouped as $loai => $dms): ?>
-            <li class="folder">
-                <i class="fas fa-folder"></i> <?= htmlspecialchars($loai) ?>
-                <ul>
-                    <?php foreach ($dms as $dm_item): ?>
-                        <li class="file">
-                            <a href="?iddm=<?= $dm_item['iddm'] ?>">
-                                <i class="<?= htmlspecialchars($dm_item['icon']) ?>"></i>
-                                <?= htmlspecialchars($dm_item['tendm']) ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </li>
-        <?php endforeach; ?>
+       
+
+$categoryTree = [];
+foreach ($categories as $category) {
+    if ($category['loaidm'] == 0) {
+        // Danh mục cha
+        $categoryTree[$category['iddm']] = $category;
+        $categoryTree[$category['iddm']]['children'] = [];
+    } else {
+        // Danh mục con
+        $categoryTree[$category['loaidm']]['children'][] = $category;
+    }
+}
+            
+        ?>
+           <!-- Hiển thị danh mục -->
+<?php foreach ($categoryTree as $parent): ?>
+    <li class="folder">
+        <i class="fas fa-folder"></i> <?= htmlspecialchars($parent['tendm']) ?>
+        <ul style="display: block;">
+            <?php foreach ($parent['children'] as $child): ?>
+                <li class="file">
+                    <a href="?iddm=<?= $child['iddm'] ?>">
+                        <img style="width:20px; height:20px; border-radius:50%" src="../<?= htmlspecialchars($child['icon']) ?>">
+                        <?= htmlspecialchars($child['tendm']) ?>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </li>
+<?php endforeach; ?>
     </ul>
 </div>
-<script>
-document.querySelectorAll('.tree .folder').forEach(folder => {
-    folder.addEventListener('click', function(e) {
-        // Chặn khi người dùng click vào icon hoặc text con
-        if (e.target.tagName === 'A' || e.target.closest('a')) return;
-        const subList = this.querySelector('ul');
-        if (subList) {
-            subList.style.display = subList.style.display === 'none' ? 'block' : 'none';
-        }
-    });
-});
-</script>
 
     <div class="product-wrapper">
         <?php foreach ($products as $row): ?>
