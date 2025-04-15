@@ -59,7 +59,9 @@ header h1 {
     max-height: 550px;
     
 }
-
+.dm-table-container::-webkit-scrollbar {
+    display: none;
+}
 .dm-table {
     width: 100%;
     border-collapse: collapse;

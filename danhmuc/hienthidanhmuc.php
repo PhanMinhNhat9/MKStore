@@ -36,11 +36,11 @@
             <table class="dm-table">
                 <thead>
                     <tr>
-                        <th>ID <i class="fas fa-sort sort-icon" onclick="sortTable('id')"></i></th>
+                        <th>ID</th>
                         <th>Tên Danh Mục</th>
                         <th>Icon</th>
                         <th>Mô Tả</th>
-                        <th>Thời Gian <i class="fas fa-sort sort-icon" onclick="sortTable('time')"></i></th>
+                        <th>Thời Gian</th>
                         <th>Hành Động</th>
                     </tr>
                 </thead>
