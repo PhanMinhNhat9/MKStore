@@ -65,7 +65,6 @@ $totalPages = ceil($totalUsers / $limit);
     <script src="../trangchuadmin.js"></script>
     <link rel="stylesheet" href="hienthinguoidung.css?v=<?= time(); ?>">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
-    
 </head>
 <body>
 

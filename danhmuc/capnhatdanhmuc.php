@@ -88,13 +88,6 @@
                                                     }, 3000); // Sau 3 giây
                                                 };
                                             </script>";
-                                        // echo "
-                                        //     <script>
-                                        //         showCustomAlert('🐳 Cập Nhật Thành Công!', 'Danh mục đã được cập nhật thành công!', '../picture/success.png');
-                                        //         setTimeout(function() {
-                                        //             goBack();
-                                        //         }, 3000); 
-                                        //     </script>";
                                     } else {
                                         echo "
                                             <script>

@@ -8,7 +8,9 @@ body {
     flex-direction: column;
     min-height: 100vh;
 }
-
+body::-webkit-scrollbar {
+    display: none;
+}
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -359,8 +361,7 @@ body {
 
 #Frame {
     width: 100%;  /* Chiều rộng tối đa */
-    height: 100%; 
-    min-height: 410px;
+    min-height: 600px;
     display: flex;
 }
 .dropdowntk {

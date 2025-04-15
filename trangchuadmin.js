@@ -237,7 +237,7 @@ function showErrorMessage(message) {
   
 function themdmcon(id) {
     let encodedId = btoa(id);
-    window.location.href = "themdmcon.php?id=" + encodeURIComponent(encodedId);
+    window.top.location.href = "themdmcon.php?id=" + encodeURIComponent(encodedId);
 }
 
 function capnhatdanhmuc() {

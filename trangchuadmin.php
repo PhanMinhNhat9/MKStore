@@ -222,9 +222,9 @@
     </script>
 
     <!-- Nội dung trang web -->
-    <div class="main-content" id="main-content">
-        <iframe id="Frame" src="" scrolling="no"></iframe>
-    </div>
+        <div class="main-content" id="main-content">
+            <iframe id="Frame" src="" scrolling="no"></iframe>
+        </div>
 
     <!-- Chân web -->
     <footer class="footer">

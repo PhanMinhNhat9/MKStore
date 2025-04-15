@@ -24,53 +24,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Danh Mục</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="hienthidanhmuc.css?v=<?= time(); ?>">
     <script src="../trangchuadmin.js"></script>
-    <title></title>
+    <link rel="stylesheet" href="hienthidanhmuc.css?v=<?= time(); ?>">
 </head>
 <body>
-    <div class="dm-table-container">
-        <table class="dm-table">
-            <thead>
-                <tr>
-                    <th style="text-align: center;">ID</th>
-                    <th style="text-align: center;">Tên Danh Mục</th>
-                    <th style="text-align: center;">Icon</th>
-                    <th style="text-align: center;">Mô Tả</th>
-                    <th style="text-align: center;">Thời Gian</th>
-                    <th style="text-align: center;">Hành Động</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($categoryTree as $parent): ?>
-                    <tr class="parent">
-                        <td style="text-align: center;"><?php echo $parent['iddm']; ?></td>
-                        <td><?= $parent['tendm'] ?></td>
-                        <td style="text-align: center;">
-                            <img src="../<?= $parent['icon'] ?>" class="icon" alt="Icon">
-                        </td>
-                        <td><?= $parent['mota'] ?></td>
-                        <td style="text-align: center;"><?= $parent['thoigian'] ?></td>
-                        <td style="text-align: center;">
-                            <i onclick="themdmcon(<?php echo $parent['iddm']; ?>)" class="fas fa-plus-circle action-icons btn-xoadm" title="Thêm"></i>
-                            <i onclick="capnhatdanhmuc()" class="fas fa-edit action-icons btn-updatedm" title="Sửa"></i>
-                        </td>
+    <div class="container">
+
+        <div class="dm-table-container">
+            <table class="dm-table">
+                <thead>
+                    <tr>
+                        <th>ID <i class="fas fa-sort sort-icon" onclick="sortTable('id')"></i></th>
+                        <th>Tên Danh Mục</th>
+                        <th>Icon</th>
+                        <th>Mô Tả</th>
+                        <th>Thời Gian <i class="fas fa-sort sort-icon" onclick="sortTable('time')"></i></th>
+                        <th>Hành Động</th>
                     </tr>
-                    <?php foreach ($parent['children'] as $child): ?>
-                        <tr class="child">
-                            <td style="text-align: center;"><?= $child['iddm'] ?></td>
-                            <td> 🌱 <?= $child['tendm'] ?></td>
-                            <td style="text-align: center;">
-                                <img src="../<?= $child['icon'] ?>" class="icon" alt="Icon">
+                </thead>
+                <tbody id="categoryTable">
+                    <?php foreach ($categoryTree as $parent): ?>
+                        <tr class="parent">
+                            <td><?php echo $parent['iddm']; ?></td>
+                            <td><?php echo $parent['tendm']; ?></td>
+                            <td>
+                                <img src="../<?php echo $parent['icon']; ?>" class="icon" alt="Icon danh mục">
                             </td>
-                            <td><?= $child['mota'] ?></td>
-                            <td style="text-align: center;"><?= $child['thoigian'] ?></td>
+                            <td><?php echo $parent['mota']; ?></td>
+                            <td><?php echo $parent['thoigian']; ?></td>
+                            <td>
+                                <button onclick="themdmcon(<?php echo $parent['iddm']; ?>)" class="action-btn add-btn" title="Thêm danh mục con">
+                                    <i class="fas fa-plus-circle"></i>
+                                </button>
+                                <button onclick="capnhatdanhmuc()" class="action-btn edit-btn" title="Sửa danh mục">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                
+                            </td>
                         </tr>
+                        <?php foreach ($parent['children'] as $child): ?>
+                            <tr class="child">
+                                <td><?php echo $child['iddm']; ?></td>
+                                <td><span class="child-indent">↳</span> <?php echo $child['tendm']; ?></td>
+                                <td>
+                                    <img src="../<?php echo $child['icon']; ?>" class="icon" alt="Icon danh mục con">
+                                </td>
+                                <td><?php echo $child['mota']; ?></td>
+                                <td><?php echo $child['thoigian']; ?></td>
+                                <td></td>
+                            </tr>
+                        <?php endforeach; ?>
                     <?php endforeach; ?>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>
