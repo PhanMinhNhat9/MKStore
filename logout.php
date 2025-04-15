@@ -5,6 +5,6 @@
     setcookie(session_name(), '', time() - 3600, '/'); // Xóa cookie session nếu có
 
     // Chuyển hướng về trang đăng nhập với thông báo timeout
-    header("Location: GUI&dangnhap.php?timeout=1");
+    header("Location: GUI&dangnhap.php");
     exit();
 ?>
