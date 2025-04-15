@@ -88,7 +88,7 @@ $total_pages = ceil($total_products / $limit);
     <title>Sản phẩm theo danh mục</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <script src="../trangchuadmin.js"></script>
-    <link rel="stylesheet" href="hienthisanpham.css?v=<?php time();?>">
+    <link rel="stylesheet" href="hienthisanpham.css?v=<? time();?>">
 </head>
 <body>
 <div id="success-alert" class="alert-success"></div>

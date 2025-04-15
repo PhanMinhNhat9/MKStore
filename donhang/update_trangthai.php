@@ -28,7 +28,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['iddh']) && isset($_POS
         echo "<script> 
                 goBack();
             </script>";
-        exit();
     }
 }
 ?>

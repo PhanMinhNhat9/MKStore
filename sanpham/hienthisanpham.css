@@ -113,7 +113,7 @@ margin-top: 30px;
 .sidebar {
     width: 260px;
     background: #fff;
-    padding: 20px;
+    padding: 10px;
     height: 390px;
     overflow-y: auto;
     border-right: 1px solid #ddd;
@@ -125,6 +125,7 @@ margin-top: 30px;
 .sidebar h3 {
     font-size: 16px;
     margin-bottom: 10px;
+    margin: 0;
     color: #444;
     display: flex;
     align-items: center;
