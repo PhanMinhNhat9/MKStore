@@ -45,11 +45,11 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
 <body>
     <div class="sidebar">
         <h1>Hệ Thống Bán Hàng</h1>
+        <label for="statusFilter">Lọc theo trạng thái:</label>
         <form id="filterForm" method="GET" action="">
-            <label for="statusFilter">Lọc theo trạng thái:</label>
             <select id="statusFilter" name="status" onchange="document.getElementById('filterForm').submit()">
                 <option value="all" <?= $status == 'all' ? 'selected' : '' ?>>Tất cả</option>
-                <option value="Chờ xác nhận" <?= $status == 'Chờ xử lý' ? 'selected' : '' ?>>🔵 Chờ xác nhận</option>
+                <option value="Chờ xác nhận" <?= $status == 'Chờ xác nhận' ? 'selected' : '' ?>>🔵 Chờ xác nhận</option>
                 <option value="Đã xác nhận" <?= $status == 'Đã xác nhận' ? 'selected' : '' ?>>🟢 Đã xác nhận</option>
                 <option value="Đã thanh toán" <?= $status == 'Đã thanh toán' ? 'selected' : '' ?>>🟢 Đã thanh toán</option>
                 <option value="Chưa thanh toán" <?= $status == 'Chưa thanh toán' ? 'selected' : '' ?>>🟠 Chưa thanh toán</option>

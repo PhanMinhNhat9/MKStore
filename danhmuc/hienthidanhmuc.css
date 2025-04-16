@@ -40,6 +40,11 @@ body {
     background-color: #4a5568;
     color: #fff;
     font-size: 14px;
+    outline: none;
+}
+.sidebar select:focus {
+    border-color: #ffffff;
+    box-shadow: 0 0 6px rgba(123, 187, 255, 0.884);
 }
 .sidebar button {
     width: 100%;

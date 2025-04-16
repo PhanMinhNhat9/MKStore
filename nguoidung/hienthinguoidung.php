@@ -69,7 +69,8 @@ $totalPages = ceil($totalUsers / $limit);
 <body>
 
 <div class="sidebar">
-    <h3>Lọc người dùng</h3>
+    <h1>Hệ Thống Bán Hàng</h1>
+    <label for="quyen" style="color:#ffffff;">Lọc theo theo quyền:</label>
     <form method="GET">
         <select name="quyen">
             <option value="" style="text-align: center">-- Tất cả quyền --</option>

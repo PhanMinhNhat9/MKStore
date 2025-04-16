@@ -4,7 +4,7 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f0f4f8;
+    background-color: #f7fafc;
     margin: 0;
     padding: 0;
     display: flex;
@@ -32,7 +32,7 @@ body {
 .sidebar label {
     font-size: 14px;
     color: #cbd5e1;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
     display: block;
 }
 
@@ -46,10 +46,13 @@ body {
     font-size: 14px;
     margin-bottom: 16px;
 }
-
+.sidebar select:focus {
+    border-color: #ffffff;
+    box-shadow: 0 0 6px rgba(123, 187, 255, 0.884);
+}
 .main-content {
     margin-left: 256px;
-    padding: 32px;
+    padding: 25px;
     flex: 1;
 }
 
