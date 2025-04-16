@@ -113,11 +113,12 @@
 
 <script>
     function thanhtoan() {
-        var phoneNumber = document.getElementById("phone").value;
-        var fullName = document.getElementById("name").value;
-        // Mã hóa dữ liệu để tránh lỗi URL
-        var url = "thanhtoan.php?phone=" + encodeURIComponent(phoneNumber) + "&name=" + encodeURIComponent(fullName);
-        window.location.href = url;
+        
+        // var phoneNumber = document.getElementById("phone").value;
+        // var fullName = document.getElementById("name").value;
+        // // Mã hóa dữ liệu để tránh lỗi URL
+        // var url = "thanhtoan.php?phone=" + encodeURIComponent(phoneNumber) + "&name=" + encodeURIComponent(fullName);
+        // window.location.href = url;
     }
 
     function updateQuantity(idsp, change) {
