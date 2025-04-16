@@ -95,7 +95,7 @@ function loadDLDonhang() {
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
-            iframe.src = "donhang/hienthidonhang.php";
+            iframe.src = "vd.php";
         } else {
             console.error("Không tìm thấy iframe có ID 'Frame'");
         }
@@ -234,10 +234,13 @@ function showErrorMessage(message) {
     }`;
     document.head.appendChild(style);
     
-  
+function themdmcha(id) {
+    let encodedId = btoa(id);
+    window.top.location.href = "themdm.php?id=" + encodeURIComponent(encodedId);
+}
 function themdmcon(id) {
     let encodedId = btoa(id);
-    window.top.location.href = "themdmcon.php?id=" + encodeURIComponent(encodedId);
+    window.top.location.href = "themdm.php?id=" + encodeURIComponent(encodedId);
 }
 
 function capnhatdanhmuc() {

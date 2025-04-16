@@ -16,7 +16,7 @@
     <script src="../trangchuadmin.js"></script>
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
-    <link rel="stylesheet" href="themdmcon.css">
+    <link rel="stylesheet" href="themdm.css">
 </head>
 <body>
 
