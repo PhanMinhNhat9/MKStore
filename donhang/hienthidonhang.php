@@ -6,7 +6,7 @@ $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $status = isset($_GET['status']) ? $_GET['status'] : 'all';
 
 $sql = "
-    SELECT iddh, idkh, tenkh, tongtien, trangthai, phuongthuctt, thoigian 
+    SELECT iddh, sdt, tenkh, tongtien, trangthai, phuongthuctt, thoigian 
     FROM donhang 
     WHERE 1
 ";
@@ -79,7 +79,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                             <td>
                                 <form action="update_idkh.php" method="POST">
                                     <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
-                                    <input type="text" name="idkh" value="<?= $order['idkh'] ?>">
+                                    <input type="text" name="idkh" value="<?= $order['sdt'] ?>">
                                     <button type="submit"><i class="fas fa-save text-blue"></i></button>
                                 </form>
                             </td>

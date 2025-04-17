@@ -72,16 +72,48 @@
     </style>
 </head>
 <body>
+<?php
+require_once '../config.php';
+$pdo = connectDatabase();
+
+$iddh = isset($_GET['iddh']) ? intval($_GET['iddh']) : 0;
+
+if ($iddh > 0) {
+    $sql = "
+        SELECT sp.tensp, ctdh.soluong, ctdh.gia, ctdh.giagoc, ctdh.giagiam
+        FROM chitietdonhang ctdh
+        JOIN sanpham sp ON ctdh.idsp = sp.idsp
+        WHERE ctdh.iddh = :iddh
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':iddh', $iddh, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} else {
+    echo "ID đơn hàng không hợp lệ!";
+}
+?>
+
 <div class="receipt">
     <h2>MKStore</h2>
-    <div class="center">Địa chỉ: 123 Lê Lợi, Q.1, TP.HCM</div>
-    <div class="center">SĐT: 0909 123 456</div>
+    <div class="center">Địa chỉ:  Địa chỉ: 73 Nguyễn Huệ, phường 2, thành phố Vĩnh Long, tỉnh Vĩnh Long </div>
+    <div class="center">SĐT: 0702 804 594</div>
     <hr style="border: none; border-top: 1px dashed #a2c7f5; margin: 10px 0;">
 
     <div class="info">
-        <div>📅 Ngày: <?= date('d/m/Y H:i') ?></div>
-        <div>🧾 Mã HĐ: HD20250416</div>
-        <div>👤 Thu ngân: NV001</div>
+        <?php date_default_timezone_set('Asia/Ho_Chi_Minh'); ?>
+        <div>📅 Ngày: <?= date('d/m/Y H:i:s') ?></div>
+        <div>🧾 Mã ĐH: <?= $iddh ?></div>
+        <?php 
+            $stmt = $pdo->prepare("SELECT hoten FROM user WHERE iduser = :iduser");
+            $stmt->bindParam(':iduser', $_SESSION['user']['iduser'], PDO::PARAM_INT);
+            $stmt->execute();
+        
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        ?>
+        <div>👤 Thu ngân: <?= $row['hoten'] ?> </div>
     </div>
 
     <table>
@@ -89,32 +121,38 @@
         <tr>
             <th>Sản phẩm</th>
             <th>SL</th>
-            <th class="right">Giá</th>
+            <th class="right">Giá gốc</th>
+            <th class="right">Giá giảm</th>
+            <th class="right">Thành tiền</th>
         </tr>
         </thead>
         <tbody>
+        <?php foreach ($data as $row) { ?>
         <tr>
-            <td>Mì Hảo Hảo</td>
-            <td>3</td>
-            <td class="right">9.000đ</td>
+            <td><?= htmlspecialchars($row['tensp']) ?></td>
+            <td><?= $row['soluong'] ?></td>
+            <td class="right"><?= number_format($row['giagoc'], 0, ',', '.') ?> VNĐ</td>
+            <td class="right"><?= number_format($row['giagiam'], 0, ',', '.') ?> VNĐ</td>
+            <td class="right"><?= number_format($row['gia'], 0, ',', '.') ?> VNĐ</td>
         </tr>
-        <tr>
-            <td>Nước suối Lavie</td>
-            <td>2</td>
-            <td class="right">6.000đ</td>
-        </tr>
-        <tr>
-            <td>Bánh Oreo</td>
-            <td>1</td>
-            <td class="right">12.000đ</td>
-        </tr>
+        <?php } ?>
         </tbody>
     </table>
+    <?php
+        $tienmat = isset($_GET['amount']) ? intval($_GET['amount']) : 0;
+        $tienthoi = isset($_GET['tienthoi']) ? intval($_GET['tienthoi']) : 0;
 
+        $sql = "SELECT tongtien FROM donhang WHERE iddh = :iddh LIMIT 1";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':iddh', $iddh, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    ?>
     <div class="total">
-        <div class="bold">Tổng cộng: <span class="right">36.000đ</span></div>
-        <div>Tiền mặt: <span class="right">50.000đ</span></div>
-        <div>Tiền thối: <span class="right">14.000đ</span></div>
+        <div class="bold">Tổng cộng: <span class="right"><?= number_format($result['tongtien'], 0, ',', '.') ?> VNĐ</span></div>
+        <div>Tiền mặt: <span class="right"><?= number_format($tienmat, 0, ',', '.') ?> VNĐ</span></div>
+        <div>Tiền thối: <span class="right"><?= number_format($tienthoi, 0, ',', '.') ?> VNĐ</span></div>
     </div>
 
     <div class="small">
@@ -122,5 +160,23 @@
         Giữ hóa đơn để đổi/trả hàng trong vòng 3 ngày.
     </div>
 </div>
+<?php
+$idnv = $_SESSION['user']['iduser'] ?? null;
+    if ($iddh > 0 && $idnv !== null) {
+        $stmt = $pdo->prepare("
+            INSERT INTO hoadon (iddh, idnv, tiennhan, tienthoi) 
+            VALUES (:iddh, :idnv, :tiennhan, :tienthoi)
+        ");
+        $stmt->execute([
+            ':iddh' => $iddh,
+            ':idnv' => $idnv,
+            ':tiennhan' => $tienmat,
+            ':tienthoi' => $tienthoi
+        ]);
+    } else {
+        echo "Thiếu thông tin để thêm hóa đơn!";
+    }
+?>
+
 </body>
 </html>

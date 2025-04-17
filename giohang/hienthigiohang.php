@@ -102,7 +102,7 @@
             <span class="total-text">Tổng tiền: <?= number_format($thanhtien, 0, ',', '.') ?> VND</span>
             <div class="button-group">
                 <button class="back-button" onclick="goBack()"><i class="fas fa-arrow-left"></i> Quay về</button>
-                <button class="checkout-button" onclick="thanhtoan()"><i class="fas fa-credit-card"></i> Thanh toán</button>
+                <button class="checkout-button" onclick="xulydl()"><i class="fas fa-credit-card"></i> Xử lý dữ liệu</button>
             </div>
         </div>
 
@@ -112,13 +112,29 @@
 </button>
 
 <script>
-    function thanhtoan() {
-        
-        // var phoneNumber = document.getElementById("phone").value;
-        // var fullName = document.getElementById("name").value;
-        // // Mã hóa dữ liệu để tránh lỗi URL
-        // var url = "thanhtoan.php?phone=" + encodeURIComponent(phoneNumber) + "&name=" + encodeURIComponent(fullName);
-        // window.location.href = url;
+    document.getElementById('phone').addEventListener('blur', function() {
+        const phone = this.value;
+
+        if (phone.trim() !== "") {
+            fetch('get_user.php?phone=' + encodeURIComponent(phone))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('name').value = data.hoten;
+                    } else {
+                        document.getElementById('name').value = "";
+                    }
+                })
+                .catch(error => console.error('Lỗi:', error));
+        }
+    });
+
+
+    function xulydl() {
+        var phoneNumber = document.getElementById("phone").value;
+        var fullName = document.getElementById("name").value;
+        var url = "xulydl.php?phone=" + encodeURIComponent(phoneNumber) + "&name=" + encodeURIComponent(fullName);
+        window.location.href = url;
     }
 
     function updateQuantity(idsp, change) {
