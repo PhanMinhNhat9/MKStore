@@ -112,30 +112,23 @@ margin-top: 30px;
 
 .sidebar {
     width: 250px;
-    background: #f0f0f0;
+    background: #2d3748;
     padding: 10px;
     height: 100vh;
     overflow-y: auto;
     border-right: 1px solid #ddd;
     font-family: 'Segoe UI', sans-serif;
     font-size: 14px;    
-    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    box-shadow: 1px 0 5px rgba(193, 210, 255, 0.925);
 }
 
-.sidebar h3 {
-    font-size: 16px;
-    margin-bottom: 10px;
-    margin: 0;
-    color: #444;
-    display: flex;
-    align-items: center;
-}
 
-.sidebar h3 i {
-    margin-right: 8px;
-    color: #007bff;
+.sidebar h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 16px;
+    color: #ffffff;
 }
-
 .tree {
     list-style: none;
     padding-left: 0;
@@ -150,7 +143,7 @@ margin-top: 30px;
 .tree .folder {
     font-weight: 600;
     cursor: pointer;
-    color: #222;
+    color: #ffffff;
     position: relative;
 }
 
@@ -166,9 +159,9 @@ margin-top: 30px;
 .tree .file a {
     display: flex;
     align-items: center;
-    color: #333;
+    color: #cbd5e0;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: all 0.3s ease;
 }
 
 .tree .file a i {
@@ -178,14 +171,20 @@ margin-top: 30px;
 }
 
 .tree .file a:hover {
-    color: #007bff;
-    text-decoration: underline;
+    background: rgba(255, 255, 255, 0.1); /* nền mờ */
+    border-radius: 12px;
+    padding: 12px 20px;
+    color: white;
+    font-weight: bold;
+    backdrop-filter: blur(8px); /* hiệu ứng mờ nền */
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2); /* viền mờ nhẹ */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* đổ bóng nhẹ */
+    max-width: fit-content;
 }
 
 
-.tree .folder:hover {
-    color: #007bff;
-}
+
 
 
 .tree ul {

@@ -95,7 +95,7 @@ $total_pages = ceil($total_products / $limit);
 <div id="error-alert" class="alert-error"></div>
 
 <div class="sidebar">
-    <h3><i class="fas fa-sitemap"></i> Cây danh mục</h3>
+<h1>Hệ Thống Bán Hàng</h1>
     <ul class="tree">
         <?php
        
@@ -117,11 +117,10 @@ foreach ($categories as $category) {
 <?php foreach ($categoryTree as $parent): ?>
     <li class="folder">
         <i class="fas fa-folder"></i> <?= htmlspecialchars($parent['tendm']) ?>
-        <ul style="display: block;">
+        <ul style="display: block; list-style-type: none;">
             <?php foreach ($parent['children'] as $child): ?>
                 <li class="file">
-                    <a href="?iddm=<?= $child['iddm'] ?>">
-                        <img style="width:20px; height:20px; border-radius:50%" src="../<?= htmlspecialchars($child['icon']) ?>">
+                    <a href="?iddm=<?= $child['iddm'] ?>">↳
                         <?= htmlspecialchars($child['tendm']) ?>
                     </a>
                 </li>
