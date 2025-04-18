@@ -62,16 +62,15 @@
             height: 100%;
         }
         .card img {
-            width: 80px;
-            height: 80px;
+            width: 50px;
+            height: 50px;
             object-fit: cover;
             border-radius: 50%;
-            margin-bottom: 10px;
             cursor: pointer;
         }
         .card h3 {
             font-size: 14px;
-            margin: 5px 0;
+            margin: 0;
             word-break: break-word;
             min-height: 40px; /* Đảm bảo tên có không gian riêng */
             display: flex;
@@ -80,11 +79,11 @@
             text-align: center;
         }
         .card p {
-            margin: 4px 0;
+            margin: 0;
             font-size: 13px;
         }
         .btn-group {
-            margin-top: 10px;
+            margin-top: 5px;
         }
         .btn {
             padding: 6px 10px;

@@ -7,7 +7,7 @@ $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $quyen = isset($_GET['quyen']) ? trim($_GET['quyen']) : '';
 
 // --- PHÂN TRANG ---
-$limit = 5;
+$limit = 8;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
