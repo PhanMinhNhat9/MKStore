@@ -51,13 +51,13 @@ if ($query != '') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh Sách Người Dùng</title>
-    <script src="../trangchuadmin.js"></script>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="hienthiphanhoi.css?v=<?= time(); ?>">
+    <script src="../trangchuadmin.js" defer></script>
 </head>
 <body>
-    <div class="product-scroll-container"> <!-- Thêm div này để cuộn -->
-        <table class="user-table" border="1" cellspacing="0" cellpadding="10">
+    <div class="product-scroll-container">
+        <table class="user-table">
             <thead>
                 <tr>
                     <th>Ảnh đại diện</th>
@@ -70,26 +70,40 @@ if ($query != '') {
             </thead>
             <tbody>
                 <?php foreach ($users as $user): ?>
-                <tr>
-                    <td>
-                        <img src="../<?= htmlspecialchars($user['anh']) ?>" alt="Ảnh đại diện" width="60" height="60" style="border-radius: 50%;">
-                    </td>
-                    <td>🧑 <?= htmlspecialchars($user['hoten']) ?></td>
-                    <td>📛 <?= htmlspecialchars($user['tendn']) ?></td>
-                    <td>✉️ <?= $user['so_tin_nhan'] ?> tin nhắn</td>
-                    <td class="<?= $user['chua_doc'] > 0 ? 'unread' : 'message-count' ?>">
-                        🔔 <?= $user['chua_doc'] > 0 ? $user['chua_doc'] . ' tin chưa đọc' : 'Không có tin mới' ?>
-                    </td>
-                    <td>
-                        <a href="#" onclick="chat(<?= $user['iduser'] ?>)" class="btn btn-chat">
-                            <i class="fa-solid fa-comment"></i> Nhắn Tin
-                        </a>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>
+                            <img src="../<?= htmlspecialchars($user['anh']) ?>" 
+                                 alt="Ảnh đại diện" 
+                                 width="60" 
+                                 height="60">
+                        </td>
+                        <td>
+                            <i class="fas fa-user"></i> 
+                            <?= htmlspecialchars($user['hoten']) ?>
+                        </td>
+                        <td>
+                            <i class="fas fa-id-badge"></i> 
+                            <?= htmlspecialchars($user['tendn']) ?>
+                        </td>
+                        <td>
+                            <i class="fas fa-envelope"></i> 
+                            <?= $user['so_tin_nhan'] ?> tin nhắn
+                        </td>
+                        <td class="<?= $user['chua_doc'] > 0 ? 'unread' : 'message-count' ?>">
+                            <i class="fas fa-bell"></i> 
+                            <?= $user['chua_doc'] > 0 ? $user['chua_doc'] . ' tin chưa đọc' : 'Không có tin mới' ?>
+                        </td>
+                        <td>
+                            <a href="#" 
+                               onclick="chat(<?= $user['iduser'] ?>)" 
+                               class="btn btn-chat">
+                                <i class="fas fa-comment"></i> Nhắn Tin
+                            </a>
+                        </td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
-    
 </body>
 </html>

@@ -1,102 +1,63 @@
-*{
-    margin: 0;
-    padding: 0;
-    font-family: Arial, Helvetica, sans-serif;
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f7fafc;
 }
-
 .product-scroll-container {
-    max-height: 500px;
+    max-height: 550px;
     overflow-y: auto;
-    border: 1px solid #ccc;
+    margin: 20px;
 }
 
-.product-scroll-container::-webkit-scrollbar {
-    display: none;
-}
 .user-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 800px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.user-table thead th {
+.user-table th,
+.user-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-table th {
+    background: #f8f9fa;
     position: sticky;
     top: 0;
-    background-color: #007BFF;
-    color: white;
-    z-index: 2;
-    text-align: center;
-    padding: 12px 15px;
-}
-
-.user-table td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #ddd;
-    text-align: center;
+    z-index: 10;
 }
 
 .user-table tr:hover {
-    background-color: #f1f1f1;
+    background: #f5f5f5;
 }
 
 .user-table img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
     border-radius: 50%;
-    border: 2px solid #ddd;
-}
-
-.unread {
-    color: red;
-    font-weight: bold;
+    object-fit: cover;
 }
 
 .btn-chat {
-    display: inline-block;
-    padding: 6px 12px;
-    background-color: #28a745;
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: #007bff;
     color: white;
     text-decoration: none;
-    border-radius: 6px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+    border-radius: 4px;
+    transition: background 0.2s;
 }
 
 .btn-chat:hover {
-    background-color: #218838;
+    background: #0056b3;
 }
 
-@media screen and (max-width: 768px) {
-    .user-table thead {
-        display: none;
-    }
+.unread {
+    color: #dc3545;
+    font-weight: bold;
+}
 
-    .user-table, .user-table tbody, .user-table tr, .user-table td {
-        display: block;
-        width: 100%;
-    }
-
-    .user-table tr {
-        margin-bottom: 15px;
-        background-color: #fff;
-        border: 1px solid #ddd;
-        padding: 10px;
-        border-radius: 8px;
-    }
-
-    .user-table td {
-        padding: 10px;
-        text-align: right;
-        position: relative;
-    }
-
-    .user-table td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 10px;
-        top: 10px;
-        font-weight: bold;
-        text-align: left;
-    }                           
+.message-count {
+    color: #28a745;
 }
