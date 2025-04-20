@@ -31,7 +31,7 @@ foreach ($categories as $cat) {
     <!-- Sidebar -->
     <div class="sidebar">
         <h1>Hệ Thống Bán Hàng</h1>
-        <label for="parentFilter">Lọc theo danh mục cha:</label>
+        <label for="parentFilter">Lọc theo danh mục cha:</label> <br> <br>
         <select id="parentFilter">
             <option value="all">Tất cả</option>
             <?php foreach ($categoryTree as $parent): ?>

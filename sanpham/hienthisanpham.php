@@ -95,40 +95,42 @@ $total_pages = ceil($total_products / $limit);
 <div id="error-alert" class="alert-error"></div>
 
 <div class="sidebar">
-<h1>Hệ Thống Bán Hàng</h1>
-    <ul class="tree">
-        <?php
-       
+    <h1>Hệ Thống Bán Hàng</h1>
+    <center><button class="floating-btn" onclick="themsanpham()"><i class="fas fa-plus"></i> Thêm sản phẩm</button></center>
 
-$categoryTree = [];
-foreach ($categories as $category) {
-    if ($category['loaidm'] == 0) {
-        // Danh mục cha
-        $categoryTree[$category['iddm']] = $category;
-        $categoryTree[$category['iddm']]['children'] = [];
-    } else {
-        // Danh mục con
-        $categoryTree[$category['loaidm']]['children'][] = $category;
+        <ul class="tree">
+            <?php
+        
+
+    $categoryTree = [];
+    foreach ($categories as $category) {
+        if ($category['loaidm'] == 0) {
+            // Danh mục cha
+            $categoryTree[$category['iddm']] = $category;
+            $categoryTree[$category['iddm']]['children'] = [];
+        } else {
+            // Danh mục con
+            $categoryTree[$category['loaidm']]['children'][] = $category;
+        }
     }
-}
-            
-        ?>
+                
+            ?>
            <!-- Hiển thị danh mục -->
-<?php foreach ($categoryTree as $parent): ?>
-    <li class="folder">
-        <i class="fas fa-folder"></i> <?= htmlspecialchars($parent['tendm']) ?>
-        <ul style="display: block; list-style-type: none;">
-            <?php foreach ($parent['children'] as $child): ?>
-                <li class="file">
-                    <a href="?iddm=<?= $child['iddm'] ?>">↳
-                        <?= htmlspecialchars($child['tendm']) ?>
-                    </a>
-                </li>
-            <?php endforeach; ?>
+    <?php foreach ($categoryTree as $parent): ?>
+        <li class="folder">
+            <i class="fas fa-folder"></i> <?= htmlspecialchars($parent['tendm']) ?>
+            <ul style="display: block; list-style-type: none;">
+                <?php foreach ($parent['children'] as $child): ?>
+                    <li class="file">
+                        <a href="?iddm=<?= $child['iddm'] ?>">↳
+                            <?= htmlspecialchars($child['tendm']) ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </li>
+    <?php endforeach; ?>
         </ul>
-    </li>
-<?php endforeach; ?>
-    </ul>
 </div>
 
     <div class="product-wrapper">
@@ -195,16 +197,5 @@ foreach ($categories as $category) {
         </div>
 
     </div>
-
-
-<button class="floating-btn" onclick="themsanpham()">
-    <i class="fas fa-plus"></i>
-</button>
-
-<script>
-    function themsanpham() {
-        window.location.href = "themsanpham.php";
-    }
-</script>
 </body>
 </html>
