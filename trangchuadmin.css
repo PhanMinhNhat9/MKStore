@@ -19,6 +19,39 @@ body::-webkit-scrollbar {
     border-bottom: 1px solid #ddd;
     position: relative;
 }
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.nav-buttons .btn {
+    background: none;
+    border: 1px solid #007BFF;
+    color: #007BFF;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.nav-buttons .btn:hover {
+    background-color: #007BFF;
+    color: white;
+}
+
+.nav-buttons .btn:focus{
+    outline: none;
+    border: none;
+    color: white;
+    background-color: #007BFF;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+}
+
+.nav-buttons .btn:active {
+    transform: scale(0.98);
+}
 
 .logo-container {
     display: flex;
@@ -122,39 +155,6 @@ body::-webkit-scrollbar {
     color: #0056b3;
 }
 
-.nav-buttons {
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
-}
-
-.nav-buttons .btn {
-    background: none;
-    border: 1px solid #007BFF;
-    color: #007BFF;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-left: 10px;
-    font-size: 14px;
-}
-
-.nav-buttons .btn:hover {
-    background-color: #007BFF;
-    color: white;
-}
-
-.nav-buttons .btn:focus{
-    outline: none;
-    border: none;
-    color: white;
-    background-color: #007BFF;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
-}
-
-.nav-buttons .btn:active {
-    transform: scale(0.98);
-}
 
 /* Thanh menu */
 .menu {
@@ -434,4 +434,154 @@ body::-webkit-scrollbar {
 50% { transform: translateX(2px); }
 75% { transform: translateX(-2px); }
 100% { transform: translateX(2px); }
+}
+.btn.chat-ai {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #1e90ff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+.btn.chat-ai:hover {
+    background: #187bcd;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.chat-box {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 350px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    transform: scale(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease;
+    z-index: 999;
+}
+
+.chat-box:not(.hidden) {
+    transform: scale(1);
+}
+
+.chat-header {
+    background: #1e90ff;
+    color: white;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chat-body {
+    padding: 15px;
+    background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+}
+
+.chat-messages {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 10px;
+    background: #f1f5f9;
+}
+
+.message {
+    margin: 8px 0;
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word;
+    animation: fadeIn 0.3s ease;
+}
+
+.message.user {
+    background: #1e90ff;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 5px;
+}
+
+.message.bot {
+    background: #e9ecef;
+    color: #333;
+    border-bottom-left-radius: 5px;
+}
+
+.chat-input {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 20px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.chat-input input:focus {
+    border-color: #1e90ff;
+}
+
+.chat-input button {
+    background: #1e90ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.chat-input button:hover {
+    background: #187bcd;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom Scrollbar */
+.chat-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #1e90ff;
+    border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #187bcd;
 }
