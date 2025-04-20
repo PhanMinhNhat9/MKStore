@@ -1,94 +1,176 @@
-* {
+body {
     margin: 0;
-    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f4f6f9;
 }
-.table-container {
-    max-height: 400px;
-    overflow-y: auto;
+
+.main-container {
+    display: flex;
+}
+
+.sidebar {
+    background-color: #1e2a38;
+    color: #ffffff;
+    width: 260px;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.sidebar h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+.sidebar label {
+    font-size: 14px;
+    color: #cbd5e1;
+    display: block;
+}
+
+.filter-section {
+    margin-top: 20px;
+}
+
+.filter-section select,
+.filter-section button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.sidebar select {
     border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: white;
+    background-color: #334155;
+    color: #fff;
+}
+
+.sidebar select:focus {
+    outline: none;
+    border: 1px solid #ffffff;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.88);
+}
+
+.btn-add-category {
+    background-color: #3c8dbc;
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 30px;
+}
+
+.table-container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
 }
 table {
     width: 100%;
     border-collapse: collapse;
 }
-th, td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-}
-th {
-    background-color: #007BFF;
-    color: white;
-}
-.expired {
-    background-color: #e74c3c;
-    color: white;
-    padding: 5px;
-    border-radius: 5px;
-}
-.actions a {
-    text-decoration: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    margin: 2px;
-    display: inline-block;
-    transition: transform 0.2s ease-in-out;
-}
-.edit-btn {
-    background: #007BFF;
-    color: white;
-}
-.delete-btn {
-    background: #e74c3c;
-    color: white;
-}
-.edit-btn:hover, .delete-btn:hover {
-    transform: scale(1.1);
-}
-.actions a i {
-    margin-right: 5px;
-}
-.add-mgg-btn {
-    background: none;
-    border: 1px solid #ffffff;
-    color: #ffffff;
-    padding: 6px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 12px;
-    transition: background 0.3s, color 0.3s;
-}
-.add-mgg-btn:hover {
-    background-color: #ffffff;
-    color: #007BFF;
-}
-.add-mgg-btn i {
-    color: #ffffff;
-}
-.add-mgg-btn:hover i {
-    color: #007BFF;
-}
-.floating-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+.table-body-container {
+    max-height: 550px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #edf2f7;
 }
 
-.floating-btn:hover {
-    background-color: #0056b3;
+.table-body-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-body-container::-webkit-scrollbar-track {
+    background: #edf2f7;
+}
+
+.table-body-container::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+}
+
+.table-body-container::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+thead th {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-size: 13px;
+    text-transform: uppercase;
+    padding: 14px 20px;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+tbody td {
+    padding: 14px 20px;
+    font-size: 14px;
+    color: #334155;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+tbody tr:hover {
+    background-color: #f8fafc;
+}
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: center;
+}
+
+.styled-table tbody tr:hover {
+    background-color: #eaf4ff;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.actions .btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 6px;
+    font-size: 16px;
+}
+
+.actions .btn:hover {
+    transform: scale(1.1);
+    transition: 0.2s;
+}
+
+.edit-btn {
+    color: #007bff;
+}
+
+.delete-btn {
+    color: #dc3545;
+}
+
+.status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.status.active {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status.expired {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.status.pending {
+    background-color: #fef9c3;
+    color: #92400e;
 }
