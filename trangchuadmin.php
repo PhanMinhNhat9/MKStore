@@ -163,6 +163,7 @@
         
         <div class="nav-buttons">
             <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
+            <button class="btn thongbao"><i class="fas fa-bell"></i> Thông báo</button>
 
             <button class="btn chat-ai" onclick="toggleChatAI()">
                 <i class="fas fa-robot"></i> Chat AI
