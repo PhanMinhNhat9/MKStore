@@ -309,7 +309,15 @@ function goBackHome() {
     });
 
     // Điều hướng về trang chủ (nếu cần)
-    window.location.href = "trangchuadmin.php";
+    //window.location.href = "trangchuadmin.php";
+    setTimeout(() => {
+        let iframe = document.getElementById("Frame");
+        if (iframe) {
+            iframe.src = "thongtintrangchu.php";
+        } else {
+            console.error("Không tìm thấy iframe có ID 'Frame'");
+        }
+    }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 }
 
 function handleSessionTimeout(sessionTimeoutInSeconds) {

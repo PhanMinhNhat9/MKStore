@@ -162,10 +162,6 @@
         </script>
 
         <div class="nav-buttons">
-            <!-- <button class="btn trangchu" onclick="window.location.href='admin_chat.php'">
-                <i class="fas fa-home"></i> Trò chuyện
-            </button> -->
-            
             <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
             <button class="btn thongbao"><i class="fas fa-bell"></i> Thông báo</button>
             <!-- Nút Admin với dropdown -->
@@ -199,13 +195,14 @@
         activateMenu();
         setTimeout(() => {
             let id = getActiveMenu();
-            if (id === "menu-user") loadDLUser();
-            if (id === "menu-product") loadDLSanpham();
-            if (id === "menu-category") loadDLDanhmuc();
-            if (id === "menu-order") loadDLDonhang();
-            if (id === "menu-discount") loadDLMGG();
-            if (id === "menu-support") loadPhanHoi();
-            if (id === "menu-gh") loadGH();
+            if (id === "menu-user") loadDLUser(); else
+            if (id === "menu-product") loadDLSanpham(); else
+            if (id === "menu-category") loadDLDanhmuc(); else
+            if (id === "menu-order") loadDLDonhang();else
+            if (id === "menu-discount") loadDLMGG();else
+            if (id === "menu-support") loadPhanHoi();else
+            if (id === "menu-gh") loadGH();else goBackHome();
+            
         }, 100); // Đợi 100ms để cập nhật menu
         function ddadmin() {
             document.getElementById("adminDropdown").classList.toggle("active");

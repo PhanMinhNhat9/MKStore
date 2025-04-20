@@ -144,6 +144,18 @@ body::-webkit-scrollbar {
     color: white;
 }
 
+.nav-buttons .btn:focus{
+    outline: none;
+    border: none;
+    color: white;
+    background-color: #007BFF;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+}
+
+.nav-buttons .btn:active {
+    transform: scale(0.98);
+}
+
 /* Thanh menu */
 .menu {
     display: flex;
