@@ -3,7 +3,7 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: Arial, sans-serif;
     background-color: #f7fafc;
     margin: 0;
     padding: 0;
@@ -101,7 +101,7 @@ table {
 thead th {
     background-color: #f1f5f9;
     color: #475569;
-    font-size: 13px;
+    font-size: 12px;
     text-transform: uppercase;
     padding: 14px 20px;
     text-align: left;

@@ -1,6 +1,6 @@
 body {
     margin: 0;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: Arial, sans-serif;
     background: #f4f6f9;
 }
 
@@ -100,7 +100,7 @@ table {
 thead th {
     background-color: #f1f5f9;
     color: #475569;
-    font-size: 13px;
+    font-size: 12px;
     text-transform: uppercase;
     padding: 14px 20px;
     text-align: left;

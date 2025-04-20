@@ -59,7 +59,7 @@
         <div class="search-container">
             <input type="text" class="search-bar" placeholder="Tìm kiếm..." onkeyup="handleSearch(this.value)">
             <button class="mic-btn"><i class="fas fa-microphone"></i></button>
-            <button class="search-btn"> Tìm kiếm</button>
+            <button class="search-btn">Tìm kiếm</button>
         </div>
 
         <script>

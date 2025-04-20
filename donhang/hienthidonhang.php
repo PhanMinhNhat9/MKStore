@@ -14,7 +14,7 @@ $sql = "
 // Tìm kiếm theo query
 $params = [];
 if ($query !== '') {
-    $sql .= " AND (tenkh LIKE :searchTerm OR idkh LIKE :searchTerm1)";
+    $sql .= " AND (tenkh LIKE :searchTerm OR iddh LIKE :searchTerm1)";
     $params['searchTerm'] = "%$query%";
     $params['searchTerm1'] = "%$query%";
 }

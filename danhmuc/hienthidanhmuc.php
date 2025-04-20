@@ -38,9 +38,9 @@ foreach ($categories as $cat) {
                 <option value="<?php echo $parent['iddm']; ?>"><?php echo $parent['tendm']; ?></option>
             <?php endforeach; ?>
         </select>
-        <button onclick="themdmcha(0)" title="Thêm con">
+        <center><button onclick="themdmcha(0)" title="Thêm con">
             <i class="fas fa-plus-circle"></i> Thêm Danh Mục Cha
-        </button>
+        </button> </center>
     </div>
 
     <!-- Main Content -->

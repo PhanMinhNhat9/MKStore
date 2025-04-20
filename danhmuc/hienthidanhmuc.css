@@ -47,7 +47,7 @@ body {
     box-shadow: 0 0 6px rgba(123, 187, 255, 0.884);
 }
 .sidebar button {
-    width: 100%;
+
     padding: 8px;
     background-color: #3182ce;
     color: #fff;
@@ -91,7 +91,7 @@ body {
 
 .table-header th {
     background-color: #edf2f7;
-    color: #4a5568;
+    color: #475569;
     font-size: 12px;
     text-transform: uppercase;
     padding: 12px 24px;
