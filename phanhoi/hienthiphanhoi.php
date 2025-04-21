@@ -60,7 +60,7 @@ if ($query != '') {
         <table class="user-table">
             <thead>
                 <tr>
-                    <th style="width: 10%;">Ảnh đại diện</th>
+                    <th style="width: 10%; ">Ảnh đại diện</th>
                     <th style="width: 20%;">Họ tên</th>
                     <th style="width: 20%;">Tên đăng nhập</th>
                     <th style="width: 15%;">Số tin nhắn</th>

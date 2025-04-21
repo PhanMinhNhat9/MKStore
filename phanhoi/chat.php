@@ -10,9 +10,7 @@ if ($id_nhan <= 0) {
     die("ID người nhận không hợp lệ!");
 }
 
-$sql = "SELECT idnhan, hoten
-FROM `chattructuyen` c, user u
-WHERE idnhan=iduser AND idnhan=:id_nhan";
+$sql = "SELECT iduser, hoten FROM user u WHERE iduser=:id_nhan";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
     'id_nhan' => $id_nhan
@@ -70,7 +68,7 @@ $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="../trangchuadmin.js"></script>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="chat.css">?v=<?= time(); ?>
+    <link rel="stylesheet" href="chat.css?v=<?= time(); ?>">
 </head>
 <body>
     <div class="chat-container">

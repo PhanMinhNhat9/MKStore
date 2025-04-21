@@ -44,7 +44,7 @@ body {
 .user-table th {
     background-color: #f1f5f9;
     color: #475569;
-    font-size: 12px;
+    font-size: 13px;
     text-transform: uppercase;
     padding: 14px 20px;
     text-align: left;
@@ -88,7 +88,7 @@ body {
 }
 
 .scroll-container {
-    max-height: 500px;
+    max-height: 550px;
     overflow-y: auto;
     scrollbar-width: thin;
 }

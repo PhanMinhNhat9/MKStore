@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giới thiệu cửa hàng</title>
     <link rel="stylesheet" href="fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="thongtintrangchu.css?v=<?= time(); ?>">>
+    <link rel="stylesheet" href="thongtintrangchu.css?v=<?= time(); ?>">
 </head>
 <body>
     <div class="container">
