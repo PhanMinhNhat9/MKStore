@@ -363,3 +363,4 @@ function loadanh() {
         reader.readAsDataURL(fileInput.files[0]); // Đọc file ảnh
     }
 }
+

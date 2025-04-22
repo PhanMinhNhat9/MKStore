@@ -36,18 +36,26 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản Lý Đơn Hàng - Hệ Thống Bán Hàng</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Đơn Hàng - Hệ Thống Bán Hàng</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="hienthidonhang.css?v=<?= time(); ?>">
+    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
+    <link rel="stylesheet" href="hienthidonhang.css">
+    <script src="../sweetalert2/sweetalert2.min.js"></script>
+    <script src="../trangchuadmin.js"></script>
 </head>
 <body>
-    <div class="sidebar">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-controls">
+            <button class="hamburger" aria-label="Collapse Sidebar" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
         <h1>Hệ Thống Bán Hàng</h1>
-        <label for="statusFilter">Lọc theo trạng thái:</label>
-        <form id="filterForm" method="GET" action="">
-            <select id="statusFilter" name="status" onchange="document.getElementById('filterForm').submit()">
+        <form class="filter-form" id="filterForm" method="GET" action="">
+            <label for="statusFilter">Lọc theo trạng thái:</label>
+            <select id="statusFilter" name="status">
                 <option value="all" <?= $status == 'all' ? 'selected' : '' ?>>Tất cả</option>
                 <option value="Chờ xác nhận" <?= $status == 'Chờ xác nhận' ? 'selected' : '' ?>>🔵 Chờ xác nhận</option>
                 <option value="Đã xác nhận" <?= $status == 'Đã xác nhận' ? 'selected' : '' ?>>🟢 Đã xác nhận</option>
@@ -55,32 +63,47 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                 <option value="Chưa thanh toán" <?= $status == 'Chưa thanh toán' ? 'selected' : '' ?>>🟠 Chưa thanh toán</option>
                 <option value="Hủy đơn" <?= $status == 'Hủy đơn' ? 'selected' : '' ?>>🔴 Hủy đơn</option>
             </select>
+            <button type="submit" class="btn btn-filter" aria-label="Lọc đơn hàng">
+                <i class="fas fa-filter"></i> Lọc
+            </button>
         </form>
-    </div>
+    </aside>
 
-    <div class="main-content">
-        <div class="table-container">
-            <div class="table-body-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mã ĐH</th>
-                            <th>Mã KH</th>
-                            <th>Tên KH</th>
-                            <th>Tổng Tiền</th>
-                            <th>Trạng Thái</th>
-                            <th>Ngày Đặt</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($orders as $order): ?>
-                        <tr data-status="<?= $order['trangthai'] ?>">
+    <!-- Main Content -->
+    <main class="container">
+        <section class="table-container">
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Mã ĐH</th>
+                        <th scope="col">Mã KH</th>
+                        <th scope="col">Tên KH</th>
+                        <th scope="col">Tổng Tiền</th>
+                        <th scope="col">Trạng Thái</th>
+                        <th scope="col">Ngày Đặt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($orders as $order): ?>
+                        <tr data-status="<?= htmlspecialchars($order['trangthai']) ?>">
                             <td><?= $order['iddh'] ?></td>
                             <td>
                                 <form action="update_idkh.php" method="POST">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                                     <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
-                                    <input type="text" name="idkh" value="<?= $order['sdt'] ?>">
-                                    <button type="submit"><i class="fas fa-save text-blue"></i></button>
+                                    <input 
+                                        type="text" 
+                                        name="idkh" 
+                                        value="<?= htmlspecialchars($order['sdt']) ?>" 
+                                        aria-label="Mã khách hàng"
+                                    >
+                                    <button 
+                                        type="submit" 
+                                        class="btn btn-update" 
+                                        aria-label="Lưu mã khách hàng"
+                                    >
+                                        <i class="fas fa-save"></i>
+                                    </button>
                                 </form>
                             </td>
                             <?php
@@ -95,16 +118,30 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                             ?>
                             <td>
                                 <form action="update_tenkh.php" method="POST">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                                     <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
-                                    <input type="text" name="tenkh" value="<?= htmlspecialchars($tenkh) ?>" placeholder="Tên KH">
-                                    <button type="submit"><i class="fas fa-save text-green"></i></button>
+                                    <input 
+                                        type="text" 
+                                        name="tenkh" 
+                                        value="<?= htmlspecialchars($tenkh) ?>" 
+                                        placeholder="Tên KH" 
+                                        aria-label="Tên khách hàng"
+                                    >
+                                    <button 
+                                        type="submit" 
+                                        class="btn btn-edit" 
+                                        aria-label="Lưu tên khách hàng"
+                                    >
+                                        <i class="fas fa-save"></i>
+                                    </button>
                                 </form>
                             </td>
                             <td><?= number_format($order['tongtien'], 0, ',', '.') ?> VNĐ</td>
                             <td>
                                 <form action="update_trangthai.php" method="POST">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                                     <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
-                                    <select name="trangthai" onchange="this.form.submit()">
+                                    <select name="trangthai" onchange="this.form.submit()" aria-label="Trạng thái đơn hàng">
                                         <option value="Chờ xác nhận" <?= $order['trangthai'] == 'Chờ xác nhận' ? 'selected' : '' ?>>🔵 Chờ xác nhận</option>
                                         <option value="Đã xác nhận" <?= $order['trangthai'] == 'Đã xác nhận' ? 'selected' : '' ?>>🟢 Đã xác nhận</option>
                                         <option value="Đã thanh toán" <?= $order['trangthai'] == 'Đã thanh toán' ? 'selected' : '' ?>>🟢 Đã thanh toán</option>
@@ -113,18 +150,28 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                                     </select>
                                 </form>
                             </td>
-                            <td><?= $order['thoigian'] ?></td>
+                            <td><?= htmlspecialchars($order['thoigian']) ?></td>
                         </tr>
-                        <?php endforeach; ?>
-                        <?php if (count($orders) === 0): ?>
+                    <?php endforeach; ?>
+                    <?php if (count($orders) === 0): ?>
                         <tr>
                             <td colspan="6" class="no-data">Không có đơn hàng nào phù hợp.</td>
                         </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+            const isExpanded = !sidebar.classList.contains('collapsed');
+            document.querySelector('.hamburger').setAttribute('aria-expanded', isExpanded);
+        }
+    </script>
 </body>
 </html>

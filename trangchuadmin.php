@@ -124,7 +124,7 @@
                     } else {
                         console.error("Không tìm thấy iframe có ID 'Frame'");
                     }
-                }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+                }, 100); 
             }
 
             function searchProducts(query) {
@@ -135,7 +135,7 @@
                     } else {
                         console.error("Không tìm thấy iframe có ID 'Frame'");
                     }
-                }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+                }, 100); 
             }
 
             function searchDonHang(query) {
@@ -146,7 +146,7 @@
                     } else {
                         console.error("Không tìm thấy iframe có ID 'Frame'");
                     }
-                }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+                }, 100); 
             }
 
             function searchPhanHoi(query) {
@@ -157,7 +157,7 @@
                     } else {
                         console.error("Không tìm thấy iframe có ID 'Frame'");
                     }
-                }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+                }, 100);
             }
         </script>
         

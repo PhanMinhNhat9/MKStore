@@ -59,76 +59,109 @@ $totalPages = ceil($totalUsers / $limit);
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh Sách Người Dùng</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
-    <script src="../trangchuadmin.js"></script>
     <link rel="stylesheet" href="hienthinguoidung.css?v=<?= time(); ?>">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
+    <script src="../trangchuadmin.js"></script>
 </head>
 <body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-controls">
+            <button class="hamburger" aria-label="Collapse Sidebar" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <h1>Hệ Thống Bán Hàng</h1>
+        <form method="GET" class="filter-form">
+            <label for="quyen">Lọc theo quyền:</label>
+            <select name="quyen" id="quyen">
+                <option value="">-- Tất cả quyền --</option>
+                <option value="0" <?= $quyen === "0" ? "selected" : "" ?>>Admin</option>
+                <option value="1" <?= $quyen === "1" ? "selected" : "" ?>>User</option>
+            </select>
+            <button type="submit" class="btn btn-filter"><i class="fas fa-filter"></i> Lọc</button>
+        </form>
+        <button class="btn btn-add" onclick="themnguoidung()"><i class="fas fa-plus"></i> Thêm người dùng</button>
+        <?php if ($totalPages > 1): ?>
+            <nav class="pagination">
+                <?php if ($page > 1): ?>
+                    <a href="?query=<?= urlencode($query) ?>&quyen=<?= $quyen ?>&page=<?= $page - 1 ?>" class="btn btn-nav">← Trước</a>
+                <?php endif; ?>
+                <span>Trang <?= $page ?> / <?= $totalPages ?></span>
+                <?php if ($page < $totalPages): ?>
+                    <a href="?query=<?= urlencode($query) ?>&quyen=<?= $quyen ?>&page=<?= $page + 1 ?>" class="btn btn-nav">Sau →</a>
+                <?php endif; ?>
+            </nav>
+        <?php endif; ?>
+    </aside>
 
-<div class="sidebar">
-    <h1>Hệ Thống Bán Hàng</h1>
-    <label for="quyen" style="color:#ffffff;">Lọc theo theo quyền:</label> <br> <br>
-    <form method="GET">
-        <select name="quyen">
-            <option value="" style="text-align: center">-- Tất cả quyền --</option>
-            <option value="0" <?= $quyen === "0" ? "selected" : "" ?>>Admin</option>
-            <option value="1" <?= $quyen === "1" ? "selected" : "" ?>>User</option>
-        </select>
-        <button type="submit" class="btn-update"><i class="fas fa-filter"></i> Lọc</button>
-    </form>
-    <center><button class="floating-btn" onclick="themnguoidung()"><i class="fas fa-plus"></i> Thêm người dùng</button></center>
-</div>
+    <!-- Main Content -->
+    <main class="container">
+        <section class="user-grid">
+            <?php if (empty($users)): ?>
+                <p class="no-users">Không tìm thấy người dùng.</p>
+            <?php else: ?>
+                <?php foreach ($users as $user): ?>
+                    <article class="card">
+                        <img 
+                            src="../<?= htmlspecialchars($user['anh']) ?>" 
+                            alt="Avatar của <?= htmlspecialchars($user['hoten']) ?>" 
+                            loading="lazy"
+                            onclick="openModal('../<?= htmlspecialchars($user['anh']) ?>', <?= $user['iduser'] ?>)"
+                        >
+                        <h3><i class="fas fa-user"></i> <?= htmlspecialchars($user['hoten']) ?></h3>
+                        <p><i class="fas fa-user-tag"></i> <?= htmlspecialchars($user['tendn']) ?></p>
+                        <p><i class="fas fa-envelope"></i> <?= htmlspecialchars($user['email']) ?></p>
+                        <p><i class="fas fa-phone"></i> <?= htmlspecialchars($user['sdt']) ?></p>
+                        <p><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($user['diachi']) ?></p>
+                        <p><i class="fas fa-lock"></i> Quyền: <?= htmlspecialchars($user['quyen'] === '0' ? 'Admin' : 'User') ?></p>
+                        <div class="btn-group">
+                            <button 
+                                onclick="capnhatnguoidung(<?= $user['iduser'] ?>)"
+                                class="btn btn-update"
+                                aria-label="Cập nhật người dùng"
+                            >
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button 
+                                onclick="xoanguoidung(<?= $user['iduser'] ?>)"
+                                class="btn btn-delete"
+                                aria-label="Xóa người dùng"
+                            >
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </section>
+    </main>
 
-<div class="container">
-    <div class="user-grid">
-        <?php foreach ($users as $user): ?>
-            <div class="card">
-                <img src="../<?= htmlspecialchars($user['anh']) ?>" alt="Ảnh người dùng"
-                     onclick="openModal('../<?= htmlspecialchars($user['anh']) ?>', <?= $user['iduser'] ?>)">
-                <h3>🧑 <?= htmlspecialchars($user['hoten']) ?></h3>
-                <p>📧 <?= htmlspecialchars($user['tendn']) ?></p>
-                <p>✉️ <?= htmlspecialchars($user['email']) ?></p>
-                <p>📞 <?= htmlspecialchars($user['sdt']) ?></p>
-                <p>📍 <?= htmlspecialchars($user['diachi']) ?></p>
-                <p>🔒 Quyền: <?= htmlspecialchars($user['quyen']) ?></p>
-                <div class="btn-group">
-                    <button onclick="capnhatnguoidung(<?= $user['iduser'] ?>)" class="btn btn-update"><i class="fas fa-edit"></i></button>
-                    <button onclick="xoanguoidung(<?= $user['iduser'] ?>)" class="btn btn-delete"><i class="fas fa-trash-alt"></i></button>
-                </div>
+    <!-- Modal for Image Update -->
+    <form action="#" method="POST" enctype="multipart/form-data" class="modal-form">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+        <div id="imageModal" class="modal" aria-hidden="true">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal()" aria-label="Đóng modal">×</span>
+                <img id="modalImage" src="" alt="Ảnh người dùng">
+                <input type="hidden" name="iduser" id="iduser" value="">
+                <input 
+                    type="file" 
+                    id="fileInput" 
+                    name="fileInput" 
+                    accept="image/*" 
+                    onchange="loadanh()"
+                    aria-label="Chọn ảnh mới"
+                >
+                <button type="submit" name="capnhatanhuser" class="btn btn-update">Cập nhật ảnh</button>
             </div>
-        <?php endforeach; ?>
-    </div>
-
-    <?php if ($totalPages > 1): ?>
-        <div class="pagination">
-            <?php if ($page > 1): ?>
-                <a href="?query=<?= urlencode($query) ?>&quyen=<?= $quyen ?>&page=<?= $page - 1 ?>" class="btn-update">← Trước</a>
-            <?php endif; ?>
-            <span>Trang <?= $page ?> / <?= $totalPages ?></span>
-            <?php if ($page < $totalPages): ?>
-                <a href="?query=<?= urlencode($query) ?>&quyen=<?= $quyen ?>&page=<?= $page + 1 ?>" class="btn-update">Sau →</a>
-            <?php endif; ?>
         </div>
-    <?php endif; ?>
-</div>
-
-<!-- Modal cập nhật ảnh -->
-<form action="#" method="POST" enctype="multipart/form-data">
-    <div id="imageModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <img id="modalImage" src="" alt="Ảnh người dùng"><br><br>
-            <input type="hidden" name="iduser" id="iduser" value="">
-            <input type="file" id="fileInput" name="fileInput" accept="image/*" onchange="loadanh()"><br><br>
-            <input type="submit" value="Cập nhật ảnh" name="capnhatanhuser" class="btn btn-update">
-        </div>
-    </div>
-    <?php
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (isset($_POST['capnhatanhuser'])) {
+        <?php
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['capnhatanhuser'])) {
             $kq = capnhatAnhUser();
             if ($kq) {
                 echo "<script>showCustomAlert('🐳 Đổi Avt Thành Công!', 'Ảnh người dùng đã được đổi!', '../picture/success.png'); setTimeout(goBack, 3000);</script>";
@@ -136,14 +169,58 @@ $totalPages = ceil($totalUsers / $limit);
                 echo "<script>showCustomAlert('🐳 Cài Đặt Avt Thất Bại!', '$kq', '../picture/error.png');</script>";
             }
         }
-    }
-    ?>
-</form>
+        ?>
+    </form>
 
-<script>
-    function themnguoidung() {
-        window.location.href = "themnguoidung.php";
-    }
-</script>
+    <!-- JavaScript -->
+    <script>
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+            const isExpanded = !sidebar.classList.contains('collapsed');
+            document.querySelector('.hamburger').setAttribute('aria-expanded', isExpanded);
+        }
+
+        // Other functions
+        function themnguoidung() {
+            window.location.href = "themnguoidung.php";
+        }
+
+        function openModal(src, id) {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'flex';
+            modal.setAttribute('aria-hidden', 'false');
+            document.getElementById('modalImage').src = src;
+            document.getElementById('iduser').value = id;
+            modal.querySelector('.modal-content').focus();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden', 'true');
+        }
+
+        function loadanh() {
+            const fileInput = document.getElementById('fileInput');
+            const modalImage = document.getElementById('modalImage');
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    modalImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('imageModal').style.display === 'flex') {
+                closeModal();
+            }
+        });
+    </script>
 </body>
 </html>
