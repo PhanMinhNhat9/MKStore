@@ -11,7 +11,7 @@ $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $dm = isset($_GET['iddm']) ? trim($_GET['iddm']) : '';
 $products = [];
 $params = [];
-$limit = 4; // Số sản phẩm mỗi trang
+$limit = 10; // Số sản phẩm mỗi trang
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
@@ -173,7 +173,7 @@ $total_pages = ceil($total_products / $limit);
             </div>
         <?php endforeach; ?>
         
-        <div class="phantrang" style="margin-top: 20px; text-align: center;">
+        <div class="phantrang" style="margin: 0; text-align: center;">
             <?php
             // Tạo chuỗi query giữ nguyên các tham số
             $baseUrl = '?';  

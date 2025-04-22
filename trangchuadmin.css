@@ -372,9 +372,11 @@ body::-webkit-scrollbar {
 }
 
 #Frame {
-    width: 100%;  /* Chiều rộng tối đa */
-    min-height: 600px;
+    width: 100%;
+    min-height: 730px;
     display: flex;
+    background-color: #f4f6f8; /* Tông nền sáng nhẹ như phần body */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Nhẹ nhàng, chuyên nghiệp */
 }
 .dropdowntk {
     position: absolute;
