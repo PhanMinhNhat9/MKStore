@@ -1,16 +1,44 @@
 <?php
-    require_once '../config.php';
-    $pdo = connectDatabase();
+require_once '../config.php';
+$pdo = connectDatabase();
 
-    $sql = "SELECT mg.idmgg, mg.code, mg.phantram, mg.ngayhieuluc, mg.ngayketthuc, 
-                mg.giaapdung, mg.iddm, mg.soluong, mg.thoigian, dm.tendm 
-            FROM magiamgia mg
-            LEFT JOIN danhmucsp dm ON mg.iddm = dm.iddm";
+$currentDate = date('Y-m-d');
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $currentDate = date('Y-m-d');
+// Initialize status filter
+$status = isset($_GET['status']) ? $_GET['status'] : 'all';
+
+// Build SQL query with status filter
+$sql = "SELECT mg.idmgg, mg.code, mg.phantram, mg.ngayhieuluc, mg.ngayketthuc, 
+            mg.giaapdung, mg.iddm, mg.soluong, mg.thoigian, dm.tendm 
+        FROM magiamgia mg
+        LEFT JOIN danhmucsp dm ON mg.iddm = dm.iddm";
+
+$conditions = [];
+$params = [];
+
+// Apply status filter
+if ($status !== 'all') {
+    if ($status === 'active') {
+        $conditions[] = "mg.ngayhieuluc <= :currentDate1 AND mg.ngayketthuc >= :currentDate2 AND mg.soluong > 0";
+        $params[':currentDate1'] = $currentDate;
+        $params[':currentDate2'] = $currentDate;
+    } elseif ($status === 'expired') {
+        $conditions[] = "(mg.ngayketthuc < :currentDate OR mg.soluong <= 0)";
+        $params[':currentDate'] = $currentDate;
+    } elseif ($status === 'pending') {
+        $conditions[] = "mg.ngayhieuluc > :currentDate";
+        $params[':currentDate'] = $currentDate;
+    }
+}
+
+// Append conditions to SQL
+if (!empty($conditions)) {
+    $sql .= " WHERE " . implode(" AND ", $conditions);
+}
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -21,7 +49,7 @@
     <title>Quản Lý Mã Giảm Giá - Hệ Thống Bán Hàng</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
-    <link rel="stylesheet" href="hienthimgg.css?v=<?= time(); ?>">
+    <link rel="stylesheet" href="hienthimgg.css">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <script src="../trangchuadmin.js"></script>
 </head>
@@ -29,22 +57,19 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-controls">
-            <button class="hamburger" aria-label="Collapse Sidebar" onclick="toggleSidebar()">
+            <button class="hamburger" aria-label="Collapse Sidebar">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
         <h1>Hệ Thống Bán Hàng</h1>
         <form class="filter-form" id="filterForm" method="GET" action="">
             <label for="statusFilter">Lọc theo trạng thái:</label>
-            <select id="statusFilter" name="status">
-                <option value="all" <?= isset($_GET['status']) && $_GET['status'] == 'all' ? 'selected' : '' ?>>Tất cả</option>
-                <option value="active" <?= isset($_GET['status']) && $_GET['status'] == 'active' ? 'selected' : '' ?>>Còn hiệu lực</option>
-                <option value="expired" <?= isset($_GET['status']) && $_GET['status'] == 'expired' ? 'selected' : '' ?>>Hết hạn</option>
-                <option value="pending" <?= isset($_GET['status']) && $_GET['status'] == 'pending' ? 'selected' : '' ?>>Chưa hiệu lực</option>
+            <select id="statusFilter" name="status" aria-label="Lọc mã giảm giá theo trạng thái">
+                <option value="all" <?= $status == 'all' ? 'selected' : '' ?>>Tất cả</option>
+                <option value="active" <?= $status == 'active' ? 'selected' : '' ?>>Còn hiệu lực</option>
+                <option value="expired" <?= $status == 'expired' ? 'selected' : '' ?>>Hết hạn</option>
+                <option value="pending" <?= $status == 'pending' ? 'selected' : '' ?>>Chưa hiệu lực</option>
             </select>
-            <button type="submit" class="btn btn-filter" aria-label="Lọc mã giảm giá">
-                <i class="fas fa-filter"></i> Lọc
-            </button>
         </form>
         <button class="btn btn-add" onclick="themmgg()" aria-label="Thêm mã giảm giá">
             <i class="fas fa-plus-circle"></i> Thêm Mã Giảm Giá
@@ -68,7 +93,7 @@
                         <th scope="col">Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-body-container">
                     <?php foreach ($coupons as $coupon): ?>
                         <tr>
                             <td><strong><?= htmlspecialchars($coupon['code']) ?></strong></td>
@@ -120,13 +145,17 @@
     <!-- JavaScript -->
     <script>
         // Toggle Sidebar
-        function toggleSidebar() {
+        document.querySelector('.hamburger').addEventListener('click', () => {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('collapsed');
             const isExpanded = !sidebar.classList.contains('collapsed');
             document.querySelector('.hamburger').setAttribute('aria-expanded', isExpanded);
-        }
+        });
+
+        // Auto-submit filter form on status change
+        document.getElementById('statusFilter').addEventListener('change', () => {
+            document.getElementById('filterForm').submit();
+        });
     </script>
 </body>
 </html>
-

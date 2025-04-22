@@ -241,15 +241,6 @@ body {
     gap: 6px;
 }
 
-.btn-filter {
-    background-color: var(--primary-color);
-    color: #ffffff;
-}
-
-.btn-filter:hover {
-    background-color: #2b6cb0;
-}
-
 .btn-update {
     background-color: var(--primary-color);
     color: #ffffff;

@@ -63,12 +63,8 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                 <option value="Chưa thanh toán" <?= $status == 'Chưa thanh toán' ? 'selected' : '' ?>>🟠 Chưa thanh toán</option>
                 <option value="Hủy đơn" <?= $status == 'Hủy đơn' ? 'selected' : '' ?>>🔴 Hủy đơn</option>
             </select>
-            <button type="submit" class="btn btn-filter" aria-label="Lọc đơn hàng">
-                <i class="fas fa-filter"></i> Lọc
-            </button>
         </form>
     </aside>
-
     <!-- Main Content -->
     <main class="container">
         <section class="table-container">
@@ -172,6 +168,10 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
             const isExpanded = !sidebar.classList.contains('collapsed');
             document.querySelector('.hamburger').setAttribute('aria-expanded', isExpanded);
         }
+        // Auto-submit filter form on status change
+        document.getElementById('statusFilter').addEventListener('change', () => {
+            document.getElementById('filterForm').submit();
+        });
     </script>
 </body>
 </html>
