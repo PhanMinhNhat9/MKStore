@@ -38,11 +38,11 @@ body {
     padding: var(--spacing);
     background-color: var(--sidebar-bg);
     color: #ffffff;
-    transition: width 0.3s ease;
+    transition: width var(--transition);
     position: relative;
     border-right: 1px solid var(--border-color);
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-    height: 730px;
+    height: 100vh;
     overflow-y: auto;
 }
 
@@ -93,6 +93,38 @@ body {
     color: var(--primary-color);
 }
 
+.fa-bars::before {
+    margin-right: 10px;
+}
+
+.sidebar h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: calc(var(--spacing) * 1.5);
+    text-align: center;
+}
+
+.btn-add {
+    background-color: var(--success-color);
+    color: #ffffff;
+    width: 100%;
+    margin-top: var(--spacing);
+    padding: 8px 12px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: var(--transition);
+}
+
+.btn-add:hover {
+    background-color: #2f855a;
+}
+
 /* Category Tree */
 .category-tree .tree {
     list-style: none;
@@ -122,29 +154,24 @@ body {
     font-weight: 600;
     color: #ffffff;
     outline: none;
+    padding: 6px 10px;
+    border-radius: var(--border-radius);
 }
 
 .category-tree summary:hover {
-    padding: 6px 10px;
-    border-radius: var(--border-radius);
-    transition: var(--transition);
     background: rgba(255, 255, 255, 0.15);
-    color: #ffffff;
 }
 
-.category-tree .toggle-btn {
-    background: none;
-    border: none;
-    color: #ffffff;
-    font-size: 14px;
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
+.category-tree summary::-webkit-details-marker {
+    display: none;
 }
 
-.category-tree .toggle-btn:hover {
-    color:#38a169;
+.category-tree .folder i.fa-chevron-right {
+    transition: transform var(--transition);
+}
+
+.category-tree details[open] i.fa-chevron-right {
+    transform: rotate(90deg);
 }
 
 .category-tree .folder i.fa-folder {
@@ -176,11 +203,16 @@ body {
     transform: translateX(4px);
 }
 
+.category-tree .file a.selected {
+    background: var(--primary-color);
+    color: #ffffff;
+}
+
 /* Main Content */
 .container {
     flex: 1;
     padding: var(--spacing);
-    transition: margin-left 0.3s ease;
+    transition: margin-left var(--transition);
 }
 
 /* Product Grid */
@@ -205,7 +237,7 @@ body {
     padding: var(--spacing);
     text-align: center;
     box-shadow: var(--shadow);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform var(--transition), box-shadow var(--transition);
     animation: fadeUp 0.5s forwards;
     position: relative;
 }
@@ -302,17 +334,6 @@ body {
     align-items: center;
     justify-content: center;
     gap: 6px;
-}
-
-.btn-add {
-    background-color: var(--success-color);
-    color: #ffffff;
-    width: 100%;
-    margin-top: var(--spacing);
-}
-
-.btn-add:hover {
-    background-color: #2f855a;
 }
 
 .btn-update {
@@ -458,14 +479,6 @@ body {
 
     .product-grid {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    }
-
-    .category-tree details:not([open]) {
-        display: block;
-    }
-
-    .category-tree details[open] ul {
-        display: block;
     }
 }
 

@@ -79,8 +79,6 @@ $total_products = $count_stmt->fetchColumn();
 $total_pages = ceil($total_products / $limit);
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -89,9 +87,9 @@ $total_pages = ceil($total_products / $limit);
     <title>Sản Phẩm Theo Danh Mục - Hệ Thống Bán Hàng</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
-    <link rel="stylesheet" href="hienthisanpham.css?v=<?= time(); ?>">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <script src="../trangchuadmin.js"></script>
+    <link rel="stylesheet" href="hienthisanpham.css?v=<?= time(); ?>">
 </head>
 <body>
     <!-- Alerts -->
@@ -127,19 +125,11 @@ $total_pages = ceil($total_products / $limit);
                     <li class="folder">
                         <details id="details-<?= $parent['iddm'] ?>">
                             <summary>
-                                <button 
-                                    class="toggle-btn" 
-                                    aria-expanded="false" 
-                                    aria-controls="category-<?= $parent['iddm'] ?>" 
-                                    aria-label="Toggle danh mục <?= htmlspecialchars($parent['tendm']) ?>"
-                                    onclick="toggleCategory(this, <?= $parent['iddm'] ?>)"
-                                >
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
+                                <i class="fas fa-chevron-right"></i>
                                 <i class="fas fa-folder"></i>
                                 <span><?= htmlspecialchars($parent['tendm']) ?></span>
                             </summary>
-                            <ul id="category-<?= $parent['iddm'] ?>">
+                            <ul>
                                 <?php foreach ($parent['children'] as $child): ?>
                                     <li class="file">
                                         <a 
@@ -257,72 +247,22 @@ $total_pages = ceil($total_products / $limit);
             document.querySelector('.hamburger').setAttribute('aria-expanded', isExpanded);
         }
 
-        // Toggle Category and Save State
-        function toggleCategory(button, iddm) {
-            const details = button.closest('details');
-            const isOpen = !details.open;
-            details.open = isOpen;
-            updateToggleButton(button, isOpen);
-            // Save expanded state to localStorage
-            let expandedCategories = JSON.parse(localStorage.getItem('expandedCategories') || '[]');
-            if (isOpen) {
-                if (!expandedCategories.includes(iddm)) {
-                    expandedCategories.push(iddm);
-                }
-            } else {
-                expandedCategories = expandedCategories.filter(id => id !== iddm);
-            }
-            localStorage.setItem('expandedCategories', JSON.stringify(expandedCategories));
-        }
-
-        // Update Toggle Button State
-        function updateToggleButton(button, isOpen) {
-            button.setAttribute('aria-expanded', isOpen);
-            const icon = button.querySelector('i');
-            icon.classList.toggle('fa-chevron-right', !isOpen);
-            icon.classList.toggle('fa-chevron-down', isOpen);
+        // Placeholder for themsanpham
+        function themsanpham() {
+            window.location.href = "themsanpham.php";
         }
 
         // Initialize Category Tree
         document.addEventListener('DOMContentLoaded', () => {
             const selectedIddm = <?= json_encode($selectedIddm) ?>;
-            const categoryTree = <?= json_encode($categoryTree) ?>;
-            
-            // Restore expanded state from localStorage
-            let expandedCategories = JSON.parse(localStorage.getItem('expandedCategories') || '[]');
-            
-            // Ensure parent of selected category is expanded
-            if (selectedIddm) {
-                for (let parentId in categoryTree) {
-                    const children = categoryTree[parentId].children;
-                    if (children.some(child => child.iddm === selectedIddm)) {
-                        if (!expandedCategories.includes(parseInt(parentId))) {
-                            expandedCategories.push(parseInt(parentId));
-                        }
-                    }
-                }
-                localStorage.setItem('expandedCategories', JSON.stringify(expandedCategories));
-            }
-
-            // Apply expanded state
+            // Automatically expand parent category if a child is selected
             document.querySelectorAll('.category-tree details').forEach(details => {
-                const iddm = parseInt(details.id.replace('details-', ''));
-                const button = details.querySelector('.toggle-btn');
-                if (expandedCategories.includes(iddm)) {
+                const ul = details.querySelector('ul');
+                if (ul && ul.querySelector('.selected')) {
                     details.open = true;
-                    updateToggleButton(button, true);
                 }
-                // Update button state when <details> is toggled
-                details.addEventListener('toggle', () => {
-                    updateToggleButton(button, details.open);
-                });
             });
         });
-
-        // Placeholder for themsanpham
-        function themsanpham() {
-            window.location.href = "themsanpham.php";
-        }
     </script>
 </body>
 </html>
