@@ -1,6 +1,6 @@
 <?php
     include "config.php";
-
+    $pdo = connectDatabase();
     // Bắt đầu session nếu chưa có
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
@@ -12,6 +12,18 @@
     } else {
         header("Location: GUI&dangnhap.php");
         exit();
+    }
+
+    $stmt = $pdo->prepare("SELECT iduser, trangthai, ngaykh FROM khxoatk WHERE iduser = :iduser");
+    $stmt->execute(['iduser' => $_SESSION['user']['iduser']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) {
+        echo "
+        <script>
+            alert('Tài khoản của bạn đã bị xóa và sẽ được xóa hoàn toàn sau 30 ngày!');
+            window.location.href = 'logout.php';
+        </script>";
     }
 
     define('SESSION_TIMEOUT', 1800);
