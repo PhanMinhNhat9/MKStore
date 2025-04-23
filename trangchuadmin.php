@@ -7,7 +7,7 @@
     }
 
     // Kiểm tra xem admin đã đăng nhập chưa
-    if (isset($_SESSION['user']) || $_SESSION['user']['quyen'] == 0 || $_SESSION['user']['quyen']==2589) {
+    if (isset($_SESSION['user'])) {
 
     } else {
         header("Location: GUI&dangnhap.php");

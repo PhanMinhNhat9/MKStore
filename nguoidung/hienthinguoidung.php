@@ -39,6 +39,15 @@ foreach ($params as $key => $val) {
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// --- KIỂM TRA TRẠNG THÁI KHÓA TÀI KHOẢN ---
+$lockedUsers = [];
+$lockStmt = $pdo->prepare("SELECT iduser FROM khxoatk WHERE trangthai = 1");
+$lockStmt->execute();
+$lockedUsersResult = $lockStmt->fetchAll(PDO::FETCH_ASSOC);
+foreach ($lockedUsersResult as $lockedUser) {
+    $lockedUsers[$lockedUser['iduser']] = true;
+}
+
 // --- ĐẾM TỔNG USER ---
 $countSql = "SELECT COUNT(*) FROM user";
 if (!empty($conditions)) {
@@ -66,6 +75,29 @@ $totalPages = ceil($totalUsers / $limit);
     <link rel="stylesheet" href="hienthinguoidung.css?v=<?= time(); ?>">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <script src="../trangchuadmin.js"></script>
+    <style>
+        .lock-label {
+            color: #d32f2f;
+            font-weight: bold;
+            margin: 5px 0;
+            background-color: #ffebee;
+            padding: 5px;
+            border-radius: 3px;
+            text-align: center;
+        }
+        .btn-complete {
+            background-color: #4caf50;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-complete:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
     <!-- Sidebar -->
@@ -80,8 +112,9 @@ $totalPages = ceil($totalUsers / $limit);
             <label for="quyen">Lọc theo quyền:</label>
             <select name="quyen" id="quyen">
                 <option value="">-- Tất cả quyền --</option>
-                <option value="0" <?= $quyen === "0" ? "selected" : "" ?>>Admin</option>
-                <option value="1" <?= $quyen === "1" ? "selected" : "" ?>>User</option>
+                <option value="2589" <?= $quyen === "2589" ? "selected" : "" ?>>Quản trị</option>
+                <option value="0" <?= $quyen === "0" ? "selected" : "" ?>>Nhân viên</option>
+                <option value="1" <?= $quyen === "1" ? "selected" : "" ?>>Người dùng</option>
             </select>
             <button type="submit" class="btn btn-filter"><i class="fas fa-filter"></i> Lọc</button>
         </form>
@@ -120,23 +153,42 @@ $totalPages = ceil($totalUsers / $limit);
                         <p><i class="fas fa-envelope"></i> <?= htmlspecialchars($user['email']) ?></p>
                         <p><i class="fas fa-phone"></i> <?= htmlspecialchars($user['sdt']) ?></p>
                         <p><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($user['diachi']) ?></p>
-                        <p><i class="fas fa-lock"></i> Quyền: <?= htmlspecialchars($user['quyen'] === '0' ? 'Admin' : 'User') ?></p>
+                        <p><i class="fas fa-lock"></i> Quyền: <?= htmlspecialchars(
+                            $user['quyen'] === '0' ? 'Nhân viên' :
+                            ($user['quyen'] === '2589' ? 'Quản trị' : 'Người dùng')
+                        ) ?></p>
+                        <!-- Hiển thị nhãn nếu tài khoản đang lên lịch khóa -->
+                        <?php if (isset($lockedUsers[$user['iduser']])): ?>
+                            <p class="lock-label"><i class="fas fa-lock"></i> Đang lên lịch khóa</p>
+                        <?php endif; ?>
                         <div class="btn-group">
                             <?php if ($_SESSION['user']['quyen'] == 2589 || $user['iduser'] == $_SESSION['user']['iduser']): ?>
-                                <button 
-                                    onclick="capnhatnguoidung(<?= $user['iduser'] ?>)"
-                                    class="btn btn-update"
-                                    aria-label="Cập nhật người dùng"
-                                >
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button 
-                                    onclick="xoanguoidung(<?= $user['iduser'] ?>)"
-                                    class="btn btn-delete"
-                                    aria-label="Xóa người dùng"
-                                >
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
+                                <?php if (isset($lockedUsers[$user['iduser']])): ?>
+                                    <!-- Nút Hoàn tất cho tài khoản đang lên lịch xóa -->
+                                    <button 
+                                        onclick="laylaiTK(<?= $user['iduser'] ?>)"
+                                        class="btn btn-complete"
+                                        aria-label="Hoàn tất xóa người dùng"
+                                    >
+                                        <i class="fas fa-check"></i> Cấp lại
+                                    </button>
+                                <?php else: ?>
+                                    <!-- Nút Cập nhật và Xóa cho tài khoản bình thường -->
+                                    <button 
+                                        onclick="capnhatnguoidung(<?= $user['iduser'] ?>)"
+                                        class="btn btn-update"
+                                        aria-label="Cập nhật người dùng"
+                                    >
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button 
+                                        onclick="xoanguoidung(<?= $user['iduser'] ?>)"
+                                        class="btn btn-delete"
+                                        aria-label="Xóa người dùng"
+                                    >
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </article>
@@ -220,6 +272,32 @@ $totalPages = ceil($totalUsers / $limit);
                     modalImage.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
+            }
+        }
+
+        // Hàm xử lý hoàn tất xóa tài khoản
+        function laylaiTK(iduser) {
+            if (confirm('Bạn có chắc chắn muốn hoàn tất xóa tài khoản này?')) {
+                // Gửi yêu cầu AJAX để hoàn tất xóa
+                fetch('laylaitk.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ iduser: iduser })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showCustomAlert('Thành công!', 'Tài khoản đã được xóa.', '../picture/success.png');
+                        setTimeout(() => location.reload(), 3000);
+                    } else {
+                        showCustomAlert('Lỗi!', data.message, '../picture/error.png');
+                    }
+                })
+                .catch(error => {
+                    showCustomAlert('Lỗi!', 'Đã xảy ra lỗi khi xử lý.', '../picture/error.png');
+                });
             }
         }
 
