@@ -85,7 +85,9 @@ $totalPages = ceil($totalUsers / $limit);
             </select>
             <button type="submit" class="btn btn-filter"><i class="fas fa-filter"></i> Lọc</button>
         </form>
-        <button class="btn btn-add" onclick="themnguoidung()"><i class="fas fa-plus"></i> Thêm người dùng</button>
+        <?php if ($_SESSION['user']['quyen'] == 2589) { ?>
+            <button class="btn btn-add" onclick="themnguoidung()"><i class="fas fa-plus"></i> Thêm người dùng</button>
+        <?php } ?>
         <?php if ($totalPages > 1): ?>
             <nav class="pagination">
                 <?php if ($page > 1): ?>
@@ -120,20 +122,22 @@ $totalPages = ceil($totalUsers / $limit);
                         <p><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($user['diachi']) ?></p>
                         <p><i class="fas fa-lock"></i> Quyền: <?= htmlspecialchars($user['quyen'] === '0' ? 'Admin' : 'User') ?></p>
                         <div class="btn-group">
-                            <button 
-                                onclick="capnhatnguoidung(<?= $user['iduser'] ?>)"
-                                class="btn btn-update"
-                                aria-label="Cập nhật người dùng"
-                            >
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button 
-                                onclick="xoanguoidung(<?= $user['iduser'] ?>)"
-                                class="btn btn-delete"
-                                aria-label="Xóa người dùng"
-                            >
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
+                            <?php if ($_SESSION['user']['quyen'] == 2589 || $user['iduser'] == $_SESSION['user']['iduser']): ?>
+                                <button 
+                                    onclick="capnhatnguoidung(<?= $user['iduser'] ?>)"
+                                    class="btn btn-update"
+                                    aria-label="Cập nhật người dùng"
+                                >
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button 
+                                    onclick="xoanguoidung(<?= $user['iduser'] ?>)"
+                                    class="btn btn-delete"
+                                    aria-label="Xóa người dùng"
+                                >
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            <?php endif; ?>
                         </div>
                     </article>
                 <?php endforeach; ?>
@@ -189,11 +193,15 @@ $totalPages = ceil($totalUsers / $limit);
 
         function openModal(src, id) {
             const modal = document.getElementById('imageModal');
+            const imageInput = document.getElementById('fileInput');
             modal.style.display = 'flex';
             modal.setAttribute('aria-hidden', 'false');
             document.getElementById('modalImage').src = src;
             document.getElementById('iduser').value = id;
             modal.querySelector('.modal-content').focus();
+            const currentUserId = <?= $_SESSION['user']['iduser'] ?>;
+            const currentUserQuyen = <?= $_SESSION['user']['quyen'] ?>;
+            imageInput.disabled = (currentUserQuyen != 2589 && id != currentUserId);
         }
 
         function closeModal() {

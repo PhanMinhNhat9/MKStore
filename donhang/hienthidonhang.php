@@ -61,6 +61,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                 <option value="Đã xác nhận" <?= $status == 'Đã xác nhận' ? 'selected' : '' ?>>🟢 Đã xác nhận</option>
                 <option value="Đã thanh toán" <?= $status == 'Đã thanh toán' ? 'selected' : '' ?>>🟢 Đã thanh toán</option>
                 <option value="Chưa thanh toán" <?= $status == 'Chưa thanh toán' ? 'selected' : '' ?>>🟠 Chưa thanh toán</option>
+                <option value="Đã gửi" <?= $order['trangthai'] == 'Đã gửi' ? 'selected' : '' ?>>🚚 Đã gửi</option>
                 <option value="Hủy đơn" <?= $status == 'Hủy đơn' ? 'selected' : '' ?>>🔴 Hủy đơn</option>
             </select>
         </form>
@@ -137,11 +138,14 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                                 <form action="update_trangthai.php" method="POST">
                                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                                     <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
-                                    <select name="trangthai" onchange="this.form.submit()" aria-label="Trạng thái đơn hàng">
+                                    <select name="trangthai" onchange="this.form.submit()" aria-label="Trạng thái đơn hàng"
+                                        <?= $order['trangthai'] == 'Đã thanh toán' ? 'disabled' : '' ?>
+                                    >
                                         <option value="Chờ xác nhận" <?= $order['trangthai'] == 'Chờ xác nhận' ? 'selected' : '' ?>>🔵 Chờ xác nhận</option>
                                         <option value="Đã xác nhận" <?= $order['trangthai'] == 'Đã xác nhận' ? 'selected' : '' ?>>🟢 Đã xác nhận</option>
                                         <option value="Đã thanh toán" <?= $order['trangthai'] == 'Đã thanh toán' ? 'selected' : '' ?>>🟢 Đã thanh toán</option>
                                         <option value="Chưa thanh toán" <?= $order['trangthai'] == 'Chưa thanh toán' ? 'selected' : '' ?>>🟠 Chưa thanh toán</option>
+                                        <option value="Đã gửi" <?= $order['trangthai'] == 'Đã gửi' ? 'selected' : '' ?>>🚚 Đã gửi</option>
                                         <option value="Hủy đơn" <?= $order['trangthai'] == 'Hủy đơn' ? 'selected' : '' ?>>🔴 Hủy đơn</option>
                                     </select>
                                 </form>

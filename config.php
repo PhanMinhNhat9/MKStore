@@ -68,7 +68,7 @@
                 'quyen' => $user['quyen']
             ];
             
-            if ($_SESSION['user']['quyen']==0) {
+            if ($_SESSION['user']['quyen']==0 || $_SESSION['user']['quyen']==2589) {
                 header("Location: trangchuadmin.php");
                 exit();
             }
