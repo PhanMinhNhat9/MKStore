@@ -253,7 +253,7 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .sidebar {
         width: var(--sidebar-collapsed-width);
     }
@@ -291,10 +291,12 @@ body {
         width: 24px;
         height: 24px;
     }
-
-    .table-body-container {
-        max-height: var(--table-height-mobile);
-    }
+/* Table */
+.table-container {
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
 }
 
 @media (max-width: 480px) {

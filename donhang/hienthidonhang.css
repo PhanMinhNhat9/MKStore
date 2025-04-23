@@ -271,9 +271,26 @@ body {
 /* Responsive Design */
 @media (max-width: 900px) {
     .sidebar {
-display: none;
+        width: var(--sidebar-collapsed-width);
     }
 
+    .sidebar.collapsed {
+        width: var(--sidebar-width);
+    }
+
+    .sidebar h1,
+    .sidebar .filter-form,
+    .sidebar .btn-add,
+    .sidebar .pagination {
+        display: none;
+    }
+
+    .sidebar.collapsed h1,
+    .sidebar.collapsed .filter-form,
+    .sidebar.collapsed .btn-add,
+    .sidebar.collapsed .pagination {
+        display: block;
+    }
 
     .order-table th,
     .order-table td {
@@ -285,8 +302,8 @@ display: none;
         width: 120px;
     }
 
-    .table-body-container {
-        max-height: var(--table-height-mobile);
+    .table-container {
+        max-height: 90vh;
     }
 }
 

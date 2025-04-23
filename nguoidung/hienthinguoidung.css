@@ -362,7 +362,7 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .sidebar {
         width: var(--sidebar-collapsed-width);
     }
@@ -387,7 +387,7 @@ body {
 
     .user-grid {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        max-height: 1000px;
+        max-height: 90vh;
         overflow-y: auto;
         padding-right: 6px;
     }

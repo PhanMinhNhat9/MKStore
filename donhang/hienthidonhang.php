@@ -77,7 +77,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                         <th scope="col">Tên KH</th>
                         <th scope="col">Tổng Tiền</th>
                         <th scope="col">Trạng Thái</th>
-                        <th scope="col">Ngày Đặt</th>
+                        <!-- <th scope="col">Ngày Đặt</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -150,7 +150,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                                     </select>
                                 </form>
                             </td>
-                            <td><?= htmlspecialchars($order['thoigian']) ?></td>
+                            <!-- <td><?= htmlspecialchars($order['thoigian']) ?></td> -->
                         </tr>
                     <?php endforeach; ?>
                     <?php if (count($orders) === 0): ?>
