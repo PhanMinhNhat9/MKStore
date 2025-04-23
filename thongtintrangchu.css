@@ -65,10 +65,40 @@ h1 {
     display: inline-block;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 900px) {
     .clock {
         font-size: 1.2rem;
         padding: 0.75rem 1.5rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+        margin: 0;
+    }
+
+    .text-content {
+        font-size: 1rem;
+    }
+
+    /* Chat button smaller for mobile */
+    .btn.chat-ai {
+        bottom: 10px;
+        right: 10px;
+        font-size: 14px;
+        padding: 10px 16px;
+    }
+
+    /* Adjust chat box */
+    .chat-box {
+        width: 300px;
+    }
+
+    /* Adjust chat messages */
+    .chat-messages {
+        max-height: 150px;
+    }
+    .space-y-6 > p {
+        margin: 0;
     }
 }
 
@@ -224,4 +254,28 @@ h1 {
 
 .chat-messages::-webkit-scrollbar-thumb:hover {
     background: #187bcd;
+}
+
+/* For tablets and larger screens (portrait mode) */
+@media (min-width: 640px) and (max-width: 1024px) {
+    .chat-box {
+        width: 300px;
+    }
+
+    .btn.chat-ai {
+        font-size: 15px;
+        padding: 12px 18px;
+    }
+}
+
+/* For large screens and desktop */
+@media (min-width: 1024px) {
+    .chat-box {
+        width: 350px;
+    }
+
+    .btn.chat-ai {
+        font-size: 16px;
+        padding: 14px 20px;
+    }
 }
