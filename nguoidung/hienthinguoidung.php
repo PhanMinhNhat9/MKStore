@@ -75,29 +75,6 @@ $totalPages = ceil($totalUsers / $limit);
     <link rel="stylesheet" href="hienthinguoidung.css?v=<?= time(); ?>">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <script src="../trangchuadmin.js"></script>
-    <style>
-        .lock-label {
-            color: #d32f2f;
-            font-weight: bold;
-            margin: 5px 0;
-            background-color: #ffebee;
-            padding: 5px;
-            border-radius: 3px;
-            text-align: center;
-        }
-        .btn-complete {
-            background-color: #4caf50;
-            color: white;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .btn-complete:hover {
-            background-color: #45a049;
-        }
-    </style>
 </head>
 <body>
     <!-- Sidebar -->

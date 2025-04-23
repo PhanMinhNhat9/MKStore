@@ -279,11 +279,7 @@ body {
 /* Responsive Design */
 @media (max-width: 768px) {
     .sidebar {
-        width: var(--sidebar-collapsed-width);
-    }
-
-    .sidebar.collapsed {
-        width: var(--sidebar-width);
+        display: none;
     }
 
     .sidebar h1,
@@ -296,14 +292,6 @@ body {
     .sidebar.collapsed .filter-form,
     .sidebar.collapsed .btn-add {
         display: block;
-    }
-
-    .container {
-        margin-left: var(--sidebar-collapsed-width);
-    }
-
-    .sidebar.collapsed ~ .container {
-        margin-left: var(--sidebar-width);
     }
 
     .coupon-table th,
@@ -327,3 +315,16 @@ body {
         padding: 6px;
     }
 }
+/* Ẩn nội dung nếu chưa xoay thiết bị */
+@media (orientation: portrait) {
+    body {
+      display: none;
+    }
+  }
+  
+  /* Hiển thị nội dung nếu thiết bị ở chế độ ngang */
+  @media (orientation: landscape) {
+    body {
+      display: flex;
+    }
+  } 

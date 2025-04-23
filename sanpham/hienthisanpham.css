@@ -469,16 +469,11 @@ body {
         display: block;
     }
 
-    .container {
-        margin-left: var(--sidebar-collapsed-width);
-    }
-
-    .sidebar.collapsed ~ .container {
-        margin-left: var(--sidebar-width);
-    }
-
     .product-grid {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        max-height: 910px;
+        overflow-y: auto;
+        padding-right: 6px;
     }
 }
 

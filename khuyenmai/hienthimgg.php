@@ -49,7 +49,7 @@ $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Quản Lý Mã Giảm Giá - Hệ Thống Bán Hàng</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
-    <link rel="stylesheet" href="hienthimgg.css">
+    <link rel="stylesheet" href="hienthimgg.css?v=<?= time(); ?>">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <script src="../trangchuadmin.js"></script>
 </head>
@@ -156,6 +156,10 @@ $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
         document.getElementById('statusFilter').addEventListener('change', () => {
             document.getElementById('filterForm').submit();
         });
+
+        if (window.innerHeight > window.innerWidth) {
+            alert("Vui lòngq xoay thiết bị sang chế độ ngang để xem đơn hàng.");
+        }
     </script>
 </body>
 </html>

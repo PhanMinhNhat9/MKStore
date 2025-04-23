@@ -258,7 +258,6 @@ body {
 .btn-edit:hover {
     background-color: #2f855a;
 }
-
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; }
@@ -269,34 +268,12 @@ body {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .sidebar {
-        width: var(--sidebar-collapsed-width);
+display: none;
     }
 
-    .sidebar.collapsed {
-        width: var(--sidebar-width);
-    }
-
-    .sidebar h1,
-    .sidebar .filter-form {
-        display: none;
-    }
-
-    .sidebar.collapsed h1,
-    .sidebar.collapsed .filter-form {
-        display: block;
-    }
-
-    .container {
-        margin-left: var(--sidebar-collapsed-width);
-    }
-
-    .sidebar.collapsed ~ .container {
-        margin-left: var(--sidebar-width);
-    }
 
     .order-table th,
     .order-table td {
@@ -314,6 +291,7 @@ body {
 }
 
 @media (max-width: 480px) {
+    
     .order-table {
         font-size: 12px;
     }
@@ -327,3 +305,16 @@ body {
         width: 100px;
     }
 }
+/* Ẩn nội dung nếu chưa xoay thiết bị */
+@media (orientation: portrait) {
+    body {
+      display: none;
+    }
+  }
+  
+  /* Hiển thị nội dung nếu thiết bị ở chế độ ngang */
+  @media (orientation: landscape) {
+    body {
+      display: flex;
+    }
+  }

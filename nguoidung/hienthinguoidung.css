@@ -178,6 +178,27 @@ body {
     background-color: #2b6cb0;
 }
 
+.lock-label {
+    color: #d32f2f;
+    font-weight: bold;
+    margin: 5px 0;
+    background-color: #ffebee;
+    padding: 5px;
+    border-radius: 3px;
+    text-align: center;
+}
+.btn-complete {
+    background-color: #4caf50;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.btn-complete:hover {
+    background-color: #45a049;
+}
 /* Pagination */
 .pagination {
     display: flex;
@@ -364,16 +385,11 @@ body {
         display: block;
     }
 
-    .container {
-        margin-left: var(--sidebar-collapsed-width);
-    }
-
-    .sidebar.collapsed ~ .container {
-        margin-left: var(--sidebar-width);
-    }
-
     .user-grid {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        max-height: 1000px;
+        overflow-y: auto;
+        padding-right: 6px;
     }
 }
 

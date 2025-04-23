@@ -40,7 +40,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
     <title>Quản Lý Đơn Hàng - Hệ Thống Bán Hàng</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
-    <link rel="stylesheet" href="hienthidonhang.css">
+    <link rel="stylesheet" href="hienthidonhang.css?v=<?= time(); ?>">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <script src="../trangchuadmin.js"></script>
 </head>
@@ -61,7 +61,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                 <option value="Đã xác nhận" <?= $status == 'Đã xác nhận' ? 'selected' : '' ?>>🟢 Đã xác nhận</option>
                 <option value="Đã thanh toán" <?= $status == 'Đã thanh toán' ? 'selected' : '' ?>>🟢 Đã thanh toán</option>
                 <option value="Chưa thanh toán" <?= $status == 'Chưa thanh toán' ? 'selected' : '' ?>>🟠 Chưa thanh toán</option>
-                <option value="Đã gửi" <?= $order['trangthai'] == 'Đã gửi' ? 'selected' : '' ?>>🚚 Đã gửi</option>
+                <option value="Đã gửi" <?= $status == 'Đã gửi' ? 'selected' : '' ?>>🚚 Đã gửi</option>
                 <option value="Hủy đơn" <?= $status == 'Hủy đơn' ? 'selected' : '' ?>>🔴 Hủy đơn</option>
             </select>
         </form>
@@ -176,6 +176,10 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
         document.getElementById('statusFilter').addEventListener('change', () => {
             document.getElementById('filterForm').submit();
         });
+
+        if (window.innerHeight > window.innerWidth) {
+            alert("Vui lòngq xoay thiết bị sang chế độ ngang để xem đơn hàng.");
+        }
     </script>
 </body>
 </html>

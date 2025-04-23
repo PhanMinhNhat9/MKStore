@@ -144,6 +144,10 @@ foreach ($categories as $cat) {
                 row.style.display = selectedParentId === 'all' || rowParentId === selectedParentId ? '' : 'none';
             });
         });
+
+        if (window.innerHeight > window.innerWidth) {
+            alert("Vui lòngq xoay thiết bị sang chế độ ngang để xem đơn hàng.");
+        }
     </script>
 </body>
 </html>

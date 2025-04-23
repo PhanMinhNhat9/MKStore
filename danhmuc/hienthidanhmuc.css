@@ -15,7 +15,7 @@
     --sidebar-width: 250px;
     --sidebar-collapsed-width: 60px;
     --table-height: 400px;
-    --table-height-mobile: 300px;
+    --table-height-mobile: 700px;
 }
 
 /* Reset */
@@ -266,20 +266,19 @@ body {
     .sidebar .filter-form,
     .sidebar .btn-add {
         display: none;
+
+    }
+
+    .sidebar.collapsed h1,
+    .sidebar.collapsed .filter-form,
+    .sidebar.collapsed .btn-add {
+        display: none;
     }
 
     .sidebar.collapsed h1,
     .sidebar.collapsed .filter-form,
     .sidebar.collapsed .btn-add {
         display: block;
-    }
-
-    .container {
-        margin-left: var(--sidebar-collapsed-width);
-    }
-
-    .sidebar.collapsed ~ .container {
-        margin-left: var(--sidebar-width);
     }
 
     .category-table th,
@@ -308,3 +307,16 @@ body {
         padding: 6px;
     }
 }
+/* Ẩn nội dung nếu chưa xoay thiết bị */
+@media (orientation: portrait) {
+    body {
+      display: none;
+    }
+  }
+  
+  /* Hiển thị nội dung nếu thiết bị ở chế độ ngang */
+  @media (orientation: landscape) {
+    body {
+      display: flex;
+    }
+  }
