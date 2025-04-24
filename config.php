@@ -4,29 +4,28 @@
     ini_set('session.cookie_secure', 1);
     ini_set('session.use_only_cookies', 1);
     session_start();
-// CSRF token generation (if not already present)
-if (!isset($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-function connectDatabase(): PDO {
-    $host = "localhost";  
-    $dbname = "quanlybanpk"; 
-    $username = "root";   
-    $password = "";    
-    try {
-        $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
-        $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,  // Hiển thị lỗi dưới dạng Exception
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,  // Mặc định trả về dạng mảng kết hợp
-            PDO::ATTR_EMULATE_PREPARES => false,  // Vô hiệu hóa giả lập prepared statements (bảo mật hơn)
-            PDO::ATTR_PERSISTENT => true  // Kết nối bền vững (giảm thời gian kết nối lại)
-        ];
-        $pdo = new PDO($dsn, $username, $password, $options);
-        return $pdo;
-    } catch (PDOException $e) {
-        die("Lỗi kết nối CSDL: " . $e->getMessage());
+    if (!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
-}
+    function connectDatabase(): PDO {
+        $host = "localhost";  
+        $dbname = "quanlybanpk"; 
+        $username = "root";   
+        $password = "";    
+        try {
+            $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
+            $options = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,  // Hiển thị lỗi dưới dạng Exception
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,  // Mặc định trả về dạng mảng kết hợp
+                PDO::ATTR_EMULATE_PREPARES => false,  // Vô hiệu hóa giả lập prepared statements (bảo mật hơn)
+                PDO::ATTR_PERSISTENT => true  // Kết nối bền vững (giảm thời gian kết nối lại)
+            ];
+            $pdo = new PDO($dsn, $username, $password, $options);
+            return $pdo;
+        } catch (PDOException $e) {
+            die("Lỗi kết nối CSDL: " . $e->getMessage());
+        }
+    }
     
     function dangnhap($tendn, $matkhau) {
         if (empty($tendn) || empty($matkhau)) {
