@@ -66,6 +66,8 @@
     <script src="trangchuadmin.js"></script>
     <link rel="stylesheet" href="fontawesome/css/all.min.css">
     <link rel="stylesheet" href="trangchuadmin.css?v=<?= time(); ?>">
+    <script src="sweetalert2/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2/sweetalert2.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
@@ -245,6 +247,26 @@
             <iframe id="Frame" src="" scrolling="no"></iframe>
         </div>
 
+    <?php
+        if (isset($_GET['status'])) {
+            if ($_GET['status'] === 'cnuserT') {
+                echo "<script>showCustomAlert('Thành Công!', 'Thông tin đã được cập nhật.', 'picture/success.png');</script>";
+            } 
+            else
+            if ($_GET['status'] === 'cnuserF') {
+                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
+            }
+            else
+            if ($_GET['status'] === 'themuserT') {
+                echo "<script>showCustomAlert('Thành Công!', 'Người dùng đã được thêm vào danh sách!', 'picture/success.png');</script>";
+            } 
+            else
+            if ($_GET['status'] === 'themuserF') {
+                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
+            }
+    
+        }
+    ?>
     <!-- Chân web -->
     <footer class="footer">
         <div class="footer-content">

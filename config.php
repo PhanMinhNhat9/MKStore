@@ -4,11 +4,6 @@
     ini_set('session.cookie_secure', 1);
     ini_set('session.use_only_cookies', 1);
     session_start();
-    
-    if (!isset($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-
     function connectDatabase(): PDO {
         $host = "localhost";  
         $dbname = "quanlybanpk"; 
@@ -34,15 +29,9 @@
             return "Vui lòng nhập đầy đủ thông tin";
         }
         $pdo = connectDatabase();
-        // if (!isset($_SESSION['login_attempts'])) {
-        //     $_SESSION['login_attempts'] = 0;
-        // }
         if (!isset($_SESSION['last_attempt_time'])) {
             $_SESSION['last_attempt_time'] = time();
         }
-        // if (!isset($_SESSION['lock_time'])) {
-        //     $_SESSION['lock_time'] = 0;
-        // }
         // Nếu đã quá 10 phút từ lần nhập sai đầu tiên, reset lại số lần nhập
         if (time() - $_SESSION['last_attempt_time'] > 10) {
             $_SESSION['login_attempts'] = 0;

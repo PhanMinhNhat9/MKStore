@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thêm Người Dùng</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="themnguoidung.css?v=<?php time(); ?>">
+    <link rel="stylesheet" href="themnguoidung.css?v=<?= time(); ?>">
     <script src="../trangchuadmin.js"></script>
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
@@ -69,16 +69,13 @@
                         if ($kq) {
                             echo "
                             <script>
-                                showCustomAlert('🐳 Thêm Thành Công!', 'Người dùng đã được thêm vào danh sách!', '../picture/success.png');
-                                setTimeout(function() {
-                                    goBack();
-                                }, 3000); 
+                                window.top.location.href = '../trangchuadmin.php?status=themuserT';
                             </script>";
                         } else {
                             echo "
                             <script>
-                                showCustomAlert('🐳 Thêm Không Thành Công!', '$kq', '../picture/error.png');
-                            </script>";
+                                window.top.location.href = '../trangchuadmin.php?status=themuserF';
+                            </script>";                    
                         }
                     }
                 }

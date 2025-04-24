@@ -53,8 +53,8 @@
                 </select>
             </div>
             <div class="btn-container">
-                <button type="submit" name="capnhatnd">💾 Cập Nhật</button>
-                <button type="button" onclick="goBack()">⬅ Trở Về</button>
+                <button type="submit" name="capnhatnd">Cập Nhật</button>
+                <button type="button" onclick="goBack()">Trở Về</button>
             </div>
             <?php
                  if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -71,15 +71,12 @@
                         if ($kq) {
                             echo "
                             <script>
-                                showCustomAlert('🐳 Cập Nhật Thành Công!', 'Thông tin người dùng đã được cập nhật thành công!', '../picture/success.png');
-                                setTimeout(function() {
-                                    goBack();
-                                }, 3000); 
+                                window.top.location.href = '../trangchuadmin.php?status=cnuserT';
                             </script>";
                         } else {
                             echo "
                             <script>
-                                showCustomAlert('🐳 Cập Nhật Thất Bại!', '$kq', '../picture/error.png');
+                                window.top.location.href = '../trangchuadmin.php?status=cnuserF';
                             </script>";
                         }
                     }

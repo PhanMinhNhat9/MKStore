@@ -85,7 +85,7 @@ $totalPages = ceil($totalUsers / $limit);
             </button>
         </div>
         <h1>Hệ Thống Bán Hàng</h1>
-        <form method="GET" class="filter-form">
+        <form method="GET" class="filter-form" id="filter-form" action="">
             <label for="quyen">Lọc theo quyền:</label>
             <select name="quyen" id="quyen">
                 <option value="">-- Tất cả quyền --</option>
@@ -93,7 +93,6 @@ $totalPages = ceil($totalUsers / $limit);
                 <option value="0" <?= $quyen === "0" ? "selected" : "" ?>>Nhân viên</option>
                 <option value="1" <?= $quyen === "1" ? "selected" : "" ?>>Người dùng</option>
             </select>
-            <button type="submit" class="btn btn-filter"><i class="fas fa-filter"></i> Lọc</button>
         </form>
         <?php if ($_SESSION['user']['quyen'] == 2589) { ?>
             <button class="btn btn-add" onclick="themnguoidung()"><i class="fas fa-plus"></i> Thêm người dùng</button>
@@ -179,7 +178,7 @@ $totalPages = ceil($totalUsers / $limit);
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
         <div id="imageModal" class="modal" aria-hidden="true">
             <div class="modal-content">
-                <span class="close-btn" onclick="closeModal()" aria-label="Đóng modal">×</span>
+                <span class="close-btn" onclick="closeModal()" aria-label="Đóng modal"><i class="fas fa-times"></i></span>
                 <img id="modalImage" src="" alt="Ảnh người dùng">
                 <input type="hidden" name="iduser" id="iduser" value="">
                 <input 
@@ -278,11 +277,8 @@ $totalPages = ceil($totalUsers / $limit);
             }
         }
 
-        // Close modal with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('imageModal').style.display === 'flex') {
-                closeModal();
-            }
+        document.getElementById('quyen').addEventListener('change', () => {
+            document.getElementById('filter-form').submit();
         });
     </script>
 </body>

@@ -207,33 +207,33 @@ function showErrorMessage(message) {
     }, 3000);
 }
 
-    function showCustomAlert(title = "Thông báo!", text = "Nội dung thông báo.", icon = "info") {
-        Swal.fire({
-            title: `<strong style="font-size:18px;">${title}</strong>`,
-            html: `<p style="font-size:16px; margin:0;">${text}</p>`,
-            iconHtml: `<img src="${icon}" style="width: 50px; height: 50px; border: none;"/>`,
-            background: "#e0f7fa",
-            color: "#1565c0",
-            width: "300px", 
-            padding: "5px",
-            customClass: {
-                confirmButton: "swal-custom-button",
-            }
-        });
-    }
-
-    const style = document.createElement("style");
-    style.innerHTML = `
-        .swal-custom-button {
-            width: auto !important;
-            padding: 10px 20px !important;
-            font-size: 16px !important;
-            background-color: #4a90e2 !important;
-            border-radius: 5px !important;
-            display: none !important; /* Ẩn nút xác nhận */
+function showCustomAlert(title = "Thông báo!", text = "Nội dung thông báo.", icon = "info") {
+    Swal.fire({
+        title: `<strong style="font-size:18px;">${title}</strong>`,
+        html: `<p style="font-size:16px; margin:0;">${text}</p>`,
+        iconHtml: `<img src="${icon}" style="width: 50px; height: 50px; border: none;"/>`,
+        background: "rgb(180, 237, 255)",
+        color: "#1565c0",
+        width: "300px", 
+        padding: "5px",
+        confirmButtonText: 'OK', // Nút OK
+        customClass: {
+            confirmButton: "swal-custom-button", // Đặt lớp tùy chỉnh cho nút xác nhận
         }
-    }`;
-    document.head.appendChild(style);
+    });
+}
+const style = document.createElement("style");
+style.innerHTML = `
+    .swal-custom-button {
+        width: auto !important;
+        padding: 10px 20px !important;
+        font-size: 16px !important;
+        background-color:rgb(50, 145, 253) !important;
+        border-radius: 5px !important;
+    }
+`;
+document.head.appendChild(style);
+
     
 function themdmcha(id) {
     let encodedId = btoa(id);

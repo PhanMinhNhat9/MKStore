@@ -151,22 +151,48 @@ body {
 }
 
 .btn-update {
-    background-color: var(--success-color);
+    background: linear-gradient(135deg, #007f4f, #005f30);
     color: #ffffff;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .btn-update:hover {
-    background-color: #2f855a;
+    background: linear-gradient(135deg, #009a61, #027040);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
 }
 
+
 .btn-delete {
-    background-color: var(--danger-color);
+    background: linear-gradient(135deg, #ff4e4e, #c53030);
     color: #ffffff;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(255, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .btn-delete:hover {
-    background-color: #c53030;
+    background: linear-gradient(135deg, #ff1f1f, #a30000);
+    box-shadow: 0 6px 10px rgba(255, 0, 0, 0.3);
+    transform: scale(1.05);
 }
+
 
 .btn-nav {
     background-color: var(--primary-color);
@@ -296,11 +322,10 @@ body {
 .modal {
     display: none;
     position: fixed;
-    top: 0;
+    bottom: 150px;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
     justify-content: center;
     align-items: center;
     z-index: 1000;
@@ -312,13 +337,14 @@ body {
 }
 
 .modal-content {
-    background: var(--card-bg);
     padding: var(--spacing);
     border-radius: var(--border-radius);
     text-align: center;
     width: clamp(300px, 90%, 360px);
     position: relative;
     animation: zoomIn 0.3s ease-in-out;
+    background: linear-gradient(135deg, #f7fbff 0%, #2a80d6 100%);
+    opacity: 0.9;
 }
 
 .modal-content img {
@@ -331,7 +357,32 @@ body {
 
 .modal-content input[type="file"] {
     margin: var(--spacing) 0;
+    padding: 10px;
+    border: 2px dashed #ffffff;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0);
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    width: 100%;
 }
+
+.modal-content input[type="file"]::file-selector-button {
+    background-color: #ffffff30;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal-content input[type="file"]::file-selector-button:hover {
+    background-color: #ffffff50;
+}
+
 
 .close-btn {
     position: absolute;
@@ -344,7 +395,7 @@ body {
 }
 
 .close-btn:hover {
-    color: #c53030;
+    transform: scale(1.2);
 }
 
 /* Animations */

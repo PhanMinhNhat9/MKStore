@@ -15,7 +15,7 @@ $limit = 5; // Số sản phẩm mỗi trang
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-$sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong, sp.iddm,
+$sql = "SELECT sp.idsp, sp.tensp, sp.giaban, sp.anh, sp.soluong, sp.iddm,
                COALESCE(SUM(ctdh.soluong), 0) AS soluong_daban,
                COALESCE(AVG(dg.sosao), 0) AS trungbinhsao,
                (sp.soluong - COALESCE(SUM(ctdh.soluong), 0)) AS soluong_conlai,
@@ -28,14 +28,12 @@ $sql = "SELECT sp.idsp, sp.tensp, sp.mota, sp.giaban, sp.anh, sp.soluong, sp.idd
 
 // Điều kiện lọc theo query và iddm
 if ($query !== '' && $dm !== '') {
-    $sql .= " WHERE (sp.tensp LIKE :searchTerm OR sp.mota LIKE :searchTerm1) AND sp.iddm = :iddm";
+    $sql .= " WHERE (sp.tensp LIKE :searchTerm) AND sp.iddm = :iddm";
     $params['searchTerm'] = "%$query%";
-    $params['searchTerm1'] = "%$query%";
     $params['iddm'] = $dm;
 } elseif ($query !== '') {
-    $sql .= " WHERE sp.tensp LIKE :searchTerm OR sp.mota LIKE :searchTerm1";
+    $sql .= " WHERE sp.tensp LIKE :searchTerm";
     $params['searchTerm'] = "%$query%";
-    $params['searchTerm1'] = "%$query%";
 } elseif ($dm !== '') {
     $sql .= " WHERE sp.iddm = :iddm";
     $params['iddm'] = $dm;
@@ -58,9 +56,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $count_sql = "SELECT COUNT(DISTINCT sp.idsp) FROM sanpham sp";
 
 if ($query !== '' && $dm !== '') {
-    $count_sql .= " WHERE (sp.tensp LIKE :searchTerm OR sp.mota LIKE :searchTerm1) AND sp.iddm = :iddm";
+    $count_sql .= " WHERE (sp.tensp LIKE :searchTerm) AND sp.iddm = :iddm";
 } elseif ($query !== '') {
-    $count_sql .= " WHERE sp.tensp LIKE :searchTerm OR sp.mota LIKE :searchTerm1";
+    $count_sql .= " WHERE sp.tensp LIKE :searchTerm";
 } elseif ($dm !== '') {
     $count_sql .= " WHERE sp.iddm = :iddm";
 }
@@ -68,7 +66,6 @@ if ($query !== '' && $dm !== '') {
 $count_stmt = $pdo->prepare($count_sql);
 if ($query !== '') {
     $count_stmt->bindValue(':searchTerm', "%$query%");
-    $count_stmt->bindValue(':searchTerm1', "%$query%");
 }
 if ($dm !== '') {
     $count_stmt->bindValue(':iddm', $dm);
@@ -166,11 +163,13 @@ $total_pages = ceil($total_products / $limit);
                     <article class="product-card <?= $classOutOfStock ?>">
                         <img 
                             src="../<?= htmlspecialchars($row['anh']) ?>" 
-                            alt="Ảnh sản phẩm <?= htmlspecialchars($row['tensp']) ?>" 
+                            alt="Ảnh sản phẩm" 
                             loading="lazy"
                         >
-                        <h3><?= htmlspecialchars(mb_strimwidth($row['tensp'], 0, 20, "...")) ?></h3>
-                        <p class="desc"><?= htmlspecialchars(mb_strimwidth($row['mota'], 0, 50, "...")) ?></p>
+                        <h3 class="product-name">
+                            <?= htmlspecialchars(mb_strimwidth($row['tensp'], 0, 50, "...")) ?>
+                            <span class="tooltip"><?= htmlspecialchars($row['tensp']) ?></span>
+                        </h3>
                         <div class="price">
                             <?php if ($phantram_giam > 0): ?>
                                 <span class="old-price"><?= number_format($giagoc, 0, ",", ".") ?>đ</span>
@@ -263,6 +262,27 @@ $total_pages = ceil($total_products / $limit);
                 }
             });
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.product-name').forEach(element => {
+            element.addEventListener('mouseenter', function() {
+                const tooltip = this.querySelector('.tooltip');
+                if (tooltip) {
+                    // Ensure tooltip stays within viewport
+                    const rect = tooltip.getBoundingClientRect();
+                    if (rect.right > window.innerWidth) {
+                        tooltip.style.left = 'auto';
+                        tooltip.style.right = '0';
+                        tooltip.style.transform = 'none';
+                    }
+                    if (rect.left < 0) {
+                        tooltip.style.left = '0';
+                        tooltip.style.transform = 'none';
+                    }
+                }
+            });
+        });
+    });
     </script>
 </body>
 </html>
