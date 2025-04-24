@@ -5,25 +5,52 @@
     ini_set('session.use_only_cookies', 1);
     session_start();
     
-    function connectDatabase(): PDO {
-        $host = "localhost";  
-        $dbname = "quanlybanpk"; 
-        $username = "root";   
-        $password = "";    
-        try {
-            $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
-            $options = [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,  // Hiển thị lỗi dưới dạng Exception
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,  // Mặc định trả về dạng mảng kết hợp
-                PDO::ATTR_EMULATE_PREPARES => false,  // Vô hiệu hóa giả lập prepared statements (bảo mật hơn)
-                PDO::ATTR_PERSISTENT => true  // Kết nối bền vững (giảm thời gian kết nối lại)
-            ];
-            $pdo = new PDO($dsn, $username, $password, $options);
-            return $pdo;
-        } catch (PDOException $e) {
-            die("Lỗi kết nối CSDL: " . $e->getMessage());
-        }
+
+function connectDatabase() {
+        // Database configuration for PostgreSQL
+$host = 'localhost'; // PostgreSQL server host
+$port = '5432';     // Default PostgreSQL port
+$dbname = 'quanlybanpk'; // Database name
+$user = 'postgres'; // PostgreSQL username
+$password = '22004335'; // PostgreSQL password (replace with your actual password)
+    try {
+        // Create PDO connection to PostgreSQL
+        $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
+        $pdo = new PDO($dsn, $user, $password, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ]);
+        return $pdo;
+    } catch (PDOException $e) {
+        // Handle connection error
+        die("Connection failed: " . $e->getMessage());
     }
+}
+
+// CSRF token generation (if not already present)
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+// function connectDatabase(): PDO {
+//     $host = "localhost";  
+//     $dbname = "quanlybanpk"; 
+//     $username = "root";   
+//     $password = "";    
+//     try {
+//         $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
+//         $options = [
+//             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,  // Hiển thị lỗi dưới dạng Exception
+//             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,  // Mặc định trả về dạng mảng kết hợp
+//             PDO::ATTR_EMULATE_PREPARES => false,  // Vô hiệu hóa giả lập prepared statements (bảo mật hơn)
+//             PDO::ATTR_PERSISTENT => true  // Kết nối bền vững (giảm thời gian kết nối lại)
+//         ];
+//         $pdo = new PDO($dsn, $username, $password, $options);
+//         return $pdo;
+//     } catch (PDOException $e) {
+//         die("Lỗi kết nối CSDL: " . $e->getMessage());
+//     }
+// }
     
     function dangnhap($tendn, $matkhau) {
         if (empty($tendn) || empty($matkhau)) {
@@ -146,10 +173,6 @@
         }
     }
     
-
-    
-    
-
     // Hàm lấy danh sách người dùng
     function getAllUsers($iduser) {
         $pdo = connectDatabase();

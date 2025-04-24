@@ -107,10 +107,18 @@ body {
 }
 
 @media (max-width: 768px) {
-    .user-table {
-        display: block;
+    /* .table-container {
+        max-width: 90vh;
+        margin: 0 auto;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    } */
+    .scroll-container {
+        max-height: 90vh;
+        overflow-y: auto;
+        scrollbar-width: thin;
     }
-
     .user-table thead {
         display: none;
     }

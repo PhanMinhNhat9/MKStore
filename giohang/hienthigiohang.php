@@ -49,6 +49,10 @@
             <i class="fas fa-user"></i>
             <input type="text" name="name" id="name" placeholder="Họ tên">
         </div>
+        <!-- Nút icon máy ảnh để bật/tắt quét -->
+        <button class="floating-btn" onclick="quetma()">
+            <i class="fas fa-camera-retro"></i>
+        </button>
     </div>
 
         <div class="cart-table-wrapper">
@@ -105,12 +109,6 @@
                 <button class="checkout-button" onclick="xulydl()"><i class="fas fa-credit-card"></i> Xử lý dữ liệu</button>
             </div>
         </div>
-
-<!-- Nút icon máy ảnh để bật/tắt quét -->
-<button class="floating-btn" onclick="quetma()">
-    <i class="fas fa-camera-retro"></i>
-</button>
-
 <script>
     document.getElementById('phone').addEventListener('blur', function() {
         const phone = this.value;

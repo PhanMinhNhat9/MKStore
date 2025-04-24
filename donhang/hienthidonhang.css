@@ -271,11 +271,7 @@ body {
 /* Responsive Design */
 @media (max-width: 900px) {
     .sidebar {
-        width: var(--sidebar-collapsed-width);
-    }
-
-    .sidebar.collapsed {
-        width: var(--sidebar-width);
+        display: none;
     }
 
     .sidebar h1,

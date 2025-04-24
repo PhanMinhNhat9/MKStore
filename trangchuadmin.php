@@ -46,11 +46,19 @@
     $admin_email = htmlspecialchars($_SESSION['user']['email'], ENT_QUOTES, 'UTF-8');
     $admin_phone = htmlspecialchars($_SESSION['user']['sdt'], ENT_QUOTES, 'UTF-8');
     $admin_avatar = !empty($_SESSION['user']['anh']) ? htmlspecialchars($_SESSION['user']['anh'], ENT_QUOTES, 'UTF-8') : "https://i.pravatar.cc/100";
+
+    $sql = "DELETE FROM user
+        WHERE iduser IN (
+            SELECT iduser
+            FROM khxoatk
+            WHERE DATEDIFF(CURDATE(), ngaykh) >= 30
+        )";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

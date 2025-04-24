@@ -271,6 +271,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 6px;
+    max-height: 20px;
 }
 
 .card p {
@@ -281,6 +282,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 6px;
+    max-height: 20px;
 }
 
 .btn-group {
