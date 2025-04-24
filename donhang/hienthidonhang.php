@@ -5,14 +5,23 @@ $pdo = connectDatabase();
 $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $status = isset($_GET['status']) ? $_GET['status'] : 'all';
 
-$sql = "
+if ($_SESSION['user']['quyen'] == 2589 || $_SESSION['user']['quyen'] == 0) {
+    $sql = "
     SELECT iddh, sdt, tenkh, tongtien, trangthai, phuongthuctt, thoigian 
     FROM donhang 
-    WHERE 1
 ";
+    $params = [];
+} else {
+    $sql = "
+    SELECT iddh, sdt, tenkh, tongtien, trangthai, phuongthuctt, thoigian 
+    FROM donhang 
+    WHERE sdt = :sdt
+";
+    $params = ['sdt' => $_SESSION['user']['sdt']];
+}
 
 // Tìm kiếm theo query
-$params = [];
+
 if ($query !== '') {
     $sql .= " AND (tenkh LIKE :searchTerm OR iddh LIKE :searchTerm1)";
     $params['searchTerm'] = "%$query%";
@@ -94,6 +103,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                                         value="<?= htmlspecialchars($order['sdt']) ?>" 
                                         aria-label="Mã khách hàng"
                                     >
+                                    <?php if ($_SESSION['user']['quyen'] != 1): ?>
                                     <button 
                                         type="submit" 
                                         class="btn btn-update" 
@@ -101,6 +111,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                                     >
                                         <i class="fas fa-save"></i>
                                     </button>
+                                    <?php endif; ?>
                                 </form>
                             </td>
                             <?php
@@ -124,6 +135,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                                         placeholder="Tên KH" 
                                         aria-label="Tên khách hàng"
                                     >
+                                    <?php if ($_SESSION['user']['quyen'] != 1): ?>
                                     <button 
                                         type="submit" 
                                         class="btn btn-edit" 
@@ -131,10 +143,26 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                                     >
                                         <i class="fas fa-save"></i>
                                     </button>
+                                    <?php endif; ?>
                                 </form>
                             </td>
                             <td><?= number_format($order['tongtien'], 0, ',', '.') ?> VNĐ</td>
                             <td>
+                            <?php if ($_SESSION['user']['quyen'] == 1): ?>
+                                <form action="update_trangthai.php" method="POST">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+                                    <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
+                                    <select name="trangthai" onchange="this.form.submit()" aria-label="Trạng thái đơn hàng">
+                                        <option value="<?= $order['trangthai'] ?>" selected disabled>
+                                            <?= $order['trangthai'] ?> (Không thể chỉnh sửa)
+                                        </option>
+                                        <?php if ($order['trangthai'] != 'Hủy đơn' && $order['trangthai'] != 'Đã thanh toán'): ?>
+                                            <option value="Hủy đơn">🔴 Hủy đơn</option>
+                                        <?php endif; ?>
+                                    </select>
+                                </form>
+                            <?php else: ?>
+                                <!-- Admin hoặc người có quyền cao hơn -->
                                 <form action="update_trangthai.php" method="POST">
                                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                                     <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
@@ -149,6 +177,9 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                                         <option value="Hủy đơn" <?= $order['trangthai'] == 'Hủy đơn' ? 'selected' : '' ?>>🔴 Hủy đơn</option>
                                     </select>
                                 </form>
+                            <?php endif; ?>
+
+
                             </td>
                             <!-- <td><?= htmlspecialchars($order['thoigian']) ?></td> -->
                         </tr>

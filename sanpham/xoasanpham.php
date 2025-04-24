@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="../sweetalert2/sweetalert2.min.js"></script>
-    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
     <script src="../trangchuadmin.js"></script>
 </head>
 <body>
@@ -53,14 +51,14 @@ if (isset($_GET['id'])) {
                 $conn->commit(); // Nếu mọi thao tác đều OK
                 echo "
                 <script>
-                    showCustomAlert('🐳 Xóa Thành Công!', 'Sản phẩm, mã QR và ảnh QR đã được xóa!', '../picture/success.png');
-                    setTimeout(function() {
-                        goBack();
-                    }, 3000); 
+                    window.top.location.href = '../trangchuadmin.php?status=xoaspT';
                 </script>";
             } else {
                 $conn->rollBack();
-                echo "Không tìm thấy sản phẩm để xóa!";
+                echo "
+                <script>
+                    window.top.location.href = '../trangchuadmin.php?status=xoaspT';
+                </script>";
             }
         } catch (PDOException $e) {
             $conn->rollBack();

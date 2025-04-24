@@ -101,9 +101,11 @@ $total_pages = ceil($total_products / $limit);
             </button>
         </div>
         <h1>Hệ Thống Bán Hàng</h1>
-        <button class="btn btn-add" onclick="themsanpham()" aria-label="Thêm sản phẩm">
-            <i class="fas fa-plus"></i> Thêm sản phẩm
-        </button>
+        <?php if ($_SESSION['user']['quyen'] != 1): ?>
+            <button class="btn btn-add" onclick="themsanpham()" aria-label="Thêm sản phẩm">
+                <i class="fas fa-plus"></i> Thêm sản phẩm
+            </button>
+        <?php endif; ?>
         <nav class="category-tree">
             <ul class="tree">
                 <?php
@@ -186,6 +188,7 @@ $total_pages = ceil($total_products / $limit);
                             <p><i class="fas fa-star"></i> <?= round($row['trungbinhsao'], 1) ?> sao</p>
                         </div>
                         <div class="btn-group">
+                        <?php if ($_SESSION['user']['quyen'] != 1): ?>
                             <button 
                                 class="btn btn-update" 
                                 onclick="capnhatsanpham(<?= $row['idsp'] ?>)"
@@ -200,6 +203,8 @@ $total_pages = ceil($total_products / $limit);
                             >
                                 <i class="fas fa-trash-alt"></i>
                             </button>
+                            <?php endif; ?>
+
                             <?php if ($soluong_conlai > 0): ?>
                                 <button 
                                     class="btn btn-cart" 

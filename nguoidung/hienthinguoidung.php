@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once '../config.php';
 $pdo = connectDatabase();
 
@@ -13,6 +13,12 @@ $offset = ($page - 1) * $limit;
 
 $params = [];
 $conditions = [];
+
+// Nếu là user thường, chỉ được xem chính mình
+if ($_SESSION['user']['quyen'] == 1) {
+    $conditions[] = "iduser = :iduser";
+    $params['iduser'] = $_SESSION['user']['iduser'];
+}
 
 if ($query != '') {
     $conditions[] = "(email LIKE :searchTerm OR sdt LIKE :searchTerm1)";
@@ -94,7 +100,7 @@ $totalPages = ceil($totalUsers / $limit);
                 <option value="1" <?= $quyen === "1" ? "selected" : "" ?>>Người dùng</option>
             </select>
         </form>
-        <?php if ($_SESSION['user']['quyen'] == 2589) { ?>
+        <?php if ($_SESSION['user']['quyen'] == 2589 || $_SESSION['user']['quyen'] == 0) { ?>
             <button class="btn btn-add" onclick="themnguoidung()"><i class="fas fa-plus"></i> Thêm người dùng</button>
         <?php } ?>
         <?php if ($totalPages > 1): ?>

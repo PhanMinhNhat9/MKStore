@@ -66,7 +66,7 @@
                 exit();
             }
             else {           
-                header("Location: trangchunguoidung.php");
+                header("Location: trangchuadmin.php");
                 exit();
             }
             
@@ -270,7 +270,6 @@
 
         $idsp = intval($_POST["idsp"]);
         $tensp = htmlspecialchars($_POST["tensp"]);
-        $mota = htmlspecialchars($_POST["mota"]);
         $giaban = floatval($_POST["giaban"]);
         $soluong = intval($_POST["soluong"]);
         $iddm = intval($_POST["iddm"]);
@@ -282,14 +281,13 @@
             $anh = $td . $target_dir . basename($file["name"]);
             move_uploaded_file($file["tmp_name"], $anh);
             $anh = addslashes($target_dir . basename($file["name"]));
-            $sql = "UPDATE sanpham SET tensp = :tensp, mota = :mota, giaban = :giaban, soluong = :soluong, anh = :anh, iddm = :iddm WHERE idsp = :idsp";
+            $sql = "UPDATE sanpham SET tensp = :tensp, giaban = :giaban, soluong = :soluong, anh = :anh, iddm = :iddm WHERE idsp = :idsp";
         } else {
-            $sql = "UPDATE sanpham SET tensp = :tensp, mota = :mota, giaban = :giaban, soluong = :soluong, iddm = :iddm WHERE idsp = :idsp";
+            $sql = "UPDATE sanpham SET tensp = :tensp, giaban = :giaban, soluong = :soluong, iddm = :iddm WHERE idsp = :idsp";
         }
         
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':tensp', $tensp, PDO::PARAM_STR);
-        $stmt->bindParam(':mota', $mota, PDO::PARAM_STR);
         $stmt->bindParam(':giaban', $giaban, PDO::PARAM_STR);
         $stmt->bindParam(':soluong', $soluong, PDO::PARAM_INT);
         $stmt->bindParam(':iddm', $iddm, PDO::PARAM_INT);
@@ -305,7 +303,6 @@
     }
     function themSanPham() {
         $tensp = $_POST['tensp'];
-        $mota = $_POST['mota'];
         $giaban = $_POST['giaban'];
         $soluong = $_POST['soluong'];
 
@@ -323,16 +320,17 @@
         // Thêm vào database
         try {
             $pdo = connectDatabase();
-            $stmt = $pdo->prepare("INSERT INTO sanpham (tensp, mota, giaban, soluong, anh, iddm) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$tensp, $mota, $giaban, $soluong, $anh, $iddm]);
+            $stmt = $pdo->prepare("INSERT INTO sanpham (tensp, giaban, soluong, anh, iddm) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$tensp, $giaban, $soluong, $anh, $iddm]);
             if ($stmt->rowcount()>0) {
                 $idsp = $pdo->lastInsertId();
                 if (taoMaQR($idsp)) {
                     $kq = themMaQR($idsp);
-                    if ($kq) return true; else return false;
-                } else return false;
-                
-                return true;
+                    if ($kq) return true; 
+                    else 
+                        return false;
+                } else 
+                    return false;
             } else {
                 return false;
             }

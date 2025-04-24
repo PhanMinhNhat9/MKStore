@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="themnguoidung.css?v=<?= time(); ?>">
     <script src="../trangchuadmin.js"></script>
-    <script src="../sweetalert2/sweetalert2.min.js"></script>
-    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
 </head>
 <body>
     <div class="nd-container">

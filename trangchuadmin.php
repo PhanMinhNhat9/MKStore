@@ -209,7 +209,11 @@
     <nav class="menu">
         <div class="menu-item" id="menu-user" onclick="loadDLUser()"><i class="fas fa-users"></i> Quản lý người dùng</div>
         <div class="menu-item" id="menu-product" onclick="loadDLSanpham()"><i class="fas fa-box"></i> Quản lý sản phẩm</div>
-        <div class="menu-item" id="menu-category" onclick="loadDLDanhmuc()"><i class="fas fa-list"></i> Quản lý danh mục</div>
+        <?php if ($_SESSION['user']['quyen'] != 1): ?>
+            <div class="menu-item" id="menu-category" onclick="loadDLDanhmuc()">
+                <i class="fas fa-list"></i> Quản lý danh mục
+            </div>
+        <?php endif; ?>
         <div class="menu-item" id="menu-order" onclick="loadDLDonhang()"><i class="fas fa-chart-bar"></i> Quản lý đơn hàng</div>
         <div class="menu-item" id="menu-discount" onclick="loadDLMGG()"><i class="fas fa-tags"></i> Quản lý khuyến mãi</div>
         <div class="menu-item" id="menu-gh" onclick="loadGH()"><i class="fas fa-shopping-cart"></i> Giỏ hàng</div>
@@ -262,6 +266,30 @@
             } 
             else
             if ($_GET['status'] === 'themuserF') {
+                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
+            }
+            else
+            if ($_GET['status'] === 'cnspT') {
+                echo "<script>showCustomAlert('Thành Công!', 'Thông tin sản phẩm đã được cập nhật thành công!', 'picture/success.png');</script>";
+            } 
+            else
+            if ($_GET['status'] === 'cnspF') {
+                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
+            }
+            else
+            if ($_GET['status'] === 'themspT') {
+                echo "<script>showCustomAlert('Thành Công!', 'Sản phẩm đã được thêm thành công!', 'picture/success.png');</script>";
+            } 
+            else
+            if ($_GET['status'] === 'themspF') {
+                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
+            }
+            else
+            if ($_GET['status'] === 'xoaspT') {
+                echo "<script>showCustomAlert('Thành Công!', 'Xóa sản phẩm thành công!', 'picture/success.png');</script>";
+            } 
+            else
+            if ($_GET['status'] === 'xoaspF') {
                 echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
             }
     

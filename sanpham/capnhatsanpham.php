@@ -28,9 +28,7 @@ if (isset($_GET['id'])) {
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../trangchuadmin.js"></script>
-    <script src="../sweetalert2/sweetalert2.min.js"></script>
-    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
-    <link rel="stylesheet" href="capnhatsanpham.css?v=<?php time();?>">
+    <link rel="stylesheet" href="capnhatsanpham.css?v=<?= time();?>">
 </head>
 <body>
     <div class="container">
@@ -40,10 +38,6 @@ if (isset($_GET['id'])) {
 
             <!-- 3 input trên 1 dòng -->
             <div class="row-inputs">
-                <div class="input-group">
-                    <i class="fas fa-box"></i>
-                    <input type="text" name="tensp" placeholder="Tên sản phẩm" value="<?= htmlspecialchars($product['tensp']) ?>" required>
-                </div>
                 <div class="input-group">
                     <i class="fas fa-dollar-sign"></i>
                     <input type="number" name="giaban" placeholder="Giá bán" value="<?= $product['giaban'] ?>" required>
@@ -55,8 +49,8 @@ if (isset($_GET['id'])) {
             </div>
 
             <div class="input-group" style="margin-top: 10px;">
-                <i class="fas fa-align-left"></i>
-                <textarea name="mota" placeholder="Mô tả sản phẩm" required><?= htmlspecialchars($product['mota']) ?></textarea>
+                 <i class="fas fa-box"></i>
+                <textarea name="tensp" placeholder="Tên tả sản phẩm" required><?= htmlspecialchars($product['tensp']) ?></textarea>
             </div>
 
             <!-- Input file và select trên 1 dòng -->
@@ -90,15 +84,12 @@ if (isset($_GET['id'])) {
                         if ($kq) {
                             echo "
                             <script>
-                                showCustomAlert('🐳 Cập Nhật Thành Công!', 'Thông tin sản phẩm đã được cập nhật thành công!', '../picture/success.png');
-                                setTimeout(function() {
-                                    goBack();
-                                }, 3000); 
+                                window.top.location.href = '../trangchuadmin.php?status=cnspT';
                             </script>";
                         } else {
                             echo "
                             <script>
-                                showCustomAlert('🐳 Cập Nhật Thất Bại!', '$kq', '../picture/error.png');
+                                window.top.location.href = '../trangchuadmin.php?status=cnspF';
                             </script>";
                         }
                     }
