@@ -31,6 +31,7 @@ function reloadCSS(file) {
     link.href = file + "?v=" + new Date().getTime();
     document.head.appendChild(link);
 }
+
 function loadPhanHoi() {
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
@@ -39,7 +40,7 @@ function loadPhanHoi() {
         } else {
             console.error("Không tìm thấy iframe có ID 'Frame'");
         }
-    }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+    }, 100);
 }
 
 
@@ -209,7 +210,7 @@ function showErrorMessage(message) {
     function showCustomAlert(title = "Thông báo!", text = "Nội dung thông báo.", icon = "info") {
         Swal.fire({
             title: `<strong style="font-size:18px;">${title}</strong>`,
-            html: `<p style="font-size:16px; margin:0;">${text}</p>`, // dùng html để tùy chỉnh font nhỏ
+            html: `<p style="font-size:16px; margin:0;">${text}</p>`,
             iconHtml: `<img src="${icon}" style="width: 50px; height: 50px; border: none;"/>`,
             background: "#e0f7fa",
             color: "#1565c0",
