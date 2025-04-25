@@ -21,8 +21,6 @@ if (!empty($phone)&&!empty($name)) {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $tongtien = $result['thanhtien'];
 
-        $phuongthuctt = "Tiền mặt";
-
         if ($tongtien <= 0) {
             throw new Exception("Giỏ hàng trống!");
         }

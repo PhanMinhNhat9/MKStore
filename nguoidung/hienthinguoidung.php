@@ -30,7 +30,7 @@ if ($quyen != '') {
     $params['quyen'] = $quyen;
 }
 
-$sql = "SELECT iduser, hoten, tendn, anh, email, sdt, diachi, quyen, thoigian FROM user";
+$sql = "SELECT iduser, hoten, tendn, matkhau, anh, email, sdt, diachi, quyen, thoigian FROM user";
 if (!empty($conditions)) {
     $sql .= " WHERE " . implode(" AND ", $conditions);
 }
@@ -68,6 +68,12 @@ foreach ($params as $key => $val) {
 $countStmt->execute();
 $totalUsers = $countStmt->fetchColumn();
 $totalPages = ceil($totalUsers / $limit);
+
+$sql = "SELECT iduser FROM khxoatk WHERE iduser = :iduser";
+$ktstmt = $pdo->prepare($sql);
+$ktstmt->bindParam(':iduser', $iduser, PDO::PARAM_INT);
+$ktstmt->execute();
+
 ?>
 
 <!DOCTYPE html>
@@ -76,46 +82,116 @@ $totalPages = ceil($totalUsers / $limit);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh Sách Người Dùng</title>
-    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
     <link rel="stylesheet" href="hienthinguoidung.css?v=<?= time(); ?>">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <script src="../trangchuadmin.js"></script>
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-controls">
-            <button class="hamburger" aria-label="Collapse Sidebar" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        <h1>Hệ Thống Bán Hàng</h1>
-        <form method="GET" class="filter-form" id="filter-form" action="">
-            <label for="quyen">Lọc theo quyền:</label>
-            <select name="quyen" id="quyen">
-                <option value="">-- Tất cả quyền --</option>
-                <option value="2589" <?= $quyen === "2589" ? "selected" : "" ?>>Quản trị</option>
-                <option value="0" <?= $quyen === "0" ? "selected" : "" ?>>Nhân viên</option>
-                <option value="1" <?= $quyen === "1" ? "selected" : "" ?>>Người dùng</option>
-            </select>
-        </form>
-        <?php if ($_SESSION['user']['quyen'] == 2589 || $_SESSION['user']['quyen'] == 0) { ?>
-            <button class="btn btn-add" onclick="themnguoidung()"><i class="fas fa-plus"></i> Thêm người dùng</button>
-        <?php } ?>
-        <?php if ($totalPages > 1): ?>
-            <nav class="pagination">
-                <?php if ($page > 1): ?>
-                    <a href="?query=<?= urlencode($query) ?>&quyen=<?= $quyen ?>&page=<?= $page - 1 ?>" class="btn btn-nav">← Trước</a>
-                <?php endif; ?>
-                <span>Trang <?= $page ?> / <?= $totalPages ?></span>
-                <?php if ($page < $totalPages): ?>
-                    <a href="?query=<?= urlencode($query) ?>&quyen=<?= $quyen ?>&page=<?= $page + 1 ?>" class="btn btn-nav">Sau →</a>
-                <?php endif; ?>
-            </nav>
-        <?php endif; ?>
-    </aside>
+    <?php if ($_SESSION['user']['quyen'] !=1): ?>
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-controls">
+                <button class="hamburger" aria-label="Collapse Sidebar" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <h1>Hệ Thống Bán Hàng</h1>
+            <form method="GET" class="filter-form" id="filter-form" action="">
+                <label for="quyen">Lọc theo quyền:</label>
+                <select name="quyen" id="quyen">
+                    <option value="">-- Tất cả quyền --</option>
+                    <option value="2589" <?= $quyen === "2589" ? "selected" : "" ?>>Quản trị</option>
+                    <option value="0" <?= $quyen === "0" ? "selected" : "" ?>>Nhân viên</option>
+                    <option value="1" <?= $quyen === "1" ? "selected" : "" ?>>Người dùng</option>
+                </select>
+            </form>
+            <?php if ($_SESSION['user']['quyen'] == 2589 || $_SESSION['user']['quyen'] == 0) { ?>
+                <button class="btn btn-add" onclick="themnguoidung()"><i class="fas fa-plus"></i> Thêm người dùng</button>
+            <?php } ?>
+            <?php if ($totalPages > 1): ?>
+                <nav class="pagination">
+                    <?php if ($page > 1): ?>
+                        <a href="?query=<?= urlencode($query) ?>&quyen=<?= $quyen ?>&page=<?= $page - 1 ?>" class="btn btn-nav">← Trước</a>
+                    <?php endif; ?>
+                    <span>Trang <?= $page ?> / <?= $totalPages ?></span>
+                    <?php if ($page < $totalPages): ?>
+                        <a href="?query=<?= urlencode($query) ?>&quyen=<?= $quyen ?>&page=<?= $page + 1 ?>" class="btn btn-nav">Sau →</a>
+                    <?php endif; ?>
+                </nav>
+            <?php endif; ?>
+        </aside>
+    <?php endif; ?>
+ 
+ <?php if ($_SESSION['user']['quyen'] ==1): ?>
+    <div class="profile-grid-wrapper"> 
+        <main class="profile-container">
+            <?php foreach ($users as $user): ?>
+                <!-- Ảnh đại diện -->
+                <section class="profile-section">
+                    <h3>Ảnh đại diện</h3>
+                    <div class="profile-avatar">
+                        <img 
+                            src="../<?= htmlspecialchars($user['anh']) ?>" 
+                            alt="Ảnh đại diện" 
+                        >
+                    </div>
 
+                    <!-- Input file để chọn ảnh mới -->
+                    <div class="custom-file-upload">
+                        <label for="anh_moi" 
+                            onclick="openModal('../<?= htmlspecialchars($user['anh']) ?>', <?= $user['iduser'] ?>)"
+                        >
+                            <i class="fas fa-image"></i> Chọn ảnh mới
+                        </label>
+                    </div>
+
+                    <!-- Nút hành động -->
+                    <div style="margin-top: 10px; display: flex; gap: 10px;">
+                        <button type="submit" name="capnhat_anh" class="KHbtn KHbtn-update">
+                            <i class="fas fa-upload"></i> Cập nhật ảnh
+                        </button>
+                        <button type="submit" name="xoa_anh" class="KHbtn KHbtn-delete" onclick="return confirm('Bạn có chắc muốn xóa ảnh này?')">
+                            <i class="fas fa-trash-alt"></i> Xóa ảnh
+                        </button>
+                    </div>
+                </section>
+                <!-- Thông tin cá nhân -->
+                <section class="profile-section">
+                    <h3>Thông tin cá nhân             
+                        <button class="edit-btn" onclick="capnhatnguoidung(<?= $user['iduser'] ?>)">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                    </h3>
+                    <div class="profile-grid">
+                        <div><label>ID User</label><input type="text" value="<?= htmlspecialchars($user['iduser']) ?>" disabled></div>
+                        <div><label>Họ tên</label><input type="text" value="<?= htmlspecialchars($user['hoten']) ?>" disabled></div>
+                        <div><label>Địa chỉ</label><input type="text" value="<?= htmlspecialchars($user['diachi']) ?>" disabled></div>
+                        <div><label>Email</label><input type="text" value="<?= htmlspecialchars($user['email']) ?>" disabled></div>
+                        <div><label>SDT</label><input type="text" value="<?= htmlspecialchars($user['sdt']) ?>" disabled></div>
+                        <?php if ($ktstmt->rowCount() === 0): ?>
+                        <div><label>Trạng thái</label><input type="text" value="Đang hoạt động" disabled></div>
+                        <?php else: ?>
+                            <div><label>Trạng thái</label><input type="text" value="Tạm ngừng hoạt động" disabled></div>
+                            <?php endif; ?>
+                    </div>
+                </section>
+
+                <!-- Thông tin lớp chuyên ngành -->
+                <section class="profile-section">
+                    <h3>Thông tin tài khoản</h3>
+                    <div class="profile-grid">
+                        <div><label>Tên đăng nhập:</label><input type="text" value="<?= htmlspecialchars($user['tendn']) ?>" disabled></div>
+                        <div><label>Mật khẩu:</label><input type="password" value="<?=$user['matkhau']?>" disabled></div>
+                    </div>
+                </section>
+
+
+            <?php endforeach; ?>
+        </main>
+    </div>
+<?php endif; ?>
+
+    <?php if ($_SESSION['user']['quyen'] !=1): ?>
     <!-- Main Content -->
     <main class="container">
         <section class="user-grid">
@@ -178,6 +254,7 @@ $totalPages = ceil($totalUsers / $limit);
             <?php endif; ?>
         </section>
     </main>
+    <?php endif; ?>
 
     <!-- Modal for Image Update -->
     <form action="#" method="POST" enctype="multipart/form-data" class="modal-form">
@@ -202,9 +279,15 @@ $totalPages = ceil($totalUsers / $limit);
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['capnhatanhuser'])) {
             $kq = capnhatAnhUser();
             if ($kq) {
-                echo "<script>showCustomAlert('🐳 Đổi Avt Thành Công!', 'Ảnh người dùng đã được đổi!', '../picture/success.png'); setTimeout(goBack, 3000);</script>";
+                echo "
+                <script>
+                    window.top.location.href = '../trangchuadmin.php?status=cnanhuserT';
+                </script>";
             } else {
-                echo "<script>showCustomAlert('🐳 Cài Đặt Avt Thất Bại!', '$kq', '../picture/error.png');</script>";
+                echo "
+                <script>
+                    window.top.location.href = '../trangchuadmin.php?status=cnanhuserF';
+                </script>";
             }
         }
         ?>
@@ -283,9 +366,15 @@ $totalPages = ceil($totalUsers / $limit);
             }
         }
 
-        document.getElementById('quyen').addEventListener('change', () => {
-            document.getElementById('filter-form').submit();
+        document.addEventListener('DOMContentLoaded', function () {
+            const quyenSelect = document.getElementById('quyen');
+            if (quyenSelect) {
+                quyenSelect.addEventListener('change', () => {
+                    document.getElementById('filter-form').submit();
+                });
+            }
         });
+
     </script>
 </body>
 </html>

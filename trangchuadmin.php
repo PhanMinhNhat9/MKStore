@@ -213,9 +213,12 @@
             <div class="menu-item" id="menu-category" onclick="loadDLDanhmuc()">
                 <i class="fas fa-list"></i> Quản lý danh mục
             </div>
+            <div class="menu-item" id="menu-discount" onclick="loadDLMGG()">
+                <i class="fas fa-tags"></i> Quản lý khuyến mãi
+            </div>
         <?php endif; ?>
         <div class="menu-item" id="menu-order" onclick="loadDLDonhang()"><i class="fas fa-chart-bar"></i> Quản lý đơn hàng</div>
-        <div class="menu-item" id="menu-discount" onclick="loadDLMGG()"><i class="fas fa-tags"></i> Quản lý khuyến mãi</div>
+        
         <div class="menu-item" id="menu-gh" onclick="loadGH()"><i class="fas fa-shopping-cart"></i> Giỏ hàng</div>
         <div class="menu-item" id="menu-support" onclick="loadPhanHoi()"><i class="fas fa-headset"></i> Hỗ trợ khách hàng</div>
     </nav>
@@ -292,7 +295,14 @@
             if ($_GET['status'] === 'xoaspF') {
                 echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
             }
-    
+            else
+            if ($_GET['status'] === 'cnanhuserT') {
+                echo "<script>showCustomAlert('Thành Công!', 'Cập nhật ảnh thành công!', 'picture/success.png');</script>";
+            } 
+            else
+            if ($_GET['status'] === 'cnanhuserF') {
+                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
+            }
         }
     ?>
     <!-- Chân web -->

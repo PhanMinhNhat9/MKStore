@@ -27,21 +27,45 @@ if ($query != '') {
         'query_like1' => "%{$query}%"
     ]);
 } else {
-    $sql = "
-    SELECT 
-        u.iduser, 
-        u.hoten, 
-        u.tendn, 
-        u.anh, 
-        COUNT(c.idchat) AS so_tin_nhan,
-        SUM(CASE WHEN c.daxem = 0 AND c.idnhan = :current_user_id THEN 1 ELSE 0 END) AS chua_doc
-    FROM user u
-    LEFT JOIN chattructuyen c ON (u.iduser = c.idgui OR u.iduser = c.idnhan)
-    WHERE u.iduser <> :current_user_id2 AND u.quyen <> 0 AND u.quyen <> 2589
-    GROUP BY u.iduser, u.hoten, u.tendn, u.anh
-    ORDER BY chua_doc DESC, u.hoten ASC";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':current_user_id' => $current_user_id, ':current_user_id2' => $current_user_id]);
+    if ($_SESSION['user']['quyen'] == 1) {
+        $sql = "
+            SELECT 
+                u.iduser, 
+                u.hoten, 
+                u.tendn, 
+                u.anh, 
+                COUNT(c.idchat) AS so_tin_nhan,
+                SUM(CASE WHEN c.daxem = 0 AND c.idnhan = :current_user_id1 THEN 1 ELSE 0 END) AS chua_doc
+            FROM user u
+            LEFT JOIN chattructuyen c ON (u.iduser = c.idgui OR u.iduser = c.idnhan)
+                AND (c.idgui = :current_user_id2 OR c.idnhan = :current_user_id3)
+            WHERE u.quyen = 0 OR u.quyen = 2589
+            GROUP BY u.iduser, u.hoten, u.tendn, u.anh
+            ORDER BY chua_doc DESC, u.hoten ASC;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':current_user_id1' => $current_user_id,
+            ':current_user_id2' => $current_user_id,
+            ':current_user_id3' => $current_user_id
+        ]);
+    } else {
+        $sql = "
+        SELECT 
+            u.iduser, 
+            u.hoten, 
+            u.tendn, 
+            u.anh, 
+            COUNT(c.idchat) AS so_tin_nhan,
+            SUM(CASE WHEN c.daxem = 0 AND c.idnhan = :current_user_id THEN 1 ELSE 0 END) AS chua_doc
+        FROM user u
+        LEFT JOIN chattructuyen c ON (u.iduser = c.idgui OR u.iduser = c.idnhan)
+        WHERE u.iduser <> :current_user_id2 AND u.quyen <> 0 AND u.quyen <> 2589
+        GROUP BY u.iduser, u.hoten, u.tendn, u.anh
+        ORDER BY chua_doc DESC, u.hoten ASC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':current_user_id' => $current_user_id, ':current_user_id2' => $current_user_id]);
+    }
+    
 }
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>

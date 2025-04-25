@@ -32,6 +32,166 @@ body {
     font-size: var(--font-size-base);
 }
 
+.profile-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f4f4;
+    flex-wrap: wrap;    
+
+}
+
+.profile-section {
+    flex: 1 1 300px; /* Chiều rộng tối thiểu là 300px, tự co dãn nếu đủ chỗ */
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+
+.profile-section h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+
+.edit-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: #007bff;
+    font-size: 16px;
+    transition: color 0.3s;
+    padding-left: 48%;
+}
+
+.edit-btn:hover {
+    color: #0056b3;
+}
+
+.profile-grid {
+
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px 20px;
+}
+
+.profile-grid label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.profile-grid input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+.profile-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.profile-avatar img {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.KHbtn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+.KHbtn-update {
+    background-color: #007bff;
+}
+
+.KHbtn-delete {
+    background-color: #dc3545;
+}
+.custom-file-upload {
+    margin-top: 10px;
+    position: relative;
+    display: inline-block;
+}
+
+.custom-file-upload input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload label {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #17a2b8;
+    color: #fff;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.custom-file-upload label:hover {
+    background-color: #138496;
+}
+
+.profile-grid-wrapper {
+    overflow-y: auto;  /* Cho phép cuộn ngang */
+    -webkit-overflow-scrolling: touch;  /* Thêm hỗ trợ cuộn mượt trên thiết bị di động */
+    height: 100vh;
+    margin: auto;
+}
+
+/* Media Queries for Mobile Devices */
+@media (max-width: 768px) {
+    .profile-container {
+        flex-direction: column;  /* Đặt các phần tử trong .profile-container theo chiều dọc */
+        padding: 10px;
+    }
+
+    .profile-section {
+        flex: 1 1 100%;  /* Chiều rộng 100% cho các phần tử */
+        margin-bottom: 15px;
+    }
+
+    .profile-avatar img {
+        width: 120px;
+        height: 120px;  /* Giảm kích thước ảnh đại diện */
+    }
+
+    .edit-btn {
+        padding-left: 20px; /* Căn chỉnh lại nút chỉnh sửa */
+    }
+
+    .profile-grid {
+        grid-template-columns: 1fr;  /* Đặt 1 cột duy nhất cho các trường trong grid */
+        gap: 10px;
+    }
+
+    .profile-grid input {
+        padding: 10px;
+    }
+
+    .custom-file-upload label {
+        padding: 8px 12px;
+    }
+}
+
 /* Sidebar */
 .sidebar {
     width: var(--sidebar-width);

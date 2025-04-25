@@ -41,18 +41,34 @@
     <div id="error-alert" class="alert-error"></div>
         
     <div class="form-group">
-        <div class="input-box">
-            <i class="fas fa-phone-alt"></i>
-            <input type="text" name="phone" id="phone" placeholder="Số điện thoại">
-        </div>
-        <div class="input-box">
-            <i class="fas fa-user"></i>
-            <input type="text" name="name" id="name" placeholder="Họ tên">
-        </div>
-        <!-- Nút icon máy ảnh để bật/tắt quét -->
-        <button class="floating-btn" onclick="quetma()">
-            <i class="fas fa-camera-retro"></i>
-        </button>
+        <?php if ($_SESSION['user']['quyen'] != 1): ?>
+            <div class="input-box">
+                <i class="fas fa-phone-alt"></i>
+                <input type="text" name="phone" id="phone" placeholder="Số điện thoại">
+            </div>
+        <?php else: ?>
+            <div class="input-box">
+                <i class="fas fa-phone-alt"></i>
+                <input type="text" name="phone" id="phone" placeholder="Số điện thoại" value="<?= $_SESSION['user']['sdt'] ?>" disabled>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($_SESSION['user']['quyen'] != 1): ?>
+            <div class="input-box">
+                <i class="fas fa-user"></i>
+                <input type="text" name="name" id="name" placeholder="Họ tên">
+            </div>
+        <?php else: ?>
+            <div class="input-box">
+                <i class="fas fa-user"></i>
+                <input type="text" name="name" id="name" placeholder="Họ tên" value="<?= $_SESSION['user']['hoten'] ?>" disabled>
+            </div>
+        <?php endif; ?>
+        <?php if ($_SESSION['user']['quyen'] != 1): ?>
+            <button class="floating-btn" onclick="quetma()">
+                <i class="fas fa-camera-retro"></i>
+            </button>
+        <?php endif; ?>
     </div>
 
         <div class="cart-table-wrapper">
@@ -105,7 +121,6 @@
         <div class="total-section">
             <span class="total-text">Tổng tiền: <?= number_format($thanhtien, 0, ',', '.') ?> VND</span>
             <div class="button-group">
-                <button class="back-button" onclick="goBack()"><i class="fas fa-arrow-left"></i> Quay về</button>
                 <button class="checkout-button" onclick="xulydl()"><i class="fas fa-credit-card"></i> Xử lý dữ liệu</button>
             </div>
         </div>

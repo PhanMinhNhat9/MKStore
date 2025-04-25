@@ -162,7 +162,7 @@
         require_once '../config.php';
         $pdo = connectDatabase();
         $sdt = $_GET['sdt'] ?? '';
-        $stmt = $pdo->prepare("SELECT iddh, tenkh, tongtien FROM donhang WHERE sdt = ?");
+        $stmt = $pdo->prepare("SELECT iddh, tenkh, tongtien FROM donhang WHERE sdt = ? ORDER BY thoigian ASC LIMIT 1");
         $stmt->execute([$sdt]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
       ?>
@@ -193,57 +193,56 @@
       </div>
     </div>
   </div>
-  <script>
-   
-function processPayment() {
-  const paymentMethod = document.getElementById('paymentMethod').value;
-  const iddh = document.getElementById('iddh').innerText;
-  const status = 'Đã thanh toán';
-  // Lấy ngày hiện tại theo định dạng YYYY-MM-DD
-  const today = new Date();
-  const thoigian = today.getFullYear() + "-" +
-                 String(today.getMonth() + 1).padStart(2, '0') + "-" +
-                 String(today.getDate()).padStart(2, '0') + " " +
-                 String(today.getHours()).padStart(2, '0') + ":" +
-                 String(today.getMinutes()).padStart(2, '0') + ":" +
-                 String(today.getSeconds()).padStart(2, '0');
-  const total = parseFloat(document.getElementById('tongtien').dataset.value) || 0;
-  const amount = parseFloat(document.getElementById('amountReceived').value) || 0;
-  const tienthoi = amount - total;
-  //Gửi Ajax đến file xử lý PHP
-  fetch('htthanhtoan.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      iddh: iddh,
-      trangthai: status,
-      phuongthuctt: paymentMethod,
-      thoigian: thoigian
+
+<script>
+  function processPayment() {
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const iddh = document.getElementById('iddh').innerText;
+    const status = 'Đã thanh toán';
+    const today = new Date();
+    const thoigian = today.getFullYear() + "-" +
+                  String(today.getMonth() + 1).padStart(2, '0') + "-" +
+                  String(today.getDate()).padStart(2, '0') + " " +
+                  String(today.getHours()).padStart(2, '0') + ":" +
+                  String(today.getMinutes()).padStart(2, '0') + ":" +
+                  String(today.getSeconds()).padStart(2, '0');
+    const total = parseFloat(document.getElementById('tongtien').dataset.value) || 0;
+    const amount = parseFloat(document.getElementById('amountReceived').value) || 0;
+    const tienthoi = amount - total;
+    //Gửi Ajax đến file xử lý PHP
+    fetch('htthanhtoan.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        iddh: iddh,
+        trangthai: status,
+        phuongthuctt: paymentMethod,
+        thoigian: thoigian
+      })
     })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.status === 'success') {
-      alert('Thanh toán thành công!');
-      // Nếu cần in hóa đơn
-      if (document.getElementById('printInvoice').checked) {
-        const url = `hoadon.php?iddh=${iddh}&amount=${amount}&tienthoi=${tienthoi}`;
-        const printWindow = window.open(url);
-        printWindow.onload = function () {
-          setTimeout(() => {
-            //printWindow.print();
-          }, 5000);
-        };
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        alert('Thanh toán thành công!');
+        // Nếu cần in hóa đơn
+        if (document.getElementById('printInvoice').checked) {
+          const url = `hoadon.php?iddh=${iddh}&amount=${amount}&tienthoi=${tienthoi}`;
+          const printWindow = window.open(url);
+          printWindow.onload = function () {
+            setTimeout(() => {
+              //printWindow.print();
+            }, 5000);
+          };
+        }
+      } else {
+        alert('Lỗi: ' + data.message);
       }
-    } else {
-      alert('Lỗi: ' + data.message);
-    }
-  })
-  .catch(error => {
-    console.error('Lỗi:', error);
-    alert('Đã xảy ra lỗi khi gửi dữ liệu.');
-  });
-}
+    })
+    .catch(error => {
+      console.error('Lỗi:', error);
+      alert('Đã xảy ra lỗi khi gửi dữ liệu.');
+    });
+  }
 
     function togglePaymentFields() {
       const method = document.getElementById('paymentMethod').value;
@@ -257,6 +256,7 @@ function processPayment() {
         productSelect.classList.remove('with-margin');
       }
     }
+    
     function calculateChange() {
       const amount = parseFloat(document.getElementById('amountReceived').value) || 0;
       const total = parseFloat(document.getElementById('tongtien').dataset.value) || 0;
