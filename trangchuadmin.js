@@ -44,11 +44,11 @@ function loadPhanHoi() {
 }
 
 function loadThongBao() {
-    const list = document.getElementById('listThongBao');
-    list.style.display = (list.style.display === 'none' || list.style.display === '') ? 'block' : 'none';
-
     const badge = document.querySelector('#menu-tb span');
-    if (badge) badge.style.display = 'none';
+    if (badge) {
+        badge.style.display = 'none'; // chỉ ẩn, KHÔNG xoá khỏi DOM
+    }
+    
 
     setTimeout(() => {
         const iframe = document.getElementById("Frame");

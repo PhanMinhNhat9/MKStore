@@ -153,12 +153,23 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                                     <input type="hidden" name="idkh" value="<?= $_SESSION['user']['iduser'] ?>">
                                     <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
-                                    <select name="trangthai" onchange="this.form.submit()" aria-label="Trạng thái đơn hàng">
-                                        <option value="<?= $order['trangthai'] ?>" selected disabled>
-                                            <?= $order['trangthai'] ?> (Không thể chỉnh sửa)
-                                        </option>
-                                        <option value="Hủy đơn">🔴 Hủy đơn</option>
-                                    </select>
+
+                                    <?php if ($order['trangthai'] == 'Hủy đơn' || $order['trangthai'] == 'Đã thanh toán'): ?>
+                                        <select name="trangthai" onchange="this.form.submit()" aria-label="Trạng thái đơn hàng" disabled>
+                                            <option value="<?= $order['trangthai'] ?>" selected disabled>
+                                                <?= $order['trangthai'] ?> (Không thể chỉnh sửa)
+                                            </option>
+                                            <option value="Hủy đơn">🔴 Hủy đơn</option>                                        
+                                        </select>
+                                    <?php else: ?>
+                                        <select name="trangthai" onchange="this.form.submit()" aria-label="Trạng thái đơn hàng">
+                                            <option value="<?= $order['trangthai'] ?>" selected>
+                                                <?= $order['trangthai'] ?> (Không thể chỉnh sửa)
+                                            </option>
+                                            <option value="Hủy đơn">🔴 Hủy đơn</option>                                        
+                                        </select>
+                                    <?php endif; ?>
+
                                 </form>
                             <?php else: ?>
                                 <!-- Admin hoặc người có quyền cao hơn -->

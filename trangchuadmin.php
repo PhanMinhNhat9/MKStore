@@ -193,12 +193,10 @@
                 $stmt->execute();
                 $thongbaoCount = (int) $stmt->fetchColumn();
             ?>
-            <button class="btn thongbao" id="menu-tb" 
+            
             <?php if ($_SESSION['user']['quyen'] != 1): ?>
-            onclick="loadThongBao()"
-            <?php endif; ?>
-            ><i class="fas fa-bell"></i> Thông báo
-                <?php if ($_SESSION['user']['quyen'] != 1): ?>
+                <button class="btn thongbao" id="menu-tb" onclick="loadThongBao()">
+                    <i class="fas fa-bell"></i> Thông báo
                     <?php if ($thongbaoCount > 0): ?>
                         <span id="listThongBao" style="
                             position: absolute;
@@ -212,8 +210,8 @@
                             <?= $thongbaoCount ?>
                         </span>
                     <?php endif; ?>
-                <?php endif; ?>
-            </button>
+                </button>
+            <?php endif; ?>
 
             <!-- Nút Admin với dropdown -->
             <div style="position: relative;">
@@ -245,7 +243,6 @@
             </div>
         <?php endif; ?>
         <div class="menu-item" id="menu-order" onclick="loadDLDonhang()"><i class="fas fa-chart-bar"></i> Quản lý đơn hàng</div>
-        
         <div class="menu-item" id="menu-gh" onclick="loadGH()"><i class="fas fa-shopping-cart"></i> Giỏ hàng</div>
         <div class="menu-item" id="menu-support" onclick="loadPhanHoi()"><i class="fas fa-headset"></i> Hỗ trợ khách hàng</div>
     </nav>

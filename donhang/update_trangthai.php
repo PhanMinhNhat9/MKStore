@@ -1,37 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../trangchuadmin.js"></script>
-    <script src="../sweetalert2/sweetalert2.min.js"></script>
-    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
-</html>
 <?php
-require_once '../config.php';
-$pdo = connectDatabase();
+    require_once '../config.php';
+    $pdo = connectDatabase();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['iddh']) && isset($_POST['trangthai'])) {
-    $iddh = $_POST['iddh'];
-    $trangthai = $_POST['trangthai'];
-    $sql = "UPDATE donhang SET trangthai = :trangthai WHERE iddh = :iddh";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':trangthai', $trangthai, PDO::PARAM_STR);
-    $stmt->bindParam(':iddh', $iddh, PDO::PARAM_INT);
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['iddh']) && isset($_POST['trangthai'])) {
+        $iddh = $_POST['iddh'];
+        $trangthai = $_POST['trangthai'];
 
-    $idyc = $_POST['idyc'];
-    $sql = "UPDATE yeucaudonhang SET trangthai = 1 WHERE idyc = :idyc";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':idyc', $idyc, PDO::PARAM_INT);
-    if ($stmt->execute()) {
+        // Cập nhật trạng thái đơn hàng
+        $sql = "UPDATE donhang SET trangthai = :trangthai WHERE iddh = :iddh";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':trangthai', $trangthai, PDO::PARAM_STR);
+        $stmt->bindParam(':iddh', $iddh, PDO::PARAM_INT);
+        $stmt->execute(); // THỰC THI update đơn hàng
+
+        // Cập nhật trạng thái yêu cầu đơn hàng
+        if (isset($_POST['idyc'])) {
+            $idyc = $_POST['idyc'];
+            $sql2 = "UPDATE yeucaudonhang SET trangthai = 1 WHERE idyc = :idyc";
+            $stmt2 = $pdo->prepare($sql2);
+            $stmt2->bindParam(':idyc', $idyc, PDO::PARAM_INT);
+            $stmt2->execute(); // THỰC THI update yêu cầu đơn hàng
+        }
+
+        // Sau khi thành công, chuyển trang
         echo "<script> 
-                goBack();
+                window.location.href = '../donhang/hienthidonhang.php';
             </script>";
     }
-}
 ?>

@@ -65,7 +65,6 @@ try {
                                     <form method="post" action="../donhang/update_trangthai.php">
                                         <input type="hidden" name="idyc" value="<?= $yc['idyc'] ?>">
                                         <input type="hidden" name="iddh" value="<?= $yc['iddh'] ?>">
-                                        <input type="hidden" name="idkh" value="<?= $yc['iddh'] ?>">
                                         <input type="hidden" name="trangthai" value="Hủy đơn">
                                         <button type="submit" name="action" value="xacnhan" class="btn btn-confirm">Xác nhận</button>
                                     </form>
