@@ -43,6 +43,19 @@ function loadPhanHoi() {
     }, 100);
 }
 
+function loadThongBao() {
+    const list = document.getElementById('listThongBao');
+    list.style.display = (list.style.display === 'none' || list.style.display === '') ? 'block' : 'none';
+
+    const badge = document.querySelector('#menu-tb span');
+    if (badge) badge.style.display = 'none';
+
+    setTimeout(() => {
+        const iframe = document.getElementById("Frame");
+        iframe?.setAttribute('src', 'thongbao/hienthithongbao.php');
+    }, 100);
+}
+
 
 function themnguoidung() {
     window.location.href = "themnguoidung.php";

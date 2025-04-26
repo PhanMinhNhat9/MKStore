@@ -187,7 +187,34 @@
         
         <div class="nav-buttons">
             <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
-            <button class="btn thongbao"><i class="fas fa-bell"></i> Thông báo</button>
+            <?php
+                // Đếm số yêu cầu chưa xem (trangthai = 0) của user
+                $stmt = $pdo->prepare("SELECT COUNT(*) FROM yeucaudonhang WHERE trangthai = 0");
+                $stmt->execute();
+                $thongbaoCount = (int) $stmt->fetchColumn();
+            ?>
+            <button class="btn thongbao" id="menu-tb" 
+            <?php if ($_SESSION['user']['quyen'] != 1): ?>
+            onclick="loadThongBao()"
+            <?php endif; ?>
+            ><i class="fas fa-bell"></i> Thông báo
+                <?php if ($_SESSION['user']['quyen'] != 1): ?>
+                    <?php if ($thongbaoCount > 0): ?>
+                        <span id="listThongBao" style="
+                            position: absolute;
+                            top: 20px;
+                            background: red;
+                            color: white;
+                            border-radius: 50%;
+                            padding: 2px 6px;
+                            font-size: 12px;
+                        ">
+                            <?= $thongbaoCount ?>
+                        </span>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </button>
+
             <!-- Nút Admin với dropdown -->
             <div style="position: relative;">
                 <button class="btn taikhoan" onclick="ddadmin()">
@@ -232,8 +259,7 @@
             if (id === "menu-order") loadDLDonhang();else
             if (id === "menu-discount") loadDLMGG();else
             if (id === "menu-support") loadPhanHoi();else
-            if (id === "menu-gh") loadGH();else goBackHome();
-            
+            if (id === "menu-gh") goBackHome(); 
         }, 100); // Đợi 100ms để cập nhật menu
         function ddadmin() {
             document.getElementById("adminDropdown").classList.toggle("active");

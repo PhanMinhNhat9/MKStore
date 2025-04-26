@@ -23,7 +23,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['iddh']) && isset($_POS
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':trangthai', $trangthai, PDO::PARAM_STR);
     $stmt->bindParam(':iddh', $iddh, PDO::PARAM_INT);
-    
+
+    $idyc = $_POST['idyc'];
+    $sql = "UPDATE yeucaudonhang SET trangthai = 1 WHERE idyc = :idyc";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':idyc', $idyc, PDO::PARAM_INT);
     if ($stmt->execute()) {
         echo "<script> 
                 goBack();

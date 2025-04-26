@@ -149,16 +149,15 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                             <td><?= number_format($order['tongtien'], 0, ',', '.') ?> VNĐ</td>
                             <td>
                             <?php if ($_SESSION['user']['quyen'] == 1): ?>
-                                <form action="update_trangthai.php" method="POST">
+                                <form action="yeucauhuydon.php" method="POST">
                                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+                                    <input type="hidden" name="idkh" value="<?= $_SESSION['user']['iduser'] ?>">
                                     <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
                                     <select name="trangthai" onchange="this.form.submit()" aria-label="Trạng thái đơn hàng">
                                         <option value="<?= $order['trangthai'] ?>" selected disabled>
                                             <?= $order['trangthai'] ?> (Không thể chỉnh sửa)
                                         </option>
-                                        <?php if ($order['trangthai'] != 'Hủy đơn' && $order['trangthai'] != 'Đã thanh toán'): ?>
-                                            <option value="Hủy đơn">🔴 Hủy đơn</option>
-                                        <?php endif; ?>
+                                        <option value="Hủy đơn">🔴 Hủy đơn</option>
                                     </select>
                                 </form>
                             <?php else: ?>
