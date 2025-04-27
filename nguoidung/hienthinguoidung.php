@@ -82,6 +82,7 @@ $ktstmt->execute();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh Sách Người Dùng</title>
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="hienthinguoidung.css?v=<?= time(); ?>">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <script src="../trangchuadmin.js"></script>

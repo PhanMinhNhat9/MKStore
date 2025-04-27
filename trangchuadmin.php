@@ -46,15 +46,31 @@
     $admin_email = htmlspecialchars($_SESSION['user']['email'], ENT_QUOTES, 'UTF-8');
     $admin_phone = htmlspecialchars($_SESSION['user']['sdt'], ENT_QUOTES, 'UTF-8');
     $admin_avatar = !empty($_SESSION['user']['anh']) ? htmlspecialchars($_SESSION['user']['anh'], ENT_QUOTES, 'UTF-8') : "https://i.pravatar.cc/100";
+    
+    // Lấy danh sách sản phẩm từ cơ sở dữ liệu
+    try {
+        $sql = "SELECT idsp, tensp, iddm FROM sanpham";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Database error: " . $e->getMessage());
+        $products = [];
+    }
 
-    $sql = "DELETE FROM user
-        WHERE iduser IN (
-            SELECT iduser
-            FROM khxoatk
-            WHERE DATEDIFF(CURDATE(), ngaykh) >= 30
-        )";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    // Xóa tài khoản người dùng bị đánh dấu xóa sau 30 ngày
+    try {
+        $sql = "DELETE FROM user
+                WHERE iduser IN (
+                    SELECT iduser
+                    FROM khxoatk
+                    WHERE DATEDIFF(CURDATE(), ngaykh) >= 30
+                )";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+    } catch (PDOException $e) {
+        error_log("Error deleting users: " . $e->getMessage());
+    }
 ?>
 
 <!DOCTYPE html>
@@ -70,6 +86,7 @@
     <link rel="stylesheet" href="sweetalert2/sweetalert2.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
 </head>
 
 <body>
@@ -83,109 +100,409 @@
         <div class="search-container">
             <input type="text" class="search-bar" placeholder="Tìm kiếm..." onkeyup="handleSearch(this.value)">
             <button class="mic-btn"><i class="fas fa-microphone"></i></button>
-            <button class="search-btn">Tìm kiếm</button>
+            <button class="search-btn" onclick="handleSearch(document.querySelector('.search-bar').value)">Tìm kiếm</button>
         </div>
+        <div id="search-results" hidden></div>
+        <!-- JavaScript -->
+    <script>
 
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const micButton = document.querySelector(".mic-btn");
-                const searchBar = document.querySelector(".search-bar");
 
-                if (!('webkitSpeechRecognition' in window)) {
-                    alert("Trình duyệt của bạn không hỗ trợ tìm kiếm bằng giọng nói.");
+            // Lấy products từ PHP
+            const rawProducts = <?php echo json_encode($products); ?>;
+            console.log("Raw Products:", rawProducts); // Debug
+            const products = rawProducts.map(p => ({
+                id: parseInt(p.idsp, 10) || 0,
+                name: p.tensp || 'unknown',
+                category: String(p.iddm ?? 'unknown')
+            })).filter(p => p.id > 0);
+            console.log("Processed Products:", products); // Debug
+            
+            // Kiểm tra nếu products rỗng (chỉ áp dụng cho menu-product)
+            function checkEmptyProducts() {
+                if (products.length === 0) {
+                    console.warn("No products found. Disabling TensorFlow.js search.");
+                    document.getElementById('search-results').innerHTML = '<div>Không có sản phẩm để tìm kiếm. Vui lòng thêm sản phẩm.</div>';
+                    return true;
+                }
+                return false;
+            }
+
+            // Chuẩn hóa từ khóa
+            const keywordMapping = {
+                'backpack': 'balo',
+                'cặp': 'balo',
+                'túi đeo lưng': 'balo',
+                'túi đi học': 'balo',
+                'ba lô': 'balo',
+                'bag': 'túi',
+                'túi xách': 'túi',
+                'túi đeo': 'túi',
+                'wallet': 'ví',
+                'clutch': 'ví',
+                'ví tiền': 'ví',
+                'watch': 'đồng hồ',
+                'đồng hồ đeo tay': 'đồng hồ',
+                'đồng hồ thời trang': 'đồng hồ',
+                'leather': 'da',
+                'đồ da': 'da',
+                'phụ kiện da': 'da',
+                'eye': 'mắt',
+                'mỹ phẩm mắt': 'mắt',
+                'phấn mắt': 'mắt',
+                'lip': 'môi',
+                'son môi': 'môi',
+                'mỹ phẩm môi': 'môi',
+                'tool': 'dụng cụ',
+                'phụ kiện': 'dụng cụ',
+                'đồ dùng': 'dụng cụ',
+                'necklace': 'vòng cổ',
+                'dây chuyền': 'vòng cổ',
+                'chuỗi ngọc': 'vòng cổ',
+                'vongco': 'vòng cổ',
+                'bracelet': 'vòng lắc',
+                'vòng tay': 'vòng lắc',
+                'lắc': 'vòng lắc',
+                'ring': 'nhẫn',
+                'nhẫn đính hôn': 'nhẫn',
+                'nhẫn cưới': 'nhẫn',
+                'nhẫn vàng 18k': 'nhẫn',
+                'earring': 'bông tai',
+                'khuyên tai': 'bông tai',
+                'hoa tai': 'bông tai',
+                'teddy bear': 'gấu bông',
+                'gấu teddy': 'gấu bông',
+                'thú nhồi bông': 'gấu bông'
+            };
+
+            // Tạo trainingData động với từ khóa phong phú (chỉ khi menu-product)
+            let trainingData = [];
+            let vocabulary = [];
+            function prepareTrainingData() {
+                trainingData = products.map(product => {
+                    console.log("Processing product:", product); // Debug
+                    const categoryKeywords = (product.category && product.category.trim() !== '') 
+                        ? product.category.toLowerCase().split(/\s+/) 
+                        : [];
+                    const productNameWords = product.name.toLowerCase().split(/\s+/).filter(word => !/^\d+$/.test(word));
+                    return {
+                        keywords: [
+                            ...productNameWords,
+                            ...categoryKeywords,
+                            ...(product.name.toLowerCase().includes("balo") ? ["cặp", "backpack", "túi đeo lưng", "túi đi học"] : []),
+                            ...(product.name.toLowerCase().includes("túi") ? ["bag", "túi xách", "túi đeo"] : []),
+                            ...(product.name.toLowerCase().includes("ví") ? ["wallet", "clutch", "ví tiền"] : []),
+                            ...(product.name.toLowerCase().includes("đồng hồ") ? ["watch", "đồng hồ đeo tay", "đồng hồ thời trang"] : []),
+                            ...(product.name.toLowerCase().includes("da") ? ["leather", "đồ da", "phụ kiện da"] : []),
+                            ...(product.name.toLowerCase().includes("mắt") ? ["eye", "mỹ phẩm mắt", "phấn mắt"] : []),
+                            ...(product.name.toLowerCase().includes("môi") ? ["lip", "son môi", "mỹ phẩm môi"] : []),
+                            ...(product.name.toLowerCase().includes("dụng cụ") ? ["tool", "phụ kiện", "đồ dùng"] : []),
+                            ...(product.name.toLowerCase().includes("vòng cổ") ? ["dây chuyền", "chuỗi ngọc", "ta2589", "vongco", "necklace"] : []),
+                            ...(product.name.toLowerCase().includes("vòng lắc") ? ["vòng tay", "lắc", "bracelet"] : []),
+                            ...(product.name.toLowerCase().includes("nhẫn") ? ["nhẫn đính hôn", "nhẫn cưới", "nhẫn vàng 18k", "ring"] : []),
+                            ...(product.name.toLowerCase().includes("bông tai") ? ["khuyên tai", "hoa tai", "earring"] : []),
+                            ...(product.name.toLowerCase().includes("gấu bông") ? ["gấu teddy", "thú nhồi bông", "teddy bear"] : [])
+                        ],
+                        productId: product.id
+                    };
+                });
+                console.log("Training Data:", trainingData); // Debug
+
+                // Tạo vocabulary
+                vocabulary = products.length > 0 ? [...new Set(trainingData.flatMap(item => item.keywords))] : [];
+                console.log("Vocabulary size:", vocabulary.length); // Debug
+                console.log("Vocabulary:", vocabulary); // Debug
+
+                // Kiểm tra và xóa mô hình cũ nếu vocabulary thay đổi
+                const currentVocabulary = JSON.stringify(vocabulary);
+                const savedVocabulary = localStorage.getItem('search-vocabulary');
+                if (savedVocabulary !== currentVocabulary) {
+                    console.log("Vocabulary changed, clearing old model");
+                    localStorage.removeItem('search-model');
+                    localStorage.setItem('search-vocabulary', currentVocabulary);
+                }
+            }
+
+            function keywordsToVector(keywords) {
+                const vector = vocabulary.map(word => keywords.includes(word) ? 1 : 0);
+                console.log("Input vector size:", vector.length); // Debug
+                console.log("Input vector:", vector); // Debug
+                return vector;
+            }
+
+            let xs = null;
+            let ys = null;
+            function prepareTrainingTensors() {
+                xs = products.length > 0 ? tf.tensor2d(trainingData.map(item => keywordsToVector(item.keywords))) : null;
+                ys = products.length > 0 ? tf.tensor2d(trainingData.map(item => [item.productId]), [trainingData.length, 1]) : null;
+            }
+
+            async function trainModel() {
+                if (products.length === 0) {
+                    console.warn("Cannot train model: No products available.");
+                    return null;
+                }
+
+                console.log("Training new model with vocabulary size:", vocabulary.length);
+                const model = tf.sequential();
+                model.add(tf.layers.dense({
+                    units: 32, // Tăng số units
+                    activation: 'relu',
+                    inputShape: [vocabulary.length]
+                }));
+                model.add(tf.layers.dense({
+                    units: 16, // Thêm tầng ẩn
+                    activation: 'relu'
+                }));
+                model.add(tf.layers.dense({
+                    units: Math.max(...products.map(p => p.id)) + 1 || 1,
+                    activation: 'softmax'
+                }));
+
+                model.compile({
+                    optimizer: tf.train.adam(0.005), // Giảm learning rate
+                    loss: 'sparseCategoricalCrossentropy',
+                    metrics: ['accuracy']
+                });
+
+                await model.fit(xs, ys, {
+                    epochs: 150, // Tăng số epoch
+                    verbose: 0,
+                    callbacks: {
+                        onEpochEnd: (epoch, logs) => {
+                            console.log(`Epoch ${epoch}: loss = ${logs.loss}, accuracy = ${logs.acc}`);
+                        }
+                    }
+                });
+
+                await model.save('localstorage://search-model');
+                console.log("Model saved");
+                return model;
+            }
+
+            async function loadModel() {
+                if (products.length === 0) {
+                    console.warn("Cannot load model: No products available.");
+                    return null;
+                }
+
+                try {
+                    console.log("Loading model...");
+                    const model = await tf.loadLayersModel('localstorage://search-model');
+                    const expectedShape = model.layers[0].input.shape[1];
+                    if (expectedShape !== vocabulary.length) {
+                        console.log("Input shape mismatch, retraining model");
+                        localStorage.removeItem('search-model');
+                        return await trainModel();
+                    }
+                    return model;
+                } catch (e) {
+                    console.error("Error loading model:", e);
+                    return await trainModel();
+                }
+            }
+
+            async function predictProduct(searchQuery) {
+                if (checkEmptyProducts()) {
+                    console.warn("Cannot predict: No products available.");
+                    return null;
+                }
+
+                // Chuẩn hóa query trước khi dự đoán
+                let normalizedQuery = searchQuery.toLowerCase();
+                for (let [keyword, mapped] of Object.entries(keywordMapping)) {
+                    if (normalizedQuery.includes(keyword)) {
+                        normalizedQuery = normalizedQuery.replace(keyword, mapped);
+                    }
+                }
+                const keywords = normalizedQuery.split(/\s+/);
+                console.log("Normalized query keywords:", keywords); // Debug
+
+                const inputVector = tf.tensor2d([keywordsToVector(keywords)]);
+                const model = await loadModel();
+                if (!model) return null;
+                const prediction = model.predict(inputVector);
+                const predictedId = tf.argMax(prediction, axis=1).dataSync()[0];
+                console.log("Predicted ID:", predictedId); // Debug
+                const product = products.find(p => p.id === predictedId) || null;
+                console.log("Predicted product:", product); // Debug
+
+                // Fallback nếu dự đoán không chính xác
+                if (!product) {
+                    for (let keyword of keywords) {
+                        const matchedProduct = products.find(p => p.name.toLowerCase().includes(keyword));
+                        if (matchedProduct) {
+                            console.log("Fallback: Found product with keyword", keyword, ":", matchedProduct);
+                            return matchedProduct;
+                        }
+                    }
+                }
+                return product;
+            }
+
+            let searchTimeout;
+            async function handleSearch(query) {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(async () => {
+                    query = query.trim();
+                    const resultsDiv = document.getElementById('search-results');
+                    resultsDiv.innerHTML = '';
+                    const activeMenu = getActiveMenu();
+
+                    if (activeMenu === "menu-product") {
+                        // Chuẩn bị dữ liệu huấn luyện và mô hình chỉ khi ở menu-product
+                        prepareTrainingData();
+                        prepareTrainingTensors();
+                        if (query) {
+                            if (checkEmptyProducts()) {
+                                console.log("Đang tìm kiếm theo key (query) khi (products.length === 0): " + query);
+                                    searchProducts(query);
+                                    return;
+                            }
+                            
+                            try {
+                                const predictedProduct = await predictProduct(query);
+                                if (predictedProduct) {
+                                    resultsDiv.innerHTML = `
+                                        <div class="search-result">
+                                            <span>${predictedProduct.name}</span>
+                                        </div>
+                                    `;
+                                    // Truyền từ khóa chuẩn hóa thay vì tên sản phẩm
+                                    let normalizedQuery = query.toLowerCase();
+                                    for (let [keyword, mapped] of Object.entries(keywordMapping)) {
+                                        if (normalizedQuery.includes(keyword)) {
+                                            normalizedQuery = normalizedQuery.replace(keyword, mapped);
+                                            break;
+                                        }
+                                    }
+                                    console.log("Đang tìm kiếm theo kết quả dự đoán: " + normalizedQuery);
+                                    searchProducts(normalizedQuery);
+                                } else {
+                                    resultsDiv.innerHTML = '<div>Không tìm thấy sản phẩm</div>';
+                                    console.log("Đang tìm kiếm theo key (query) khi (predictedProduct là false): " + query);
+                                    searchProducts(query);
+                                }
+                            } catch (e) {
+                                console.error("Error in handleSearch:", e);
+                                resultsDiv.innerHTML = '<div>Lỗi khi tìm kiếm. Vui lòng thử lại.</div>';
+                                console.log("Đang tìm kiếm theo key (query): " + query);
+                                searchProducts(query);
+                            }
+                        } else {
+                            console.log("Đang tìm kiếm theo key (query) khi lỗi (predictedProduct): " + query);
+                            searchProducts(query);
+                        }
+                    } else {
+                        if (activeMenu === "menu-user") searchUsers(query);
+                        if (activeMenu === "menu-order") searchDonHang(query);
+                        if (activeMenu === "menu-support") searchPhanHoi(query);
+                    }
+                }, 300);
+            }
+
+        function searchUsers(query) {
+            setTimeout(() => {
+                let iframe = document.getElementById("Frame");
+                if (iframe) {
+                    iframe.src = "nguoidung/hienthinguoidung.php?query=" + encodeURIComponent(query);
+                    console.log("Iframe updated (users):", iframe.src); // Debug
                 } else {
-                    const recognition = new webkitSpeechRecognition();
-                    recognition.continuous = false;
-                    recognition.interimResults = false;
-                    recognition.lang = "vi-VN";
+                    console.error("Không tìm thấy iframe có ID 'Frame'");
+                }
+            }, 100);
+        }
 
-                    micButton.addEventListener("click", function() {
-                        micButton.classList.add("listening"); // Thêm hiệu ứng khi mic hoạt động
-                        recognition.start();
-                    });
-
-                    recognition.onresult = function(event) {
-                        micButton.classList.remove("listening"); // Xóa hiệu ứng khi mic ngừng hoạt động
-                        const speechResult = event.results[0][0].transcript;
-                        searchBar.value = speechResult;
-                        handleSearch(speechResult);
+        function searchProducts(query) {
+            setTimeout(() => {
+                let iframe = document.getElementById("Frame");
+                if (iframe) {
+                    iframe.src = "sanpham/hienthisanpham.php?query=" + encodeURIComponent(query);
+                    console.log("Iframe updated (products):", iframe.src); // Debug
+                    iframe.onload = function() {
+                        console.log("Iframe loaded successfully");
+                        if (iframe.contentDocument && iframe.contentDocument.body.innerHTML.trim() === "") {
+                            console.warn("Iframe content is empty");
+                            iframe.contentDocument.body.innerHTML = '<div class="no-data-message">Không có sản phẩm nào để hiển thị.</div>';
+                        }
                     };
+                } else {
+                    console.error("Không tìm thấy iframe có ID 'Frame'");
+                }
+            }, 100);
+        }
 
-                    recognition.onerror = function(event) {
-                        micButton.classList.remove("listening"); // Xóa hiệu ứng nếu có lỗi
-                        console.error("Lỗi nhận dạng giọng nói: ", event.error);
-                    };
+        function searchDonHang(query) {
+            setTimeout(() => {
+                let iframe = document.getElementById("Frame");
+                if (iframe) {
+                    iframe.src = "donhang/hienthidonhang.php?query=" + encodeURIComponent(query);
+                    console.log("Iframe updated (orders):", iframe.src); // Debug
+                } else {
+                    console.error("Không tìm thấy iframe có ID 'Frame'");
+                }
+            }, 100);
+        }
 
-                    recognition.onend = function() {
-                        micButton.classList.remove("listening"); // Xóa hiệu ứng khi mic dừng hoạt động
-                    };
+        function searchPhanHoi(query) {
+            setTimeout(() => {
+                let iframe = document.getElementById("Frame");
+                if (iframe) {
+                    iframe.src = "phanhoi/hienthiphanhoi.php?query=" + encodeURIComponent(query);
+                    console.log("Iframe updated (support):", iframe.src); // Debug
+                } else {
+                    console.error("Không tìm thấy iframe có ID 'Frame'");
                 }
-            });
+            }, 100);
+        }
 
-            function handleSearch(query) {
-                query = query.trim();
-                let activeMenu = getActiveMenu(); // Lấy menu hiện tại
+        // Voice Search
+        document.addEventListener("DOMContentLoaded", function() {
+            const micButton = document.querySelector(".mic-btn");
+            const searchBar = document.querySelector(".search-bar");
 
-                if (activeMenu === "menu-user") {
-                    searchUsers(query);
-                }
-                if (activeMenu === "menu-product") {
-                    searchProducts(query);
-                }
-                if (activeMenu === "menu-order") {
-                    searchDonHang(query);
-                }
-                if (activeMenu === "menu-support") {
-                    searchPhanHoi(query);
-                }
+            if (!('webkitSpeechRecognition' in window)) {
+                alert("Trình duyệt không hỗ trợ tìm kiếm bằng giọng nói.");
+            } else {
+                const recognition = new webkitSpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = "vi-VN";
+
+                micButton.addEventListener("click", function() {
+                    micButton.classList.add("listening");
+                    recognition.start();
+                });
+
+                recognition.onresult = function(event) {
+                    micButton.classList.remove("listening");
+                    const speechResult = event.results[0][0].transcript;
+                    searchBar.value = speechResult;
+                    handleSearch(speechResult);
+                };
+
+                recognition.onerror = function(event) {
+                    micButton.classList.remove("listening");
+                    console.error("Lỗi nhận dạng giọng nói: ", event.error);
+                };
+
+                recognition.onend = function() {
+                    micButton.classList.remove("listening");
+                };
             }
 
-            function searchUsers(query) {
-                setTimeout(() => {
-                    let iframe = document.getElementById("Frame");
-                    if (iframe) {
-                        iframe.src = "nguoidung/hienthinguoidung.php?query=" + encodeURIComponent(query);
-                    } else {
-                        console.error("Không tìm thấy iframe có ID 'Frame'");
-                    }
-                }, 100); 
+            // Khởi tạo iframe mặc định khi tải trang
+            const activeMenu = getActiveMenu();
+            if (activeMenu === "menu-product") {
+                searchProducts("");
             }
 
-            function searchProducts(query) {
-                setTimeout(() => {
-                    let iframe = document.getElementById("Frame");
-                    if (iframe) {
-                        iframe.src = "sanpham/hienthisanpham.php?query=" + encodeURIComponent(query);
-                    } else {
-                        console.error("Không tìm thấy iframe có ID 'Frame'");
-                    }
-                }, 100); 
-            }
-
-            function searchDonHang(query) {
-                setTimeout(() => {
-                    let iframe = document.getElementById("Frame");
-                    if (iframe) {
-                        iframe.src = "donhang/hienthidonhang.php?query=" + encodeURIComponent(query);
-                    } else {
-                        console.error("Không tìm thấy iframe có ID 'Frame'");
-                    }
-                }, 100); 
-            }
-
-            function searchPhanHoi(query) {
-                setTimeout(() => {
-                    let iframe = document.getElementById("Frame");
-                    if (iframe) {
-                        iframe.src = "phanhoi/hienthiphanhoi.php?query=" + encodeURIComponent(query);
-                    } else {
-                        console.error("Không tìm thấy iframe có ID 'Frame'");
-                    }
-                }, 100);
-            }
-        </script>
+        });     
+    </script>
         
         <div class="nav-buttons">
+            <?php if ($_SESSION['user']['quyen'] != 1): ?>
+                <button class="btn clear-storage-btn" onclick="clearLocalStorage()"><i class="fas fa-eraser"></i> Model</button>
+            <?php endif; ?>
             <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
             <?php
                 // Đếm số yêu cầu chưa xem (trangthai = 0) của user
@@ -256,8 +573,9 @@
             if (id === "menu-order") loadDLDonhang();else
             if (id === "menu-discount") loadDLMGG();else
             if (id === "menu-support") loadPhanHoi();else
-            if (id === "menu-gh") goBackHome(); 
+            if (id === "menu-gh") loadGH(); else goBackHome();
         }, 100); // Đợi 100ms để cập nhật menu
+        
         function ddadmin() {
             document.getElementById("adminDropdown").classList.toggle("active");
         }

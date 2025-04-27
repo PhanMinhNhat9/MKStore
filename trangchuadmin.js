@@ -309,7 +309,6 @@ function goBack() {
         
     } else {
        window.location.href = "../trangchuadmin.php"; // Điều hướng thông thường
-       
     }
 }
 
@@ -378,3 +377,10 @@ function loadanh() {
     }
 }
 
+// Hàm xóa localStorage
+function clearLocalStorage() {
+    localStorage.removeItem('search-model');
+    localStorage.removeItem('search-vocabulary');
+    alert('Đã xóa localStorage thành công!');
+    location.reload(); // Tải lại trang để áp dụng thay đổi
+}
