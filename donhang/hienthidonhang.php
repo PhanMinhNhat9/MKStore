@@ -177,7 +177,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                                     <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
                                     <select name="trangthai" onchange="this.form.submit()" aria-label="Trạng thái đơn hàng"
-                                        <?= $order['trangthai'] == 'Đã thanh toán' ? 'disabled' : '' ?>
+                                    <?= ($order['trangthai'] == 'Đã thanh toán' || $order['trangthai'] == 'Hủy đơn') ? 'disabled' : '' ?>
                                     >
                                         <option value="Chờ xác nhận" <?= $order['trangthai'] == 'Chờ xác nhận' ? 'selected' : '' ?>>🔵 Chờ xác nhận</option>
                                         <option value="Đã xác nhận" <?= $order['trangthai'] == 'Đã xác nhận' ? 'selected' : '' ?>>🟢 Đã xác nhận</option>

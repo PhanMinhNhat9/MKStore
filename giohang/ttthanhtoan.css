@@ -1,0 +1,162 @@
+body {
+    background: #f7fafd;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+  .container {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.1);
+    max-width: 700px;
+    padding: 15px;
+    margin: 15px;
+  }
+  h1 {
+    color: #007BFF;
+    font-size: 26px;
+    text-align: center;
+    margin-bottom: 15px;
+    margin-top: 5px;
+  }
+  .grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .column {
+    flex: 1;
+    min-width: 260px;
+    transition: all 0.3s ease;
+  }
+  .column.full-width {
+    flex: 0 0 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  h2 {
+    color: #007BFF;
+    font-size: 20px;
+    margin: 0 0 10px;
+  }
+  .qr-section {
+    border: 3px dashed #28a745;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.1);
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+  }
+  .qr-section.bank {
+    background: #c6f7c0; /* Màu xanh lá cho ngân hàng */
+  }
+  .qr-section.wallet {
+    background: #b3e5fc; /* Màu xanh dương cho VNPay */
+  }
+  .qr-section.hidden {
+    display: none;
+  }
+  .qr-section img {
+    width: 140px;
+    height: 140px;
+    border: 5px solid #fff;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  .qr-section .scan-text {
+    color: #007BFF;
+    font-size: 16px;
+    background: #fff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  .qr-section .info {
+    color: #333;
+    font-size: 13px;
+    text-align: left;
+    line-height: 1.5;
+  }
+  select, input[type="number"], button {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    border: 2px solid #007BFF;
+    border-radius: 5px;
+    margin-top: 8px;
+    box-sizing: border-box;
+  }
+  select:focus, input[type="number"]:focus {
+    border-color: #007BFF;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  label {
+    color: #333;
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 8px;
+    display: block;
+  }
+  .checkbox {
+    display: flex;
+    align-items: center;
+  }
+  .checkbox input {
+    margin-right: 8px;
+  }
+  button {
+    background: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 10px;
+  }
+  button:hover {
+    background: #218838;
+  }
+  @media (max-width: 768px) {
+    .grid {
+      flex-direction: column;
+    }
+    .column.full-width {
+      max-width: 100%;
+    }
+  }
+  .tienthoi {
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+  select.with-margin {
+    margin-bottom: 16px;
+  }
+  .bank-info, .wallet-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .bank-logo, .wallet-logo {
+    width: 40px;
+    height: auto;
+    border-radius: 5px;
+  }
+  #walletFields {
+    margin-top: 10px;
+    display: none;
+  }
+  #walletFields select {
+    margin-bottom: 10px;
+  }
+  hr {
+    border: none;
+    height: 2px; /* Tăng độ dày của hr */
+    background-color:rgb(194, 194, 194); /* Màu xanh phù hợp với giao diện */
+    margin: 15px 0;
+  }

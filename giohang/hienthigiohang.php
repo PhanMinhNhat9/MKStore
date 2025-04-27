@@ -142,13 +142,18 @@
         }
     });
 
-
     function xulydl() {
-        var phoneNumber = document.getElementById("phone").value;
-        var fullName = document.getElementById("name").value;
-        var url = "xulydl.php?phone=" + encodeURIComponent(phoneNumber) + "&name=" + encodeURIComponent(fullName);
-        window.location.href = url;
+        var phoneNumber = document.getElementById("phone").value.trim();
+        var fullName = document.getElementById("name").value.trim();
+        
+        if (phoneNumber !== "" && fullName !== "") {
+            var url = "xulydl.php?phone=" + encodeURIComponent(phoneNumber) + "&name=" + encodeURIComponent(fullName);
+            window.location.href = url;
+        } else {
+            alert("Vui lòng nhập đầy đủ số điện thoại và họ tên.");
+        }
     }
+
 
     function updateQuantity(idsp, change) {
         fetch("capnhatsp.php", {
