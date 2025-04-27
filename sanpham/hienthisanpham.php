@@ -208,7 +208,7 @@ $total_pages = ceil($total_products / $limit);
                             <?php if ($soluong_conlai > 0): ?>
                                 <button 
                                     class="btn btn-cart" 
-                                    onclick="themvaogiohang(<?= (int)$row['idsp'] ?>)"
+                                    onclick="themvaogiohang(<?= (int)$row['idsp'] ?>, <?= (int)$row['soluong_daban'] ?>)"
                                     aria-label="Thêm vào giỏ hàng"
                                 >
                                     <i class="fas fa-cart-plus"></i>

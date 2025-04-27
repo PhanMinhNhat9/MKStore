@@ -12,7 +12,9 @@
     if ($phuongthuctt=='cash') $phuongthuctt="Tiền mặt" ;
     else
         if ($phuongthuctt=='bank') $phuongthuctt="Chuyển khoản ngân hàng";
-
+        else 
+            if ($phuongthuctt=='bank') $phuongthuctt="Chuyển khoản ngân hàng";
+            
     if ($iddh && $trangthai && $phuongthuctt && $thoigian) {
         $stmt = $pdo->prepare("UPDATE donhang SET trangthai = ?, phuongthuctt = ?, thoigian = ? WHERE iddh = ?");
         $success = $stmt->execute([$trangthai, $phuongthuctt, $thoigian, $iddh]);

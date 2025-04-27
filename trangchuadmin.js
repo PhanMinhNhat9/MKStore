@@ -158,7 +158,6 @@ function themsaukhiquet(idsp) {
         .then(response => response.text()) 
         .then(data => {
             console.log("Server response:", data); 
-
             if (data.trim() === "success") {
                 return true;
             } else {
@@ -171,13 +170,15 @@ function themsaukhiquet(idsp) {
         });
 }
 
-function themvaogiohang(idsp) {
+function themvaogiohang(idsp, soluongdaban) {
     let encodedId = btoa(idsp); 
-    fetch("../giohang/themvaogiohang.php?id=" + encodeURIComponent(encodedId))
+    fetch("../giohang/themvaogiohang.php?id=" + encodeURIComponent(encodedId) + "&sldaban=" + encodeURIComponent(soluongdaban))
         .then(response => response.text()) 
         .then(data => {
-            console.log("Server response:", data); 
-
+            console.log("Server response:", data);
+            if (data.trim() === "null") {
+                showErrorMessage("Bạn đã thêm quá số lượng hàng còn lại trong cửa hàng!");
+            } else
             if (data.trim() === "success") {
                 showSuccessMessage("Thêm vào giỏ hàng thành công! 🛒");
             } else {

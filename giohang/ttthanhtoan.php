@@ -58,6 +58,7 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
         </p>
         <label for="paymentMethod">Phương thức thanh toán:</label>
         <select id="paymentMethod" onchange="togglePaymentFields()">
+      
           <?php if ($_SESSION['user']['quyen']!=1): ?>
             <option value="cash">Tiền mặt</option>
           <?php else: ?>
@@ -65,6 +66,7 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
           <?php endif; ?>
           <option value="bank">Chuyển khoản</option>
           <option value="wallet">Ví điện tử</option>
+
         </select>
         
         <div id="cashFields">
@@ -93,7 +95,13 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
       const paymentMethod = document.getElementById('paymentMethod').value;
       const walletProvider = document.getElementById('walletProvider').value;
       const iddh = document.getElementById('iddh').innerText;
-      const status = 'Đã thanh toán';
+      
+      let status ='';
+      if (paymentMethod==='wallet' || paymentMethod==='bank' || paymentMethod==='cash')
+        status = 'Đã thanh toán';
+      else
+        status = 'Chưa thanh toán';
+
       const today = new Date();
       const thoigian = today.getFullYear() + "-" +
                       String(today.getMonth() + 1).padStart(2, '0') + "-" +
@@ -171,6 +179,18 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
         productSelect.classList.add('with-margin');
       }
 
+      if (method === 'ttkhinhanhang') {
+        qrSection.classList.add('hidden');
+        qrColumn.style.display = 'none';
+        infoColumn.classList.add('full-width');
+        productSelect.classList.remove('with-margin');
+      } else {
+        qrSection.classList.remove('hidden');
+        qrColumn.style.display = 'block';
+        infoColumn.classList.remove('full-width');
+        productSelect.classList.add('with-margin');
+      }
+      
       // Cập nhật màu nền và QR code
       if (method === 'wallet') {
         qrSection.classList.remove('bank');
