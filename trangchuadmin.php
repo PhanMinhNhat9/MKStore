@@ -549,8 +549,19 @@
     </nav>
     <!-- Thanh menu -->
     <nav class="menu">
-        <div class="menu-item" id="menu-user" onclick="loadDLUser()"><i class="fas fa-users"></i> Quản lý người dùng</div>
-        <div class="menu-item" id="menu-product" onclick="loadDLSanpham()"><i class="fas fa-box"></i> Quản lý sản phẩm</div>
+
+        <?php if ($_SESSION['user']['quyen'] != 1): ?>
+            <div class="menu-item" id="menu-user" onclick="loadDLUser()"><i class="fas fa-users"></i> Quản lý người dùng</div>
+        <?php else: ?>
+            <div class="menu-item" id="menu-user" onclick="loadDLUser()"><i class="fas fa-users"></i> Quản lý tài khoản cá nhân</div>
+        <?php endif; ?>
+
+        <?php if ($_SESSION['user']['quyen'] != 1): ?>
+            <div class="menu-item" id="menu-product" onclick="loadDLSanpham()"><i class="fas fa-box"></i> Quản lý sản phẩm</div>
+        <?php else: ?>
+            <div class="menu-item" id="menu-product" onclick="loadDLSanpham()"><i class="fas fa-box"></i> Quản lý mua sắm</div>
+        <?php endif; ?>
+
         <?php if ($_SESSION['user']['quyen'] != 1): ?>
             <div class="menu-item" id="menu-category" onclick="loadDLDanhmuc()">
                 <i class="fas fa-list"></i> Quản lý danh mục
@@ -559,7 +570,12 @@
                 <i class="fas fa-tags"></i> Quản lý khuyến mãi
             </div>
         <?php endif; ?>
-        <div class="menu-item" id="menu-order" onclick="loadDLDonhang()"><i class="fas fa-chart-bar"></i> Quản lý đơn hàng</div>
+        <?php if ($_SESSION['user']['quyen'] != 1): ?>
+            <div class="menu-item" id="menu-order" onclick="loadDLDonhang()"><i class="fas fa-chart-bar"></i> Quản lý đơn hàng</div>
+        <?php else: ?>
+            <div class="menu-item" id="menu-order" onclick="loadDLDonhang()"><i class="fas fa-chart-bar"></i> Quản lý đơn mua hàng</div>
+        <?php endif; ?>
+        
         <div class="menu-item" id="menu-gh" onclick="loadGH()"><i class="fas fa-shopping-cart"></i> Giỏ hàng</div>
         <div class="menu-item" id="menu-support" onclick="loadPhanHoi()"><i class="fas fa-headset"></i> Hỗ trợ khách hàng</div>
     </nav>
