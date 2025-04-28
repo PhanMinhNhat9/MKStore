@@ -66,11 +66,11 @@ $lockTime = $_SESSION['lock_time'] - time();
         <form method="POST">
             <div class="input-group">
                 <i class="fa fa-user"></i>
-                <input type="text" name="tendn" placeholder="Tên đăng nhập" required>
+                <input type="text" name="tendn" placeholder="Tên đăng nhập" required autocomplete="off">
             </div>
             <div class="input-group">
                 <i class="fa fa-lock"></i>
-                <input type="password" name="matkhau" id="password" placeholder="Mật khẩu" required>
+                <input type="password" name="matkhau" id="password" placeholder="Mật khẩu" required >
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
             </div>
             <div class="checkbox-container">
