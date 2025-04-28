@@ -231,7 +231,6 @@ body {
     background-color: var(--success-color);
     color: #ffffff;
     width: 100%;
-    margin-top: var(--spacing);
 }
 
 .btn-add:hover {
