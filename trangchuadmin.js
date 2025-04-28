@@ -126,6 +126,16 @@ function loadDLMGG() {
         }
     }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 }
+function loadTaiKhoanCN() {
+    setTimeout(() => {
+        let iframe = document.getElementById("Frame");
+        if (iframe) {
+            iframe.src = "nguoidung/quanlyttcanhan.php";
+        } else {
+            console.error("Không tìm thấy iframe có ID 'Frame'");
+        }
+    }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+}
 function themsanpham() {
     window.location.href = "themsanpham.php";
 }
@@ -321,7 +331,7 @@ function goBackHome() {
     document.querySelectorAll(".menu-item").forEach(item => {
         item.classList.remove("active");
     });
-
+    localStorage.removeItem('profileMenuClicked');
     // Điều hướng về trang chủ (nếu cần)
     //window.location.href = "trangchuadmin.php";
     setTimeout(() => {

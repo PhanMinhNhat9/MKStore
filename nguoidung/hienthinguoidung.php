@@ -29,8 +29,8 @@ if ($quyen != '') {
     $conditions[] = "quyen = :quyen";
     $params['quyen'] = $quyen;
 }
-
-$sql = "SELECT iduser, hoten, tendn, matkhau, anh, email, sdt, diachi, quyen, thoigian FROM user";
+$iduser = $_SESSION['user']['iduser'];
+$sql = "SELECT iduser, hoten, tendn, matkhau, anh, email, sdt, diachi, quyen, thoigian FROM user WHERE iduser <> '$iduser'";
 if (!empty($conditions)) {
     $sql .= " WHERE " . implode(" AND ", $conditions);
 }
@@ -185,7 +185,6 @@ $ktstmt->execute();
                         <div><label>Mật khẩu:</label><input type="password" value="<?=$user['matkhau']?>" disabled></div>
                     </div>
                 </section>
-
 
             <?php endforeach; ?>
         </main>

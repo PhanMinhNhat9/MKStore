@@ -106,7 +106,6 @@
         <!-- JavaScript -->
     <script>
 
-
             // Lấy products từ PHP
             const rawProducts = <?php echo json_encode($products); ?>;
             console.log("Raw Products:", rawProducts); // Debug
@@ -503,7 +502,35 @@
             <?php if ($_SESSION['user']['quyen'] != 1): ?>
                 <button class="btn clear-storage-btn" onclick="clearLocalStorage()"><i class="fas fa-eraser"></i> Model</button>
             <?php endif; ?>
-            <button class="btn trangchu" onclick="goBackHome()"><i class="fas fa-home"></i> Trang chủ</button>
+            <button class="btn trangchu" onclick="handleHomeClick()"><i class="fas fa-home"></i> Trang chủ</button>
+            <script>
+                // Khi bấm nút Trang chủ
+                function handleHomeClick() {
+                    setTimeout(() => {
+                        let iframe = document.getElementById("Frame");
+                        if (iframe) {
+                            iframe.src = "thongtintrangchu.php";
+                        } else {
+                            console.error("Không tìm thấy iframe có ID 'Frame'");
+                        }
+                    }, 100);
+                    localStorage.setItem('homeButtonClicked', 'true');
+                }
+
+                // Khi load lại trang
+                window.addEventListener('load', function() {
+                    if (localStorage.getItem('homeButtonClicked') === 'true') {
+                        setTimeout(() => {
+                        let iframe = document.getElementById("Frame");
+                        if (iframe) {
+                            iframe.src = "thongtintrangchu.php";
+                        } else {
+                            console.error("Không tìm thấy iframe có ID 'Frame'");
+                        }
+                    }, 100);
+                    }
+                });
+                </script>
             <?php
                 // Đếm số yêu cầu chưa xem (trangthai = 0) của user
                 $stmt = $pdo->prepare("SELECT COUNT(*) FROM yeucaudonhang WHERE trangthai = 0");
@@ -537,7 +564,7 @@
                 </button>
                 <div class="dropdowntk" id="adminDropdown">
                     <div class="profile">
-                        <img src="<?= $admin_avatar ?>" alt="Avatar">
+                        <img src="<?= $admin_avatar ?>" alt="Avatar" id="menu-ttcn" onclick="taikhoancn()">
                         <p><strong><?= $admin_name ?></strong></p>
                         <p><?= $admin_phone ?></p>
                         <p><?= $admin_email ?></p>
@@ -547,6 +574,28 @@
             </div>
         </div>
     </nav>
+<script>
+    // Khi bấm vào ảnh
+function taikhoancn() {
+    loadTaiKhoanCN();
+    localStorage.setItem('profileMenuClicked', 'true');
+    // Xóa trạng thái menu active trong localStorage
+    localStorage.removeItem("activeMenu");
+    localStorage.removeItem('homeButtonClicked');
+
+    // Xóa lớp active khỏi tất cả menu items
+    document.querySelectorAll(".menu-item").forEach(item => {
+        item.classList.remove("active");
+    });
+}
+
+// Khi load lại trang
+window.addEventListener('load', function() {
+    if (localStorage.getItem('profileMenuClicked') === 'true') {
+        loadTaiKhoanCN();
+    }
+});
+</script>
     <!-- Thanh menu -->
     <nav class="menu">
 
@@ -583,13 +632,42 @@
         activateMenu();
         setTimeout(() => {
             let id = getActiveMenu();
-            if (id === "menu-user") loadDLUser(); else
-            if (id === "menu-product") loadDLSanpham(); else
-            if (id === "menu-category") loadDLDanhmuc(); else
-            if (id === "menu-order") loadDLDonhang();else
-            if (id === "menu-discount") loadDLMGG();else
-            if (id === "menu-support") loadPhanHoi();else
-            if (id === "menu-gh") loadGH(); else goBackHome();
+            if (id === "menu-user") {
+                loadDLUser(); 
+                localStorage.removeItem('profileMenuClicked');
+                localStorage.removeItem('homeButtonClicked');
+            } else
+            if (id === "menu-product") {
+                loadDLSanpham();
+                localStorage.removeItem('profileMenuClicked');
+                localStorage.removeItem('homeButtonClicked');
+            } else
+            if (id === "menu-category") {
+                loadDLDanhmuc(); 
+                localStorage.removeItem('profileMenuClicked');
+                localStorage.removeItem('homeButtonClicked');
+            } else
+            if (id === "menu-order") { 
+                loadDLDonhang();
+                localStorage.removeItem('profileMenuClicked');
+                localStorage.removeItem('homeButtonClicked');
+            } else
+            if (id === "menu-discount") {
+                loadDLMGG();
+                localStorage.removeItem('profileMenuClicked');
+                localStorage.removeItem('homeButtonClicked');
+            } else
+            if (id === "menu-support") { 
+                loadPhanHoi();
+                localStorage.removeItem('profileMenuClicked');
+                localStorage.removeItem('homeButtonClicked');
+            } else
+            if (id === "menu-gh") {
+                loadGH();
+                localStorage.removeItem('profileMenuClicked');
+                localStorage.removeItem('homeButtonClicked');
+            }
+
         }, 100); // Đợi 100ms để cập nhật menu
         
         function ddadmin() {
