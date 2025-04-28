@@ -520,14 +520,7 @@
                 // Khi load lại trang
                 window.addEventListener('load', function() {
                     if (localStorage.getItem('homeButtonClicked') === 'true') {
-                        setTimeout(() => {
-                        let iframe = document.getElementById("Frame");
-                        if (iframe) {
-                            iframe.src = "thongtintrangchu.php";
-                        } else {
-                            console.error("Không tìm thấy iframe có ID 'Frame'");
-                        }
-                    }, 100);
+                        goBackHome();
                     }
                 });
                 </script>
@@ -581,8 +574,7 @@ function taikhoancn() {
     localStorage.setItem('profileMenuClicked', 'true');
     // Xóa trạng thái menu active trong localStorage
     localStorage.removeItem("activeMenu");
-    localStorage.removeItem('homeButtonClicked');
-
+    localStorage.removeItem("homeButtonClicked");
     // Xóa lớp active khỏi tất cả menu items
     document.querySelectorAll(".menu-item").forEach(item => {
         item.classList.remove("active");
