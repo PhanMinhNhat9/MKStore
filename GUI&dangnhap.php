@@ -102,8 +102,8 @@ $lockTime = $_SESSION['lock_time'] - time();
   <div class="flex items-center bg-white/20 rounded px-2 mt-1">
     <i class="fa fa-user text-white mr-2"></i>
     <input type="text" name="tendn"
-           class="w-full p-2 bg-transparent text-white focus:outline-none focus:ring-2 focus:ring-[#007bff]"
-           required>
+           class="w-full p-2 bg-transparent text-white focus:outline-none"
+           required autocomplete="off">
   </div>
 </div>
 
@@ -112,8 +112,8 @@ $lockTime = $_SESSION['lock_time'] - time();
   <div class="flex items-center bg-white/20 rounded px-2 mt-1">
     <i class="fa fa-lock text-white mr-2"></i>
     <input type="password" name="matkhau" id="password"
-           class="w-full p-2 bg-transparent text-white focus:outline-none focus:ring-2 focus:ring-[#007bff]"
-           required>
+           class="w-full p-2 bg-transparent text-white focus:outline-none"
+           required autocomplete="off">
   </div>
 </div>
 
