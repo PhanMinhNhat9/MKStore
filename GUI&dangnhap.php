@@ -53,74 +53,114 @@ $lockTime = $_SESSION['lock_time'] - time();
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập</title>
-    <link rel="stylesheet" href="fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="FMdangnhap.css">
-</head>
-<body>
-    <div class="login-container">
-        <h2>Đăng nhập</h2>
-        <p class='error'><?= !empty($_SESSION['login_error']) ? $_SESSION['login_error'] : ""; unset($_SESSION['login_error']);?></p>
-        <form method="POST">
-            <div class="input-group">
-                <i class="fa fa-user"></i>
-                <input type="text" name="tendn" placeholder="Tên đăng nhập" required autocomplete="off">
-            </div>
-            <div class="input-group">
-                <i class="fa fa-lock"></i>
-                <input type="password" name="matkhau" id="password" placeholder="Mật khẩu" required >
-                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="showPassword">
-                <label for="showPassword">Hiển thị mật khẩu</label>
-            </div>
-            <button type="submit"><i class="fa fa-sign-in-alt"></i> Đăng nhập</button>
-            
-            <div class="auth-links">
-                <a href="GUI&quenMK.php" class="forgot-password">Quên mật khẩu?</a>
-                <a href="dangky/giaodiendangky.php" class="dangkynd">Đăng ký</a>
-            </div>
-        </form>
-    </div>
-    <script>
-    let lockTime = <?= $lockTime; ?>;
-if (lockTime > 0) {
-    let countdownElement = document.createElement("p");
-    countdownElement.className = "countdown";
-    countdownElement.style.marginTop = "15px"; // Tạo khoảng cách với phần tử trên
-    document.querySelector(".login-container").appendChild(countdownElement);
-
-    function updateCountdown() {
-        let minutes = Math.floor(lockTime / 60);
-        let seconds = lockTime % 60;
-        countdownElement.innerHTML = `<strong style="color: red; font-size: 14px;">⏳ Bạn có thể đăng nhập lại sau: ${minutes} phút ${seconds} giây</strong>`;
-        
-        if (lockTime > 0) {
-            lockTime--;
-            setTimeout(updateCountdown, 1000);
-        } else {
-            countdownElement.innerHTML = `<strong style="color: green; font-size: 14px;">✅ Bạn có thể đăng nhập lại ngay bây giờ.</strong>`;
-            document.querySelector(".error").textContent = "";
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { poppins: ['Poppins', 'sans-serif'] }
         }
+      }
     }
-    
-    updateCountdown();
-}
-
-</script>
-
-    <script>
-        document.getElementById("showPassword").addEventListener("change", function () {
-    let passwordInput = document.getElementById("password");
-    if (this.checked) {
-        passwordInput.type = "text";
-    } else {
-        passwordInput.type = "password";
+  </script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    /* Dấu tick tuỳ chỉnh khi checkbox được chọn */
+    #showPassword:checked::after {
+        content: '✔';
+        display: block;
+        color: white;
+        font-size: 0.75rem;
+        line-height: 1rem;
+        text-align: center;
     }
-});
-    </script>
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-800 via-blue-400 via-40% via-blue-300 via-50% to-blue-800">
+  <div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl w-96 shadow-lg text-white">
+    <div class="flex justify-between mb-6 border-b border-gray-400 pb-2">
+      <button class="text-white font-semibold border-b-2 border-white-700">Sign In</button>
+    </div>
+
+    <?php if (!empty($_SESSION['login_error'])): ?>
+      <div class="text-red-200 text-sm text-center mb-4 font-medium"><?= $_SESSION['login_error']; unset($_SESSION['login_error']); ?></div>
+    <?php endif; ?>
+
+    <?php if ($lockTime > 0): ?>
+      <div id="countdown" class="text-yellow-300 text-sm text-center mb-4"></div>
+    <?php endif; ?>
+
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+      <div class="mb-4">
+  <label class="text-sm text-gray-300">Username</label>
+  <div class="flex items-center bg-white/20 rounded px-2 mt-1">
+    <i class="fa fa-user text-white mr-2"></i>
+    <input type="text" name="tendn"
+           class="w-full p-2 bg-transparent text-white focus:outline-none focus:ring-2 focus:ring-[#007bff]"
+           required>
+  </div>
+</div>
+
+<div class="mb-4">
+  <label class="text-sm text-gray-300">Password</label>
+  <div class="flex items-center bg-white/20 rounded px-2 mt-1">
+    <i class="fa fa-lock text-white mr-2"></i>
+    <input type="password" name="matkhau" id="password"
+           class="w-full p-2 bg-transparent text-white focus:outline-none focus:ring-2 focus:ring-[#007bff]"
+           required>
+  </div>
+</div>
+
+
+<div class="flex items-center mb-4 text-sm text-gray-300">
+  <input type="checkbox" id="showPassword"
+    class="mr-2 h-5 w-5 appearance-none bg-white/20 rounded-sm checked:bg-blue-500
+           relative before:content-[''] before:block before:absolute before:inset-0 before:rounded-sm transition" />
+  <label for="showPassword">Hiển thị mật khẩu</label>
+</div>
+
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded font-bold hover:bg-blue-300 transition">SIGN IN</button>
+
+      <div class="text-sm text-center mt-4">
+        <a href="GUI&quenMK.php" class="text-white-200">Quên mật khẩu?</a> |
+        <a href="dangky/giaodiendangky.php" class="text-white-200">Đăng ký</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Toggle hiển thị mật khẩu
+    document.getElementById("showPassword").addEventListener("change", function () {
+      let passwordInput = document.getElementById("password");
+      passwordInput.type = this.checked ? "text" : "password";
+    });
+
+    // Đếm ngược thời gian khóa nếu cần
+    <?php if ($lockTime > 0): ?>
+      let lockTime = <?= $lockTime ?>;
+      const countdown = document.getElementById("countdown");
+
+      function updateCountdown() {
+        let m = Math.floor(lockTime / 60);
+        let s = lockTime % 60;
+        countdown.textContent = `⏳ Vui lòng thử lại sau: ${m} phút ${s} giây`;
+        if (lockTime > 0) {
+          lockTime--;
+          setTimeout(updateCountdown, 1000);
+        } else {
+          countdown.textContent = "✅ Bạn có thể đăng nhập lại.";
+        }
+      }
+      updateCountdown();
+    <?php endif; ?>
+  </script>
 </body>
 </html>
+
+
