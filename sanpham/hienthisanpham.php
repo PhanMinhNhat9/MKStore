@@ -85,7 +85,7 @@ $total_pages = ceil($total_products / $limit);
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
-    <script src="../trangchuadmin.js"></script>
+    <script src="../script.js"></script>
     <link rel="stylesheet" href="hienthisanpham.css?v=<?= time(); ?>">
 </head>
 <body>

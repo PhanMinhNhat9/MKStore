@@ -1,18 +1,32 @@
 <?php
 require_once '../config.php';
-$pdo = connectDatabase();
 
-$sql = "SELECT iddm, tendm, loaidm, icon, mota, thoigian FROM danhmucsp ORDER BY loaidm, iddm";
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Kết nối CSDL
+try {
+    $pdo = connectDatabase();
+} catch (PDOException $e) {
+    die("Lỗi kết nối CSDL: " . $e->getMessage());
+}
 
+// Truy vấn danh sách danh mục
+try {
+    $sql = "SELECT iddm, tendm, loaidm, icon, mota, thoigian FROM danhmucsp ORDER BY loaidm, iddm";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Lỗi truy vấn CSDL: " . $e->getMessage());
+}
+
+// Xây dựng cây danh mục
 $categoryTree = [];
 foreach ($categories as $cat) {
     if ($cat['loaidm'] == 0) {
         $categoryTree[$cat['iddm']] = $cat + ['children' => []];
     } else {
-        $categoryTree[$cat['loaidm']]['children'][] = $cat;
+        if (isset($categoryTree[$cat['loaidm']])) {
+            $categoryTree[$cat['loaidm']]['children'][] = $cat;
+        }
     }
 }
 ?>
@@ -26,7 +40,7 @@ foreach ($categories as $cat) {
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
     <link rel="stylesheet" href="hienthidanhmuc.css?v=<?= time(); ?>">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
-    <script src="../trangchuadmin.js"></script>
+    <script src="../script.js"></script>
 </head>
 <body>
     <!-- Sidebar -->
@@ -42,7 +56,9 @@ foreach ($categories as $cat) {
             <select id="parentFilter" name="parentFilter">
                 <option value="all">Tất cả</option>
                 <?php foreach ($categoryTree as $parent): ?>
-                    <option value="<?= $parent['iddm'] ?>"><?= htmlspecialchars($parent['tendm']) ?></option>
+                    <option value="<?= htmlspecialchars($parent['iddm']) ?>">
+                        <?= htmlspecialchars($parent['tendm']) ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </form>
@@ -66,60 +82,68 @@ foreach ($categories as $cat) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($categoryTree as $parent): ?>
-                        <tr class="parent" data-parent-id="<?= $parent['iddm'] ?>">
-                            <td><?= $parent['iddm'] ?></td>
-                            <td><?= htmlspecialchars($parent['tendm']) ?></td>
-                            <td>
-                                <img 
-                                    src="../<?= htmlspecialchars($parent['icon']) ?>" 
-                                    class="icon" 
-                                    alt="Icon danh mục <?= htmlspecialchars($parent['tendm']) ?>"
-                                    loading="lazy"
-                                >
-                            </td>
-                            <td><?= htmlspecialchars($parent['mota']) ?></td>
-                            <td><?= htmlspecialchars($parent['thoigian']) ?></td>
-                            <td>
-                                <button 
-                                    class="btn btn-update" 
-                                    onclick="themdmcon(<?= $parent['iddm'] ?>)"
-                                    aria-label="Thêm danh mục con"
-                                    title="Thêm con"
-                                >
-                                    <i class="fas fa-plus-circle"></i>
-                                </button>
-                                <button 
-                                    class="btn btn-edit" 
-                                    onclick="capnhatdanhmuc(<?= $parent['iddm'] ?>)"
-                                    aria-label="Cập nhật danh mục"
-                                    title="Sửa"
-                                >
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </td>
+                    <?php if (empty($categoryTree)): ?>
+                        <tr>
+                            <td colspan="6" style="text-align: center;">Không có danh mục nào.</td>
                         </tr>
-                        <?php foreach ($parent['children'] as $child): ?>
-                            <tr class="child" data-parent-id="<?= $parent['iddm'] ?>">
-                                <td><?= $child['iddm'] ?></td>
-                                <td>
-                                    <span class="child-indent">↳</span> 
-                                    <?= htmlspecialchars($child['tendm']) ?>
-                                </td>
+                    <?php else: ?>
+                        <?php foreach ($categoryTree as $parent): ?>
+                            <tr class="parent" data-parent-id="<?= htmlspecialchars($parent['iddm']) ?>">
+                                <td><?= htmlspecialchars($parent['iddm']) ?></td>
+                                <td><?= htmlspecialchars($parent['tendm']) ?></td>
                                 <td>
                                     <img 
-                                        src="../<?= htmlspecialchars($child['icon']) ?>" 
+                                        src="../<?= htmlspecialchars($parent['icon']) ?>" 
                                         class="icon" 
-                                        alt="Icon danh mục con <?= htmlspecialchars($child['tendm']) ?>"
+                                        alt="Icon danh mục <?= htmlspecialchars($parent['tendm']) ?>"
                                         loading="lazy"
+                                        onerror="this.src='../images/default-icon.png'"
                                     >
                                 </td>
-                                <td><?= htmlspecialchars($child['mota']) ?></td>
-                                <td><?= htmlspecialchars($child['thoigian']) ?></td>
-                                <td></td>
+                                <td><?= htmlspecialchars($parent['mota']) ?></td>
+                                <td><?= htmlspecialchars($parent['thoigian']) ?></td>
+                                <td>
+                                    <button 
+                                        class="btn btn-update" 
+                                        onclick="themdmcon(<?= htmlspecialchars($parent['iddm']) ?>)"
+                                        aria-label="Thêm danh mục con"
+                                        title="Thêm con"
+                                    >
+                                        <i class="fas fa-plus-circle"></i>
+                                    </button>
+                                    <button 
+                                        class="btn btn-edit" 
+                                        onclick="capnhatdanhmuc(<?= htmlspecialchars($parent['iddm']) ?>)"
+                                        aria-label="Cập nhật danh mục"
+                                        title="Sửa"
+                                    >
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
                             </tr>
+                            <?php foreach ($parent['children'] as $child): ?>
+                                <tr class="child" data-parent-id="<?= htmlspecialchars($parent['iddm']) ?>">
+                                    <td><?= htmlspecialchars($child['iddm']) ?></td>
+                                    <td>
+                                        <span class="child-indent">↳</span> 
+                                        <?= htmlspecialchars($child['tendm']) ?>
+                                    </td>
+                                    <td>
+                                        <img 
+                                            src="../<?= htmlspecialchars($child['icon']) ?>" 
+                                            class="icon" 
+                                            alt="Icon danh mục con <?= htmlspecialchars($child['tendm']) ?>"
+                                            loading="lazy"
+                                            onerror="this.src='../images/default-icon.png'"
+                                        >
+                                    </td>
+                                    <td><?= htmlspecialchars($child['mota']) ?></td>
+                                    <td><?= htmlspecialchars($child['thoigian']) ?></td>
+                                    <td></td>
+                                </tr>
+                            <?php endforeach; ?>
                         <?php endforeach; ?>
-                    <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </section>
@@ -130,24 +154,41 @@ foreach ($categories as $cat) {
         // Toggle Sidebar
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('collapsed');
-            const isExpanded = !sidebar.classList.contains('collapsed');
-            document.querySelector('.hamburger').setAttribute('aria-expanded', isExpanded);
+            if (sidebar) {
+                sidebar.classList.toggle('collapsed');
+                const isExpanded = !sidebar.classList.contains('collapsed');
+                const hamburger = document.querySelector('.hamburger');
+                if (hamburger) {
+                    hamburger.setAttribute('aria-expanded', isExpanded);
+                }
+            }
         }
 
         // Filter by Parent Category
-        document.getElementById('parentFilter').addEventListener('change', function () {
-            const selectedParentId = this.value;
-            const rows = document.querySelectorAll('.category-table tbody tr');
-            rows.forEach(row => {
-                const rowParentId = row.getAttribute('data-parent-id');
-                row.style.display = selectedParentId === 'all' || rowParentId === selectedParentId ? '' : 'none';
-            });
+        document.addEventListener('DOMContentLoaded', () => {
+            const parentFilter = document.getElementById('parentFilter');
+            if (parentFilter) {
+                parentFilter.addEventListener('change', function () {
+                    const selectedParentId = this.value;
+                    const rows = document.querySelectorAll('.category-table tbody tr');
+                    rows.forEach(row => {
+                        const rowParentId = row.getAttribute('data-parent-id');
+                        row.style.display = selectedParentId === 'all' || rowParentId === selectedParentId ? '' : 'none';
+                    });
+                });
+            }
         });
 
-        if (window.innerHeight > window.innerWidth) {
-            alert("Vui lòngq xoay thiết bị sang chế độ ngang để xem đơn hàng.");
-        }
+        // Kiểm tra hướng màn hình
+        window.addEventListener('resize', () => {
+            if (window.innerHeight > window.innerWidth) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Xoay thiết bị',
+                    text: 'Vui lòng xoay thiết bị sang chế độ ngang để xem danh mục tốt hơn.',
+                });
+            }
+        });
     </script>
 </body>
 </html>

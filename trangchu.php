@@ -79,9 +79,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <script src="trangchuadmin.js"></script>
+    <script src="script.js"></script>
     <link rel="stylesheet" href="fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="trangchuadmin.css?v=<?= time(); ?>">
+    <link rel="stylesheet" href="trangchu.css?v=<?= time(); ?>">
     <script src="sweetalert2/sweetalert2.min.js"></script>
     <link rel="stylesheet" href="sweetalert2/sweetalert2.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
