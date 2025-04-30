@@ -61,15 +61,10 @@
                 'quyen' => $user['quyen']
             ];
             
-            if ($_SESSION['user']['quyen']==0 || $_SESSION['user']['quyen']==2589) {
-                header("Location: trangchuadmin.php");
+            if ($_SESSION['user']['quyen']==0 || $_SESSION['user']['quyen']==2589 || $_SESSION['user']['quyen']==1) {
+                header("Location: ../trangchu.php");
                 exit();
-            }
-            else {           
-                header("Location: trangchuadmin.php");
-                exit();
-            }
-            
+            }            
         } else {
             $_SESSION['login_attempts'] = $_SESSION['login_attempts'] + 1;
             $_SESSION['last_attempt_time'] = time();
