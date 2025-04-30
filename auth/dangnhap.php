@@ -54,6 +54,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+<link rel="icon" href="../picture/logoTD.png" type="image/png">
 <script>
   tailwind.config = {
     theme: {

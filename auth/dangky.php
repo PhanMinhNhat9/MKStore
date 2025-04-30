@@ -39,6 +39,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="../fontawesome/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="../picture/logoTD.png" type="image/png">
   <script>
     tailwind.config = {
       theme: {
@@ -76,7 +77,7 @@
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 via-blue-400 to-blue-800">
-    <form class="bg-white/20 p-6 rounded-2xl shadow-xl max-w-3xl mx-auto grid grid-cols-2 gap-4 text-white">
+    <form class="bg-white/20 p-6 rounded-2xl shadow-xl max-w-3xl mx-auto grid grid-cols-2 gap-4 text-white" id="registerForm">
         <!-- Đã điều chỉnh h2 để chiếm 2 cột -->
         <h2 class="col-span-2 text-center text-2xl font-semibold mb-2 border-b border-white/30 pb-3">Đăng ký tài khoản</h2>
         <!-- Cột trái -->
@@ -84,7 +85,7 @@
             <label class="text-sm text-gray-200 block mb-1">Họ và tên</label>
             <div class="flex items-center bg-white/10 rounded-md px-3">
                 <i class="fas fa-user mr-2"></i>
-                <input type="text" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off"/>
+                <input type="text" id="hoten" name="hoten" onkeypress="validateInput(event)" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off"/>
             </div>
         </div>
 
@@ -92,7 +93,7 @@
             <label class="text-sm text-gray-200 block mb-1">Tên đăng nhập</label>
             <div class="flex items-center bg-white/10 rounded-md px-3">
                 <i class="fas fa-user-circle mr-2"></i>
-                <input type="text" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off"/>
+                <input type="text" id="tendn" name="tendn" oninput="removeInvalidChars(this)" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off"/>
             </div>
         </div>
 
@@ -100,7 +101,7 @@
             <label class="text-sm text-gray-200 block mb-1">Email</label>
             <div class="flex items-center bg-white/10 rounded-md px-3">
                 <i class="fas fa-envelope mr-2"></i>
-                <input type="email" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off" />
+                <input type="email" id="email" name="email" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off" />
             </div>
         </div>
 
@@ -109,7 +110,7 @@
             <label class="text-sm text-gray-200 block mb-1">Mật khẩu</label>
             <div class="flex items-center bg-white/10 rounded-md px-3">
                 <i class="fas fa-lock mr-2"></i>
-                <input type="password" class="w-full bg-transparent p-2 focus:outline-none" required/>
+                <input type="password" id="password" name="password" class="w-full bg-transparent p-2 focus:outline-none" required/>
             </div>
         </div>
 
@@ -117,7 +118,7 @@
             <label class="text-sm text-gray-200 block mb-1">Số điện thoại</label>
             <div class="flex items-center bg-white/10 rounded-md px-3">
                 <i class="fas fa-phone mr-2"></i>
-                <input type="text" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off"/>
+                <input type="text" id="sdt" name="sdt" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off"/>
             </div>
         </div>
 
@@ -181,6 +182,23 @@
         }
     });
 
+    function validateInput(event) {
+        const char = String.fromCharCode(event.which || event.keyCode);
+        
+        // Kiểm tra xem ký tự có phải là số hoặc ký tự đặc biệt không được phép nhập
+        const invalidChars = /[~`!@#$%^&*()_\-+=\{\}\[\]\\|:;"'<,>.?/]/;
+        
+        // Kiểm tra xem ký tự có phải là số hoặc ký tự đặc biệt không hợp lệ
+        if (/\d/.test(char) || invalidChars.test(char)) {
+            event.preventDefault(); // Ngừng nhập ký tự nếu là số hoặc ký tự đặc biệt
+        }
+    }
+
+    function removeInvalidChars(input) {
+    // Giữ lại chỉ chữ cái không dấu và số
+    input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+}
+
     // Tự động tạo tên đăng nhập
     function generateRandomString(length) {
         const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -190,13 +208,27 @@
     function removeDiacritics(str) {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "").toLowerCase();
     }
-
+    
     document.getElementById("hoten").addEventListener("blur", function () {
         const fullName = this.value.trim();
-        if (fullName) {
-        const parts = fullName.split(" ");
-        const lastName = removeDiacritics(parts[parts.length - 1]);
-        document.querySelector("input[name='tendn']").value = lastName + generateRandomString(4);
+
+        const usernameInput = document.querySelector("input[name='tendn']");
+
+        if (fullName !== "") {
+            // Capitalize first letter of each word
+            const capitalizedName = fullName
+                .split(" ")
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(" ");
+            this.value = capitalizedName;
+
+            // Generate username from the last name
+            const parts = capitalizedName.split(" ");
+            const lastName = removeDiacritics(parts[parts.length - 1]);
+            usernameInput.value = lastName + generateRandomString(4);
+        } else {
+            // Nếu không nhập họ tên, xóa tên đăng nhập
+            usernameInput.value = "";
         }
     });
 
@@ -206,4 +238,6 @@
 </script>
 </body>
 </html>
+
+
 

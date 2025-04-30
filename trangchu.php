@@ -10,7 +10,7 @@
     if (isset($_SESSION['user'])) {
 
     } else {
-        header("Location: GUI&dangnhap.php");
+        header("Location: auth/dangnhap.php");
         exit();
     }
 
@@ -42,10 +42,14 @@
     session_write_close(); // Đảm bảo session được ghi lại ngay lập tức
 
     // Lấy thông tin admin từ session
-    $admin_name = htmlspecialchars($_SESSION['user']['hoten'], ENT_QUOTES, 'UTF-8');
-    $admin_email = htmlspecialchars($_SESSION['user']['email'], ENT_QUOTES, 'UTF-8');
-    $admin_phone = htmlspecialchars($_SESSION['user']['sdt'], ENT_QUOTES, 'UTF-8');
-    $admin_avatar = !empty($_SESSION['user']['anh']) ? htmlspecialchars($_SESSION['user']['anh'], ENT_QUOTES, 'UTF-8') : "https://i.pravatar.cc/100";
+    $stmt = $pdo->prepare("SELECT `hoten`, `anh`, `email`, `sdt` FROM `user` WHERE iduser = :iduser");
+    $stmt->execute(['iduser' => $_SESSION['user']['iduser']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $admin_name = htmlspecialchars($result['hoten'], ENT_QUOTES, 'UTF-8');
+    $admin_email = htmlspecialchars($result['email'], ENT_QUOTES, 'UTF-8');
+    $admin_phone = htmlspecialchars($result['sdt'], ENT_QUOTES, 'UTF-8');
+    $admin_avatar = !empty($result['anh']) ? htmlspecialchars($result['anh'], ENT_QUOTES, 'UTF-8') : "https://i.pravatar.cc/100";
     
     // Lấy danh sách sản phẩm từ cơ sở dữ liệu
     try {
@@ -87,6 +91,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <link rel="icon" href="picture/logoTD.png" type="image/png">
 </head>
 
 <body>
@@ -506,14 +511,7 @@
             <script>
                 // Khi bấm nút Trang chủ
                 function handleHomeClick() {
-                    setTimeout(() => {
-                        let iframe = document.getElementById("Frame");
-                        if (iframe) {
-                            iframe.src = "thongtintrangchu.php";
-                        } else {
-                            console.error("Không tìm thấy iframe có ID 'Frame'");
-                        }
-                    }, 100);
+                    goBackHome();
                     localStorage.setItem('homeButtonClicked', 'true');
                 }
 
@@ -627,37 +625,30 @@ window.addEventListener('load', function() {
             if (id === "menu-user") {
                 loadDLUser(); 
                 localStorage.removeItem('profileMenuClicked');
-                localStorage.removeItem('homeButtonClicked');
             } else
             if (id === "menu-product") {
                 loadDLSanpham();
                 localStorage.removeItem('profileMenuClicked');
-                localStorage.removeItem('homeButtonClicked');
             } else
             if (id === "menu-category") {
                 loadDLDanhmuc(); 
                 localStorage.removeItem('profileMenuClicked');
-                localStorage.removeItem('homeButtonClicked');
             } else
             if (id === "menu-order") { 
                 loadDLDonhang();
                 localStorage.removeItem('profileMenuClicked');
-                localStorage.removeItem('homeButtonClicked');
             } else
             if (id === "menu-discount") {
                 loadDLMGG();
                 localStorage.removeItem('profileMenuClicked');
-                localStorage.removeItem('homeButtonClicked');
             } else
             if (id === "menu-support") { 
                 loadPhanHoi();
                 localStorage.removeItem('profileMenuClicked');
-                localStorage.removeItem('homeButtonClicked');
             } else
             if (id === "menu-gh") {
                 loadGH();
                 localStorage.removeItem('profileMenuClicked');
-                localStorage.removeItem('homeButtonClicked');
             }
 
         }, 100); // Đợi 100ms để cập nhật menu

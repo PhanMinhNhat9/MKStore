@@ -33,6 +33,7 @@ function reloadCSS(file) {
 }
 
 function loadPhanHoi() {
+    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -75,6 +76,7 @@ function xoanguoidung(iduser) {
 }
 
 function loadDLUser() {
+    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -85,6 +87,7 @@ function loadDLUser() {
     }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 }
 function loadDLSanpham() {
+    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -94,8 +97,8 @@ function loadDLSanpham() {
         }
     }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 }
-function loadDLDanhmuc()
-{
+function loadDLDanhmuc() {
+    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -106,6 +109,7 @@ function loadDLDanhmuc()
     }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 }
 function loadDLDonhang() {
+    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -117,6 +121,7 @@ function loadDLDonhang() {
 }
 
 function loadDLMGG() {
+    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -127,6 +132,7 @@ function loadDLMGG() {
     }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 }
 function loadTaiKhoanCN() {
+    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -299,7 +305,7 @@ function xoamgg(idmgg) {
 }
 // Hàm đăng xuất
 function logout() {
-    window.location.href = "logout.php"; 
+    window.location.href = "auth/logout.php"; 
 }
 
 // Đổi icon khi hover
