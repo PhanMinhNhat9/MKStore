@@ -76,7 +76,6 @@
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 via-blue-400 to-blue-800">
-    <!-- <div class="bg-white/20 backdrop-blur-xl p-8 rounded-2xl w-full max-w-md text-white space-y-6 shadow-xl"> -->
     <form class="bg-white/20 p-6 rounded-2xl shadow-xl max-w-3xl mx-auto grid grid-cols-2 gap-4 text-white">
         <!-- Đã điều chỉnh h2 để chiếm 2 cột -->
         <h2 class="col-span-2 text-center text-2xl font-semibold mb-2 border-b border-white/30 pb-3">Đăng ký tài khoản</h2>
@@ -147,7 +146,7 @@
                 <a href="../auth/dangnhap.php" class="hover:underline">Đăng nhập</a>
             </div>
         </div>
-</form>
+    </form>
 
 <script>
     // Hiển thị mật khẩu
