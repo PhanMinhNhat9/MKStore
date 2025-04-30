@@ -258,6 +258,26 @@ body {
 .btn-edit:hover {
     background-color: #2f855a;
 }
+.btn-review {
+    background-color: #f1c40f; /* Yellow color for review button */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+}
+
+.btn-review:hover {
+    background-color: #e1b309; /* Darker yellow on hover */
+}
+
+.btn-review i {
+    font-size: 16px;
+}
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; }

@@ -30,7 +30,7 @@ if ($quyen != '') {
     $params['quyen'] = $quyen;
 }
 $iduser = $_SESSION['user']['iduser'];
-$sql = "SELECT iduser, hoten, tendn, matkhau, anh, email, sdt, diachi, quyen, thoigian FROM user WHERE iduser <> '$iduser'";
+$sql = "SELECT iduser, hoten, tendn, matkhau, anh, email, sdt, diachi, quyen, thoigian FROM user ";
 if (!empty($conditions)) {
     $sql .= " WHERE " . implode(" AND ", $conditions);
 }

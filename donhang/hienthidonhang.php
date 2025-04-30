@@ -87,6 +87,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                         <th scope="col">Tổng Tiền</th>
                         <th scope="col">Trạng Thái</th>
                         <th scope="col">Ngày Đặt</th>
+                        <th scope="col">Đánh Giá</th> <!-- New column -->
                     </tr>
                 </thead>
                 <tbody>
@@ -190,6 +191,21 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                             <?php endif; ?>
                             </td>
                             <td><?= htmlspecialchars($order['thoigian']) ?></td>
+                            <td>
+                                <?php if ($order['trangthai'] == 'Đã thanh toán'): ?>
+                                    <form action="#" method="POST">
+                                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+                                        <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
+                                        <button 
+                                            type="submit" 
+                                            class="btn btn-review" 
+                                            aria-label="Đánh giá đơn hàng"
+                                        >
+                                            <i class="fas fa-star"></i> Đánh Giá
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                     <?php if (count($orders) === 0): ?>
