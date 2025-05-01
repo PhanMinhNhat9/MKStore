@@ -38,6 +38,13 @@ $sql .= " ORDER BY thoigian DESC";
 $stmtOrders = $pdo->prepare($sql);
 $stmtOrders->execute($params);
 $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
+
+// $sqluser = "SELECT `quyen` FROM `user` WHERE iduser = :iduser";
+// $stmtuser = $pdo->prepare($sqluser);
+// $stmtuser->execute([
+//     'iduser' => $_SESSION['user']['iduser']
+// ]);
+// $user = $stmtuser->fetch(PDO::FETCH_ASSOC);
 ?>
 
 
@@ -193,18 +200,33 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                             <td><?= htmlspecialchars($order['thoigian']) ?></td>
                             <td>
                                 <?php if ($order['trangthai'] == 'Đã thanh toán'): ?>
-                                    <form action="../donhang/danhgia.php" method="POST">
-                                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
-                                        <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
-                                        <input type="hidden" name="idkh" value="<?= $_SESSION['user']['iduser'] ?>">
-                                        <button 
-                                            type="submit" 
-                                            class="btn btn-review" 
-                                            aria-label="Đánh giá đơn hàng"
-                                        >
-                                            <i class="fas fa-star"></i> Đánh Giá
-                                        </button>
-                                    </form>
+                                    <?php if ($_SESSION['user']['quyen']==1): ?>
+                                        <form action="../donhang/danhgia.php" method="POST">
+                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+                                            <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
+                                            <input type="hidden" name="idkh" value="<?= $_SESSION['user']['iduser'] ?>">
+                                            <button 
+                                                type="submit" 
+                                                class="btn btn-review" 
+                                                aria-label="Đánh giá đơn hàng"
+                                            >
+                                                <i class="fas fa-star"></i> Đánh Giá
+                                            </button>
+                                        </form>
+                                    <?php else: ?>
+                                        <form action="../donhang/chitietdanhgia.php" method="POST">
+                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+                                            <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
+                                            <input type="hidden" name="idkh" value="<?= $_SESSION['user']['iduser'] ?>">
+                                            <button 
+                                                type="submit" 
+                                                class="btn btn-review" 
+                                                aria-label="Đánh giá đơn hàng"
+                                            >
+                                                <i class="fas fa-star"></i> Xem chi tiết
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </td>
                         </tr>
