@@ -1,4 +1,4 @@
 <?php
     require_once 'config.php';
-    sendVerificationEmail("monkeystore.hotro@gmail.com",123456);
+    sendVerificationEmail("nguyentuanand2589@gmail.com",123456);
 ?>

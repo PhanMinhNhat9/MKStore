@@ -110,22 +110,88 @@
             $mail->CharSet = 'UTF-8'; // Đảm bảo email sử dụng UTF-8
             $mail->Host = 'smtp.gmail.com'; // SMTP của Gmail
             $mail->SMTPAuth = true;
-            $mail->Username = 'nguyentuanand2589@gmail.com'; // Thay bằng email của bạn
-            $mail->Password = 'ykrq borr osxw urtl'; // Thay bằng mật khẩu ứng dụng của Gmail
+            $mail->Username = 'monkeystore.hotro.4335@gmail.com'; // Email của bạn
+            $mail->Password = 'ofkv yzxx ovkt jgqw'; // Mật khẩu ứng dụng Gmail
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
+    
             // Cấu hình người gửi và người nhận
-            $mail->setFrom('nguyentuanand2589@gmail.com', 'Hệ thống xác thực');
+            $mail->setFrom('monkeystore.hotro.4335@gmail.com', 'MonkeyStore Support');
             $mail->addAddress($email);
+            $mail->addReplyTo('monkeystore.hotro.4335@gmail.com', 'MonkeyStore Support');
+    
             // Nội dung email
             $mail->isHTML(true);
-            $mail->Subject = 'Xác thực tài khoản của bạn';
-            $mail->Body    = "
-                                <h3>Chào mừng bạn đến với hệ thống của chúng tôi!</h3>
-                                <p>Vui lòng nhập mã xác thực sau để hoàn tất đăng ký:</p>
-                                <h2>$verificationCode</h2>
-                                <p>Nếu bạn không yêu cầu đăng ký, vui lòng bỏ qua email này.</p>
-                            ";
+            $mail->Subject = 'Xác nhận đăng ký tài khoản MonkeyStore';
+            $mail->Body = '
+                <!DOCTYPE html>
+                <html lang="vi">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Xác nhận đăng ký</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+                    <style>
+                        body {
+                            font-family: "Poppins", sans-serif;
+                            background-color: #f4f4f4;
+                            margin: 0;
+                            padding: 0;
+                            color: #333;
+                        }
+                        .container {
+                            background-color: #fff;
+                            max-width: 600px;
+                            margin: 30px auto;
+                            padding: 30px;
+                            border-radius: 10px;
+                            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+                        }
+                        h3 {
+                            color: #2d89ef;
+                        }
+                        .code-box {
+                            margin: 20px 0;
+                            padding: 15px;
+                            background-color: #e8f0fe;
+                            border-left: 6px solid #2d89ef;
+                            font-size: 24px;
+                            font-weight: bold;
+                            color: #2d89ef;
+                            text-align: center;
+                            border-radius: 6px;
+                        }
+                        .footer {
+                            font-size: 12px;
+                            color: #777;
+                            margin-top: 30px;
+                            border-top: 1px solid #ddd;
+                            padding-top: 15px;
+                            text-align: center;
+                        }
+                        a {
+                            color: #2d89ef;
+                            text-decoration: none;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h3>Chào bạn,</h3>
+                        <p>Cảm ơn bạn đã đăng ký tài khoản tại <strong>MonkeyStore</strong>! Vui lòng sử dụng mã xác nhận dưới đây để hoàn tất quá trình đăng ký:</p>
+                        <div class="code-box">' . htmlspecialchars($verificationCode) . '</div>
+                        <p>Mã xác nhận chỉ có hiệu lực trong vòng <strong>5 phút</strong>. Nếu bạn không yêu cầu đăng ký, bạn có thể bỏ qua email này.</p>
+                        <p>Nếu cần hỗ trợ, hãy liên hệ chúng tôi qua email: <a href="mailto:monkeystore.hotro.4335@gmail.com">monkeystore.hotro.4335@gmail.com</a></p>
+                        <div class="footer">
+                            <p>Trân trọng,<br>
+                            Đội ngũ MonkeyStore<br>
+                            Website: <a href="https://monkeystore.com">monkeystore.com</a></p>
+                            <p>Bạn nhận được email này vì đã thực hiện đăng ký tại MonkeyStore.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                ';    
             // Gửi email
             $mail->send();
             return true;
