@@ -51,7 +51,7 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
     <link rel="stylesheet" href="hienthidonhang.css?v=<?= time(); ?>">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
-    <script src="../trangchuadmin.js"></script>
+    <script src="../script.js"></script>
 </head>
 <body>
     <!-- Sidebar -->
@@ -193,9 +193,10 @@ $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
                             <td><?= htmlspecialchars($order['thoigian']) ?></td>
                             <td>
                                 <?php if ($order['trangthai'] == 'Đã thanh toán'): ?>
-                                    <form action="#" method="POST">
+                                    <form action="../donhang/danhgia.php" method="POST">
                                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                                         <input type="hidden" name="iddh" value="<?= $order['iddh'] ?>">
+                                        <input type="hidden" name="idkh" value="<?= $_SESSION['user']['iduser'] ?>">
                                         <button 
                                             type="submit" 
                                             class="btn btn-review" 

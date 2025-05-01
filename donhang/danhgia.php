@@ -1,136 +1,376 @@
+<?php
+require_once '../config.php';
+
+// Kiểm tra CSRF token
+if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    die('Invalid CSRF token');
+}
+
+// Kết nối database
+try {
+    $pdo = connectDatabase();
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die('Database connection failed: ' . htmlspecialchars($e->getMessage()));
+}
+
+// Lấy và kiểm tra dữ liệu đầu vào
+$iddh = filter_input(INPUT_POST, 'iddh', FILTER_VALIDATE_INT) ?: 0;
+$idkh = filter_input(INPUT_POST, 'idkh', FILTER_VALIDATE_INT) ?: 0;
+
+if (!$iddh || !$idkh) {
+    die('Invalid order or customer ID');
+}
+
+// Truy vấn sản phẩm trong đơn hàng
+try {
+    $stmt = $pdo->prepare("
+        SELECT 
+            ctdh.idctdh,
+            ctdh.idsp,
+            sp.tensp,
+            sp.anh,
+            ctdh.soluong,
+            ctdh.gia,
+            ctdh.giagoc,
+            ctdh.giagiam
+        FROM chitietdonhang ctdh
+        JOIN sanpham sp ON ctdh.idsp = sp.idsp
+        WHERE ctdh.iddh = :iddh AND ctdh.danhgia <> 1
+    ");
+    $stmt->execute(['iddh' => $iddh]);
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die('Query failed: ' . htmlspecialchars($e->getMessage()));
+}
+
+// Tạo CSRF token mới cho form
+$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Đánh giá đơn hàng</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-    }
-    .fade-in {
-      animation: fadeIn 0.5s ease-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .star {
-      cursor: pointer;
-      transition: transform 0.2s ease, color 0.2s ease;
-    }
-    .star:hover {
-      transform: scale(1.2);
-      color: #facc15;
-    }
-    .submit-btn {
-      transition: all 0.3s ease;
-    }
-    .submit-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đánh Giá Đơn Hàng</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --hover-color: #7c3aed;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0e7ff, #f3f4f6);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 960px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 1rem;
+            scrollbar-width: thin;
+            scrollbar-color: #4f46e5 transparent;
+        }
+
+        .review-card {
+            animation: slideIn 0.6s ease-out;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .star {
+            cursor: pointer;
+            transition: transform 0.2s ease, color 0.3s ease;
+        }
+
+        .star:hover {
+            transform: scale(1.3) rotate(15deg);
+            color: #facc15;
+        }
+
+        .star.active {
+            animation: bounce 0.4s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+        }
+
+        .submit-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(to right, var(--primary-color), var(--hover-color));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .submit-btn:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        textarea {
+            transition: all 0.3s ease;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            transform: scale(1.01);
+        }
+
+        .toastify {
+            animation: popIn 0.5s ease-out;
+            border-radius: 8px;
+            padding: 12px 16px;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-gray-50 to-gray-200 flex items-center justify-center min-h-screen">
-  <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md fade-in">
-    <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Đánh giá sản phẩm</h2>
+<body>
+    <div class="min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-indigo-100 to-gray-100 px-4">
+        <!-- Header -->
+        <header class="w-full max-w-4xl py-8 sticky top-0 z-10 bg-gradient-to-br from-indigo-100 to-gray-100 backdrop-blur-md shadow-sm">
+            <h2 class="text-4xl font-extrabold text-center text-gray-800 flex items-center justify-center">
+                <i class="fas fa-star text-yellow-400 mr-2 animate-pulse"></i>
+                Đánh Giá Đơn Hàng #<?php echo htmlspecialchars($iddh); ?>
+            </h2>
+        </header>
 
-    <!-- Sản phẩm -->
-    <div class="flex items-center gap-4 mb-6">
-      <img src="https://via.placeholder.com/80" alt="Sản phẩm" class="rounded-xl w-20 h-20 object-cover border">
-      <div>
-        <p class="text-base text-gray-700 font-semibold">Tên sản phẩm: <span id="productName">Tên sản phẩm mẫu</span></p>
-        <p class="text-sm text-gray-500">Mã SP: <span id="productId">SP123</span></p>
-      </div>
+        <!-- Content container -->
+        <main class="container">
+            <?php if (empty($products)): ?>
+                <div class="text-center py-8">
+                    <p class="text-xl text-gray-600">Không tìm thấy sản phẩm trong đơn hàng này.</p>
+                </div>
+            <?php else: ?>
+                <?php foreach ($products as $product): ?>
+                    <div class="review-card bg-white rounded-2xl shadow-lg p-6 mb-8">
+                        <!-- Product Info -->
+                        <div class="flex items-center space-x-4 mb-6">
+                            <img src="../<?php echo htmlspecialchars($product['anh']); ?>" 
+                                 alt="<?php echo htmlspecialchars($product['tensp']); ?>" 
+                                 class="w-24 h-24 rounded-lg object-cover shadow-md pulse">
+                            <div>
+                                <h3 class="text-2xl font-semibold text-gray-800 flex items-center">
+                                    <i class="fas fa-box text-indigo-500 mr-2"></i>
+                                    <?php echo htmlspecialchars($product['tensp']); ?>
+                                </h3>
+                                <p class="text-sm text-gray-500 flex items-center">
+                                    <i class="fas fa-tag text-gray-400 mr-1"></i>
+                                    Mã sản phẩm: <?php echo htmlspecialchars($product['idsp']); ?>
+                                </p>
+                                <p class="text-sm text-gray-500 flex items-center">
+                                    <i class="fas fa-shopping-cart text-gray-400 mr-1"></i>
+                                    Số lượng: <?php echo htmlspecialchars($product['soluong']); ?> | 
+                                    Giá: <?php echo number_format($product['gia']); ?>₫
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Rating Stars -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                <i class="fas fa-star-half-alt text-yellow-400 mr-1"></i>
+                                Đánh giá sao
+                            </label>
+                            <div class="flex space-x-2 rating" data-idsp="<?php echo htmlspecialchars($product['idsp']); ?>">
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <button class="star text-2xl text-gray-300 focus:outline-none" 
+                                            data-value="<?php echo $i; ?>">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                <?php endfor; ?>
+                            </div>
+                        </div>
+
+                        <!-- Review Content -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                <i class="fas fa-comment-alt text-indigo-500 mr-1"></i>
+                                Nhận xét
+                            </label>
+                            <textarea class="review-content w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                                      rows="4" 
+                                      placeholder="Viết nhận xét của bạn..."></textarea>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-right">
+                            <button class="submit-btn bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex items-center justify-center" 
+                                    data-idsp="<?php echo htmlspecialchars($product['idsp']); ?>" 
+                                    data-idctdh="<?php echo htmlspecialchars($product['idctdh']); ?>">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Gửi Đánh Giá
+                            </button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </main>
     </div>
 
-    <!-- Đánh giá sao -->
-    <div class="mb-6">
-      <label class="block text-sm font-medium text-gray-700 mb-2">Chọn số sao</label>
-      <div class="flex gap-2">
-        <button class="star text-3xl text-gray-300" data-value="1">★</button>
-        <button class="star text-3xl text-gray-300" data-value="2">★</button>
-        <button class="star text-3xl text-gray-300" data-value="3">★</button>
-        <button class="star text-3xl text-gray-300" data-value="4">★</button>
-        <button class="star text-3xl text-gray-300" data-value="5">★</button>
-      </div>
-    </div>
-
-    <!-- Nhận xét -->
-    <div class="mb-6">
-      <label for="reviewContent" class="block text-sm font-medium text-gray-700 mb-2">Nhận xét của bạn</label>
-      <textarea id="reviewContent" rows="4" placeholder="Hãy chia sẻ cảm nhận của bạn..."
-        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"></textarea>
-    </div>
-
-    <!-- Nút gửi -->
-    <div class="text-center">
-      <button id="submitReview"
-        class="submit-btn bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-md w-full">Gửi đánh giá</button>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  <script>
-    const stars = document.querySelectorAll('.star');
-    let selectedRating = 0;
-
-    stars.forEach(star => {
-      star.addEventListener('click', () => {
-        selectedRating = star.getAttribute('data-value');
-        stars.forEach(s => {
-          s.classList.remove('text-yellow-400');
-          s.classList.add('text-gray-300');
-          if (s.getAttribute('data-value') <= selectedRating) {
-            s.classList.remove('text-gray-300');
-            s.classList.add('text-yellow-400');
-          }
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        // Handle star rating
+        document.querySelectorAll('.rating').forEach(rating => {
+            const stars = rating.querySelectorAll('.star');
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    const value = parseInt(star.dataset.value);
+                    stars.forEach(s => {
+                        const isActive = parseInt(s.dataset.value) <= value;
+                        s.classList.toggle('text-yellow-400', isActive);
+                        s.classList.toggle('text-gray-300', !isActive);
+                        if (isActive) {
+                            s.classList.add('active');
+                            setTimeout(() => s.classList.remove('active'), 400);
+                        }
+                    });
+                    rating.dataset.rating = value;
+                });
+            });
         });
-      });
-    });
 
-    document.getElementById('submitReview').addEventListener('click', async () => {
-      const reviewContent = document.getElementById('reviewContent').value;
-      const productId = document.getElementById('productId').textContent;
-      const submitBtn = document.getElementById('submitReview');
+        // Handle review submission
+        document.querySelectorAll('.submit-btn').forEach(button => {
+            button.addEventListener('click', async () => {
+                const container = button.closest('.review-card');
+                const textarea = container.querySelector('.review-content');
+                const ratingDiv = container.querySelector('.rating');
 
-      if (selectedRating === 0) {
-        Toastify({ text: "Vui lòng chọn số sao!", duration: 3000, backgroundColor: "#ef4444" }).showToast();
-        return;
-      }
+                const rating = parseInt(ratingDiv.dataset.rating) || 0;
+                const idsp = button.dataset.idsp;
+                const idctdh = button.dataset.idctdh;
+                const content = textarea.value.trim();
+                const idkh = <?php echo json_encode($idkh); ?>;
+                const csrfToken = '<?php echo $_SESSION['csrf_token']; ?>';
 
-      if (!reviewContent.trim()) {
-        Toastify({ text: "Vui lòng nhập nhận xét!", duration: 3000, backgroundColor: "#ef4444" }).showToast();
-        return;
-      }
+                // Validation
+                if (rating === 0) {
+                    showToast('Vui lòng chọn số sao! <i class="fas fa-star"></i>', 'var(--error-color)');
+                    return;
+                }
+                if (!content) {
+                    showToast('Vui lòng nhập nhận xét! <i class="fas fa-comment-alt"></i>', 'var(--error-color)');
+                    return;
+                }
+                if (content.length > 1000) {
+                    showToast('Nhận xét không được vượt quá 1000 ký tự!', 'var(--error-color)');
+                    return;
+                }
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Đang gửi...";
+                // Disable button
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang gửi...';
 
-      const reviewData = {
-        idsp: productId,
-        sosao: selectedRating,
-        noidung: reviewContent,
-        idkh: "KH123",
-        thoigian: new Date().toISOString()
-      };
+                try {
+                    const response = await fetch('../donhang/luudanhgia.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': csrfToken
+                        },
+                        body: JSON.stringify({
+                            idctdh,
+                            idsp,
+                            rating,
+                            content,
+                            idkh,
+                            thoigian: new Date().toISOString()
+                        })
+                    });
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+                    if (!response.ok) {
+                        throw new Error(`HTTP error: ${response.status}`);
+                    }
 
-      console.log('Dữ liệu đánh giá:', reviewData);
+                    const result = await response.json();
 
-      Toastify({ text: "Đánh giá đã được gửi!", duration: 3000, backgroundColor: "#10b981" }).showToast();
+                    if (result.success) {
+                        showToast(result.message + ' <i class="fas fa-check-circle"></i>', 'var(--success-color)');
+                        resetForm(textarea, ratingDiv);
+                        container.classList.add('opacity-50', 'pointer-events-none');
+                    } else {
+                        showToast(result.message + ' <i class="fas fa-exclamation-circle"></i>', 'var(--error-color)');
+                    }
+                } catch (error) {
+                    console.error('Error submitting review:', error);
+                    showToast('Có lỗi xảy ra, vui lòng thử lại! <i class="fas fa-exclamation-circle"></i>', 'var(--error-color)');
+                } finally {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Gửi Đánh Giá';
+                }
+            });
+        });
 
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Gửi đánh giá";
-      document.getElementById('reviewContent').value = '';
-      stars.forEach(s => s.classList.add('text-gray-300'));
-      selectedRating = 0;
-    });
-  </script>
+        // Utility functions
+        function showToast(message, background) {
+            Toastify({
+                text: message,
+                duration: 3000,
+                style: { background },
+                gravity: 'top',
+                position: 'right',
+                stopOnFocus: true,
+                escapeMarkup: false
+            }).showToast();
+        }
+
+        function resetForm(textarea, ratingDiv) {
+            textarea.value = '';
+            ratingDiv.querySelectorAll('.star').forEach(star => {
+                star.classList.remove('text-yellow-400');
+                star.classList.add('text-gray-300');
+            });
+            ratingDiv.dataset.rating = 0;
+        }
+    </script>
 </body>
 </html>
