@@ -213,8 +213,7 @@ function showSuccessMessage(message) {
     alertBox.innerText = message;
     alertBox.style.display = "flex";
     alertBox.classList.add("show");
-    // Phát âm thanh thông báo thành công
-    let audio = new Audio('../amthanh/thanhcong.mp3'); // Đặt đường dẫn file âm thanh
+    let audio = new Audio('../amthanh/thanhcong.mp3'); 
     audio.play();
     setTimeout(() => {
         alertBox.classList.remove("show");
