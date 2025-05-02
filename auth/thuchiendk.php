@@ -12,6 +12,7 @@
     $mk = password_hash($_SESSION['mk_temp'], PASSWORD_BCRYPT); // Mã hóa mật khẩu
     $sdt = $_SESSION['sdt_temp'];
     $diachi = $_SESSION['diachi_temp'];
+    echo $diachi;
     if ($enteredCode == $storedCode) {
         try {
             $pdo = connectDatabase(); // Kết nối CSDL

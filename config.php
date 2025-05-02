@@ -23,23 +23,28 @@
             die("Lỗi kết nối CSDL: " . $e->getMessage());
         }
     }
-    
+    // Khởi tạo biến session nếu chưa có
+    if (!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    if (!isset($_SESSION['login_attempts'])) {
+        $_SESSION['login_attempts'] = 0;
+    }
+
+    if (!isset($_SESSION['lock_time']) || !is_numeric($_SESSION['lock_time'])) {
+        $_SESSION['lock_time'] = 0;
+    }
+
     function dangnhap($tendn, $matkhau) {
+        $pdo = connectDatabase(); 
+
         if (empty($tendn) || empty($matkhau)) {
             return "Vui lòng nhập đầy đủ thông tin";
         }
-        $pdo = connectDatabase();
-        if (!isset($_SESSION['last_attempt_time'])) {
-            $_SESSION['last_attempt_time'] = time();
-        }
-        // Nếu đã quá 10 phút từ lần nhập sai đầu tiên, reset lại số lần nhập
-        if (time() - $_SESSION['last_attempt_time'] > 10) {
-            $_SESSION['login_attempts'] = 0;
-            $_SESSION['last_attempt_time'] = time();
-        }
        
         if ($_SESSION['login_attempts'] >= 2 && time() < $_SESSION['lock_time']) { 
-            return "Bạn đã nhập sai quá nhiều lần, hãy thử lại sau 2 phút.";
+            return "Bạn đã nhập sai quá nhiều lần, hãy thử lại sau 10 giây.";
         }
        
         $stmt = $pdo->prepare("SELECT * FROM user WHERE tendn = :tendn LIMIT 1");
@@ -48,8 +53,8 @@
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($matkhau, trim($user['matkhau']))) {
-        $_SESSION['login_attempts'] = 0;
-        $_SESSION['lock_time'] = 0; // Reset thời gian khóa
+            $_SESSION['login_attempts'] = 0;
+            $_SESSION['lock_time'] = 0; 
             $_SESSION['user'] = [
                 'iduser' => $user['iduser'],
                 'tendn' => $user['tendn'],
@@ -61,15 +66,17 @@
                 'quyen' => $user['quyen']
             ];
             
-            if ($_SESSION['user']['quyen']==0 || $_SESSION['user']['quyen']==2589 || $_SESSION['user']['quyen']==1) {
+            if (in_array($_SESSION['user']['quyen'], [0, 1, 2589])) {
                 header("Location: ../trangchu.php");
                 exit();
-            }            
+            } 
+
         } else {
-            $_SESSION['login_attempts'] = $_SESSION['login_attempts'] + 1;
-            $_SESSION['last_attempt_time'] = time();
+            $_SESSION['login_attempts']++;
             if ($_SESSION['login_attempts'] >= 2) {
-                $_SESSION['lock_time'] = time() + 10; // Khóa trong 2 phút
+                $_SESSION['lock_time'] = time() + 10;
+                $_SESSION['login_attempts'] = 0;
+                return "Bạn đã nhập sai quá nhiều lần, hãy thử lại sau 10 giấy.";
             }
             return "Sai tài khoản hoặc mật khẩu";
         }

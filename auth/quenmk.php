@@ -11,11 +11,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user = verifyUser($email, $sdt);
         if ($user) {
             $_SESSION["reset_user_id"] = $user["iduser"];
+            $verificationCode = rand(100000, 999999);
+            $_SESSION['verification_code'] = $verificationCode;
+            sendVerificationEmail($email, $verificationCode);
             $step = 2;
         } else {
             $error = "Thông tin không chính xác. Vui lòng thử lại!";
         }
-    } elseif (isset($_POST["reset_password"])) {
+    } 
+    elseif (isset($_POST["xacthuc"])) {
+        $maxt = $_POST["verification_code"]??'';
+        if ($maxt == $_SESSION['verification_code']) {
+            $step = 3;
+        } else {
+            $error = "Mã xác thực không chính xác. Vui lòng thử lại!";
+        }
+    }
+    elseif (isset($_POST["reset_password"])) {
         $newPassword = trim($_POST["new_password"] ?? '');
         $confirmPassword = trim($_POST["confirm_password"] ?? '');
 
@@ -105,6 +117,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </button>
             </form>
         <?php elseif ($step == 2): ?>
+            <!-- Form -->
+            <form method="POST" class="space-y-5">
+                <!-- Mã xác thực -->
+                <div>
+                    <label for="verification_code" class="text-sm text-gray-200 block">Mã xác thực</label>
+                    <div class="flex items-center bg-white/20 rounded px-3 mt-1">
+                    <i class="fa fa-key text-white mr-2"></i>
+                    <input
+                        id="verification_code"
+                        type="text"
+                        name="verification_code"
+                        required
+                        class="w-full p-2 bg-transparent text-white focus:outline-none"
+                        autocomplete="off"
+                    />
+                    </div>
+                </div>
+                <!-- Nút xác nhận -->
+                <button
+                    type="submit"
+                    name="xacthuc"
+                    class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white py-2 rounded-lg font-semibold shadow-md transition"
+                >
+                    Xác nhận
+                </button>
+            </form>
+        <?php elseif ($step == 3): ?>
             <form method="POST" class="space-y-4">
                 <div class="space-y-1">
                     <label for="new_password" class="text-sm text-gray-200 block mb-1">Mật khẩu mới</label>
@@ -144,7 +183,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     function togglePasswords() {
         const newPassword = document.getElementById('new_password');
         const confirmPassword = document.getElementById('confirm_password');
-        const isChecked = document.getElementById('show_password').checked;
+        const isChecked = document.getElementById('showPassword').checked;
         newPassword.type = isChecked ? 'text' : 'password';
         confirmPassword.type = isChecked ? 'text' : 'password';
     }

@@ -77,7 +77,7 @@
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 via-blue-400 to-blue-800">
-    <form class="bg-white/20 p-6 rounded-2xl shadow-xl max-w-3xl mx-auto grid grid-cols-2 gap-4 text-white" id="registerForm">
+    <form method="post" class="bg-white/20 p-6 rounded-2xl shadow-xl max-w-3xl mx-auto grid grid-cols-2 gap-4 text-white" id="registerForm">
         <!-- Đã điều chỉnh h2 để chiếm 2 cột -->
         <h2 class="col-span-2 text-center text-2xl font-semibold mb-2 border-b border-white/30 pb-3">Đăng ký tài khoản</h2>
         <!-- Cột trái -->
@@ -126,7 +126,7 @@
             <label class="text-sm text-gray-200 block mb-1">Địa chỉ</label>
             <div class="flex items-center bg-white/10 rounded-md px-3">
                 <i class="fas fa-map-marker-alt mr-2"></i>
-                <input type="text" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off"/>
+                <input type="text" name="diachi" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off"/>
             </div>
         </div>
 
@@ -146,6 +146,8 @@
                 <span>Tôi đã có tài khoản:</span>
                 <a href="../auth/dangnhap.php" class="hover:underline">Đăng nhập</a>
             </div>
+            <!-- Lỗi -->
+            <span id="loi"></span>
         </div>
     </form>
 
@@ -172,13 +174,14 @@
         const password = document.getElementById("password").value;
         const phone = document.getElementById("sdt").value.trim();
         const hoten = document.getElementById("hoten").value.trim();
+        const loiSpan = document.getElementById("loi");
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const phoneRegex = /^0\d{9,10}$/;
         const nameRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
 
         if (!emailRegex.test(email) || !isValidPassword(password) || !phoneRegex.test(phone) || !nameRegex.test(hoten)) {
         e.preventDefault();
-        alert("Thông tin không hợp lệ. Vui lòng kiểm tra lại.");
+        errors.push("Thông tin không hợp lệ. Vui lòng kiểm tra lại.");
         }
     });
 
@@ -195,9 +198,9 @@
     }
 
     function removeInvalidChars(input) {
-    // Giữ lại chỉ chữ cái không dấu và số
-    input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
-}
+        // Giữ lại chỉ chữ cái không dấu và số
+        input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+    }
 
     // Tự động tạo tên đăng nhập
     function generateRandomString(length) {
