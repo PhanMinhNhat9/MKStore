@@ -51,7 +51,7 @@ $coupons = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
     <link rel="stylesheet" href="hienthimgg.css?v=<?= time(); ?>">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
-    <script src="../trangchuadmin.js"></script>
+    <script src="../script.js"></script>
 </head>
 <body>
     <!-- Sidebar -->

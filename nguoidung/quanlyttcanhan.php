@@ -27,7 +27,7 @@ $ktstmt->execute();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-    <script src="../trangchuadmin.js"></script>
+    <script src="../script.js"></script>
     <style>
         /* CSS Variables */
 :root {

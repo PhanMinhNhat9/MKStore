@@ -77,7 +77,7 @@ if ($query != '') {
     <title>Danh Sách Người Dùng</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="hienthiphanhoi.css?v=<?= time(); ?>">
-    <script src="../trangchuadmin.js" defer></script>
+    <script src="../script.js" defer></script>
 </head>
 <body>
     <div class="table-container">

@@ -18,7 +18,7 @@ if ($idmgg > 0) {
 
         // Commit transaction nếu mọi thứ thành công
         $pdo->commit();
-        echo "<script src='../trangchuadmin.js'></script>";
+        echo "<script src='../script.js'></script>";
         echo "<script> 
                 alert('Xóa thành công!');
                 goBack();

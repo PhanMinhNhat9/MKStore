@@ -6,7 +6,7 @@
     <title>Xóa Người Dùng</title>
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
-    <script src="../trangchuadmin.js"></script>
+    <script src="../script.js"></script>
 </head>
 <body>
 <?php

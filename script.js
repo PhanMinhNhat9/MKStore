@@ -321,10 +321,10 @@ function resetIcon(button) {
 
 function goBack() {
     if (window.top !== window.self) {
-        window.top.location.href = "../trangchuadmin.php"; // Điều hướng thoát khỏi iframe
+        window.top.location.href = "../trangchu.php"; // Điều hướng thoát khỏi iframe
         
     } else {
-       window.location.href = "../trangchuadmin.php"; // Điều hướng thông thường
+       window.location.href = "../trangchu.php"; // Điều hướng thông thường
     }
 }
 
@@ -338,7 +338,7 @@ function goBackHome() {
     });
     localStorage.removeItem('profileMenuClicked');
     // Điều hướng về trang chủ (nếu cần)
-    //window.location.href = "trangchuadmin.php";
+    //window.location.href = "trangchu.php";
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {

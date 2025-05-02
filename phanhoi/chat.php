@@ -66,7 +66,7 @@ $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <title>Chat Trực Tuyến</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="../trangchuadmin.js"></script>
+    <script src="../script.js"></script>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="chat.css?v=<?= time(); ?>">
 </head>

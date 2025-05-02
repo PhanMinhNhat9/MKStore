@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="../trangchuadmin.js"></script>
+    <script src="../script.js"></script>
 </head>
 <body>
     
@@ -51,13 +51,13 @@ if (isset($_GET['id'])) {
                 $conn->commit(); // Nếu mọi thao tác đều OK
                 echo "
                 <script>
-                    window.top.location.href = '../trangchuadmin.php?status=xoaspT';
+                    window.top.location.href = '../trangchu.php?status=xoaspT';
                 </script>";
             } else {
                 $conn->rollBack();
                 echo "
                 <script>
-                    window.top.location.href = '../trangchuadmin.php?status=xoaspT';
+                    window.top.location.href = '../trangchu.php?status=xoaspT';
                 </script>";
             }
         } catch (PDOException $e) {

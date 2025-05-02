@@ -32,7 +32,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cập Nhật Mã Giảm Giá</title>
-    <script src="../trangchuadmin.js"></script>
+    <script src="../script.js"></script>
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">

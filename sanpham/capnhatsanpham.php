@@ -27,7 +27,7 @@ if (isset($_GET['id'])) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../trangchuadmin.js"></script>
+    <script src="../script.js"></script>
     <link rel="stylesheet" href="capnhatsanpham.css?v=<?= time();?>">
 </head>
 <body>
@@ -84,12 +84,12 @@ if (isset($_GET['id'])) {
                         if ($kq) {
                             echo "
                             <script>
-                                window.top.location.href = '../trangchuadmin.php?status=cnspT';
+                                window.top.location.href = '../trangchu.php?status=cnspT';
                             </script>";
                         } else {
                             echo "
                             <script>
-                                window.top.location.href = '../trangchuadmin.php?status=cnspF';
+                                window.top.location.href = '../trangchu.php?status=cnspF';
                             </script>";
                         }
                     }

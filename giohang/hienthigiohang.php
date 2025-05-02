@@ -32,7 +32,7 @@
     <title>Giỏ Hàng</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="hienthigiohang.css?v=<?= time(); ?>">
-    <script src="../trangchuadmin.js"></script>
+    <script src="../script.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>

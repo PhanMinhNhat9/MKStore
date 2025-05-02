@@ -281,12 +281,12 @@ $ktstmt->execute();
             if ($kq) {
                 echo "
                 <script>
-                    window.top.location.href = '../trangchuadmin.php?status=cnanhuserT';
+                    window.top.location.href = '../trangchu.php?status=cnanhuserT';
                 </script>";
             } else {
                 echo "
                 <script>
-                    window.top.location.href = '../trangchuadmin.php?status=cnanhuserF';
+                    window.top.location.href = '../trangchu.php?status=cnanhuserF';
                 </script>";
             }
         }

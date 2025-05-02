@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quét Sản Phẩm</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
-  <script src="../trangchuadmin.js"></script>
+  <script src="../script.js"></script>
   <script src="../sweetalert2/sweetalert2.min.js"></script>
   <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
   <style>

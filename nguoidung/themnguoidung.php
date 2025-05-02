@@ -6,7 +6,7 @@
     <title>Thêm Người Dùng</title>
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="themnguoidung.css?v=<?= time(); ?>">
-    <script src="../trangchuadmin.js"></script>
+    <script src="../script.js"></script>
 </head>
 <body>
     <div class="nd-container">
@@ -67,12 +67,12 @@
                         if ($kq) {
                             echo "
                             <script>
-                                window.top.location.href = '../trangchuadmin.php?status=themuserT';
+                                window.top.location.href = '../trangchu.php?status=themuserT';
                             </script>";
                         } else {
                             echo "
                             <script>
-                                window.top.location.href = '../trangchuadmin.php?status=themuserF';
+                                window.top.location.href = '../trangchu.php?status=themuserF';
                             </script>";                    
                         }
                     }
