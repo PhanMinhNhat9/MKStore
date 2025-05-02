@@ -78,7 +78,7 @@
     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
       <path d="M18 10c0 4.418-3.582 8-8 8a8 8 0 110-16c4.418 0 8 3.582 8 8zm-8-6a6 6 0 100 12 6 6 0 000-12zm1 9H9v-1h2v1zm0-2H9V7h2v4z"/>
     </svg>
-    <span>Hỗ trợ trực tuyến</span>
+    <span>Hãy phản hồi đến tôi!</span>
   </button>
 
   <!-- Popup hỗ trợ gửi Telegram -->
