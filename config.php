@@ -4,6 +4,13 @@
     ini_set('session.cookie_secure', 1);
     ini_set('session.use_only_cookies', 1);
     session_start();
+    if (isset($_POST['contactInfo']))
+    {
+        $_SESSION['user'] = [
+            'tele' => $_POST['contactInfo']
+        ];
+    }
+
     function connectDatabase(): PDO {
         $host = "localhost";  
         $dbname = "quanlybanpk"; 
