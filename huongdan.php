@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
   <link rel="icon" href="picture/logoTD.png" type="image/png">
   <style>
+    @import url('https://cdn.tailwindcss.com'); 
     .store-name {
       font-family: 'Poppins', sans-serif;
       animation: colorShift 5s infinite linear, glowEffect 3s infinite ease-in-out;
