@@ -59,9 +59,35 @@
       border-radius: 20px;
       border: none;
       font-size: 14px;
-      margin-top: 10px;
+      margin: 5px 5px;
       cursor: pointer;
+      transition: 0.3s;
       display: none;
+      margin: auto;
+    }
+
+    .store-button:hover {
+      background-color: #218838;
+    }
+
+    .cart-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #ffc107;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.3s;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .cart-button:hover {
+      background-color: #e0a800;
     }
 
     .qrcode {
@@ -112,9 +138,55 @@
       background-color: #dc3545;
       display: none;
     }
+    .alert-success, .alert-error {
+display: none;
+position: fixed;
+top: 20%;
+left: 50%;
+transform: translate(-50%, -50%);
+padding: 10px 16px;
+border-radius: 8px;
+font-size: 14px;
+font-weight: bold;
+text-align: center;
+z-index: 1000;
+min-width: 180px;
+transition: transform 0.3s ease, opacity 0.3s ease;
+opacity: 0;
+}
+
+/* Thành công - màu xanh lá */
+.alert-success {
+background-color: white;
+color: #28a745;
+border: 2px solid #28a745;
+box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+}
+
+/* Lỗi - màu đỏ */
+.alert-error {
+background-color: white;
+color: #dc3545;
+border: 2px solid #dc3545;
+box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+}
+
+/* Hiệu ứng hiển thị */
+.alert-success.show, .alert-error.show {
+opacity: 1;
+transform: translate(-50%, -50%) scale(1.1);
+}
+    .alert-success, .alert-error {
+        font-size: 13px;
+        padding: 8px 12px;
+        min-width: 160px;
+    }
   </style>
 </head>
 <body>
+<div id="success-alert" class="alert-success"></div>
+<div id="error-alert" class="alert-error"></div>
+  <button id="cart-button" class="cart-button" onclick="viewCart()">🛒 Giỏ hàng</button>
   <div class="container">
     <div class="header">📷 Quét Sản Phẩm</div>
 
@@ -132,24 +204,21 @@
 
   <script>
     let currentProductCode = null;
+
     function handleAddProduct() {
-      // Ẩn hình ảnh và nút
       document.getElementById("product-image").style.display = "none";
       document.getElementById("add-button").style.display = "none";
-
       document.getElementById("product-name").textContent = "Tên sản phẩm";
       document.getElementById("product-status").textContent = "Trạng thái";
       var kq;
       if (currentProductCode) {
-        //themvaogiohang(currentProductCode);
-        kq = themsaukhiquet(currentProductCode);
-        if (kq) {
-          showSuccessMessage("Thêm vào giỏ hàng thành công! 🛒");
-        } else {
-          showErrorMessage("Lỗi khi thêm vào giỏ hàng!");
-        }
+        themsaukhiquet(currentProductCode);
       }
       startScanner();
+    }
+
+    function viewCart() {
+      window.location.href = "../trangchu.php";
     }
 
     let scanner = null;
@@ -160,6 +229,7 @@
       readerElement.style.display = "block";
       document.querySelector(".scan-button").style.display = "none";
       document.querySelector(".stop-button").style.display = "inline-block";
+      //document.getElementById("add-button").style.display = "none";
 
       if (!scanner) {
         scanner = new Html5Qrcode("reader");
@@ -189,6 +259,7 @@
           document.getElementById("reader").style.display = "none";
           document.querySelector(".scan-button").style.display = "inline-block";
           document.querySelector(".stop-button").style.display = "none";
+          document.getElementById("add-button").style.display = "none";
           isScanning = false;
           sessionStorage.removeItem("isScanning");
         }).catch(err => console.error("Lỗi dừng máy quét:", err));
@@ -196,36 +267,39 @@
     }
 
     function addScannedProduct(productCode) {
-    if (!isScanning) return;
+      if (!isScanning) return;
 
-    isScanning = false;
-    scanner.stop().then(() => {
+      isScanning = false;
+      scanner.stop().then(() => {
         document.getElementById("reader").style.display = "none";
         document.querySelector(".stop-button").style.display = "none";
 
-        // Gửi mã sản phẩm tới PHP để truy vấn dữ liệu thật
         fetch('get_product.php?idsp=' + productCode)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    // Hiển thị dữ liệu từ JSON trả về
-                    document.getElementById("product-image").src = "../"+data.image;
-                    document.getElementById("product-name").textContent = data.name;
-                    document.getElementById("product-image").style.display = "block";
-                    document.getElementById("add-button").style.display = "inline-block";
-                }
-            })
-            .catch(error => {
-                console.error("Lỗi khi truy xuất dữ liệu:", error);
-            })
-    }).catch(err => {
-        console.error("Lỗi dừng máy quét:", err);
+          .then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              alert(data.error);
+              // startScanner(); 
+            } else {
+              document.getElementById("product-image").src = "../" + data.image;
+              document.getElementById("product-name").textContent = data.name;
+              document.getElementById("product-image").style.display = "block";
+              document.getElementById("add-button").style.display = "block";
+              // startScanner(); 
+            }
+          })
+          .catch(error => {
+            console.error("Lỗi khi truy xuất dữ liệu:", error);
+            startScanner(); 
+          })
+          .finally(() => {
+      //startScanner(); // <-- gọi lại sau tất cả
     });
-}
-
-
+      }).catch(err => {
+        console.error("Lỗi dừng máy quét:", err);
+        startScanner(); // Mở lại khung quét nếu có lỗi dừng máy quét
+      });
+    }
 
     window.onload = function() {
       if (sessionStorage.getItem("isScanning") === "true") {

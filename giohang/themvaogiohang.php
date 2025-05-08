@@ -4,7 +4,7 @@ $pdo = connectDatabase();
 
 if (isset($_GET['id'])) {
     $idsp = base64_decode($_GET['id']);
-    $sldaban = $_GET['sldaban'];
+    $sldaban = $_GET['sldaban'] ?? 0;
     try {
         $pdo->beginTransaction();
 
@@ -72,10 +72,10 @@ if (isset($_GET['id'])) {
         }
 
         $pdo->commit();
-        echo "success"; // ✅ Thêm thành công
+        echo "success"; 
     } catch (Exception $e) {
         $pdo->rollBack();
-        echo "error"; // ❌ Thêm thất bại
+        echo "error";
     }
     exit;
 }

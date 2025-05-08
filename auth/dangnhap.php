@@ -103,12 +103,19 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .bgkhung {
+                width: 300px;
+            }
+        }
     </style>
 </head>
 
 <body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 via-blue-400 to-blue-800">
     <!-- Khung đăng nhập với hiệu ứng kính mờ -->
-    <div class="bg-white/20 backdrop-blur-xl p-8 rounded-2xl w-96 shadow-2xl text-white space-y-6">
+    <div class="bgkhung bg-white/20 backdrop-blur-xl p-8 rounded-2xl shadow-2xl text-white space-y-6">
         <!-- Phần tiêu đề -->
         <div class="flex justify-center border-b border-white/30 pb-3">
             <span class="text-2xl font-semibold tracking-wide">Đăng nhập</span>

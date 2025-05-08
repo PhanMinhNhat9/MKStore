@@ -88,10 +88,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+            /* Responsive */
+            @media (max-width: 768px) {
+            .bgkhung {
+                width: 300px;
+            }
+        }
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 via-blue-400 to-blue-800">
-    <div class="bg-white/20 backdrop-blur-xl p-8 rounded-2xl w-full max-w-md text-white space-y-6 shadow-xl">
+    <div class="bgkhung bg-white/20 backdrop-blur-xl p-8 rounded-2xl max-w-md text-white space-y-6 shadow-xl">
         <h2 class="text-2xl font-semibold text-center mb-4 border-b border-white/30 pb-3">Quên Mật Khẩu</h2>
         <?php if (!empty($error)) echo "<p class='bg-red-500/80 text-white px-4 py-2 rounded text-sm'>$error</p>"; ?>
         <?php if (!empty($success)) echo "<p class='bg-green-500/80 text-white px-4 py-2 rounded text-sm'>$success</p>"; ?>

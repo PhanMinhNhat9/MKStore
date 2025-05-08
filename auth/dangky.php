@@ -74,10 +74,16 @@
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
+            /* Responsive */
+            @media (max-width: 768px) {
+            .bgkhung {
+                width: 300px;
+            }
+        }
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 via-blue-400 to-blue-800">
-    <form method="post" class="bg-white/20 p-6 rounded-2xl shadow-xl max-w-3xl mx-auto grid grid-cols-2 gap-4 text-white" id="registerForm">
+    <form method="post" class="bgkhung bg-white/20 p-6 rounded-2xl shadow-xl max-w-3xl mx-auto grid grid-cols-2 gap-4 text-white" id="registerForm">
         <!-- Đã điều chỉnh h2 để chiếm 2 cột -->
         <h2 class="col-span-2 text-center text-2xl font-semibold mb-2 border-b border-white/30 pb-3">Đăng ký tài khoản</h2>
         <!-- Cột trái -->

@@ -175,14 +175,15 @@ function themsaukhiquet(idsp) {
         .then(data => {
             console.log("Server response:", data); 
             if (data.trim() === "success") {
-                return true;
+                showSuccessMessage("Thêm vào giỏ hàng thành công!");
+                //alert("Thêm vào giỏ hàng thành công!");
             } else {
-                return false;
+                showErrorMessage("Lỗi khi thêm vào giỏ hàng!");
             }
         })
         .catch(error => {
             console.error("❌ Lỗi khi gửi yêu cầu:", error);
-            showErrorMessage("Không thể kết nối đến server!");
+            return false;
         });
 }
 
@@ -262,16 +263,6 @@ style.innerHTML = `
     }
 `;
 document.head.appendChild(style);
-
-    
-function themdmcha(id) {
-    let encodedId = btoa(id);
-    window.top.location.href = "themdm.php?id=" + encodeURIComponent(encodedId);
-}
-function themdmcon(id) {
-    let encodedId = btoa(id);
-    window.top.location.href = "themdm.php?id=" + encodeURIComponent(encodedId);
-}
 
 function capnhatdanhmuc() {
     window.location.href = "capnhatdanhmuc.php";
@@ -360,7 +351,7 @@ function handleSessionTimeout(sessionTimeoutInSeconds) {
 
     // Chuyển hướng về trang đăng nhập khi hết hạn
     setTimeout(function() {
-        window.location.href = 'logout.php?timeout=1';
+        window.location.href = '../auth/logout.php?timeout=1';
     }, sessionTimeout);
 }
 

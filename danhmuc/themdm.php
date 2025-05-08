@@ -1,7 +1,7 @@
 <?php
     require_once '../config.php';
     if (isset($_GET['id'])) {
-        $loaidm = intval(base64_decode($_GET['id']));
+        $loaidm = intval($_GET['id']);
     }
 ?>
 <!DOCTYPE html>
