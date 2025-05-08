@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Giới thiệu cửa hàng</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" />
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="tailwind/dist/output.css" rel="stylesheet">
   </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col items-center justify-center px-4">
 <style>

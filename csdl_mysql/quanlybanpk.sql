@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 02, 2025 at 05:01 PM
+-- Generation Time: May 08, 2025 at 05:37 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -60,19 +60,6 @@ CREATE TABLE `chitietdonhang` (
   `danhgia` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Dumping data for table `chitietdonhang`
---
-
-INSERT INTO `chitietdonhang` (`idctdh`, `iddh`, `idsp`, `soluong`, `gia`, `giagoc`, `giagiam`, `danhgia`) VALUES
-(1, 1, 8, 1, 115000, 115000, 115000, 0),
-(2, 2, 8, 1, 115000, 115000, 115000, 1),
-(3, 2, 8, 1, 70840, 70840, 70840, 1),
-(4, 2, 10, 1, 89000, 89000, 89000, 1),
-(5, 2, 11, 1, 195000, 195000, 195000, 1),
-(6, 3, 10, 2, 178000, 89000, 89000, 1),
-(7, 3, 8, 2, 230000, 115000, 115000, 0);
-
 -- --------------------------------------------------------
 
 --
@@ -88,15 +75,6 @@ CREATE TABLE `danhgia` (
   `noidung` text NOT NULL,
   `thoigian` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Dumping data for table `danhgia`
---
-
-INSERT INTO `danhgia` (`iddg`, `idctdh`, `idkh`, `idsp`, `sosao`, `noidung`, `thoigian`) VALUES
-(4, 2, 3, 10, 5, 'ghrr', '2025-05-01 06:58:25'),
-(5, 4, 3, 8, 4, 'xấu hoắt', '2025-05-01 06:59:32'),
-(6, 5, 3, 11, 3, 'gớm', '2025-05-01 00:00:40');
 
 -- --------------------------------------------------------
 
@@ -153,15 +131,6 @@ CREATE TABLE `donhang` (
   `thoigian` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Dumping data for table `donhang`
---
-
-INSERT INTO `donhang` (`iddh`, `sdt`, `tenkh`, `tongtien`, `trangthai`, `phuongthuctt`, `thoigian`) VALUES
-(1, '0987654321', 'Trần Thanh Tâm', 115000, 'Đã thanh toán', 'Chuyển khoản ngân hàng', '2025-05-01 00:01:52'),
-(2, '0987654321', 'Trần Thanh Tâm', 469840, 'Đã thanh toán', 'Chuyển khoản ngân hàng', '2025-05-01 00:38:21'),
-(3, '0987654321', 'Trần Thanh Tâm', 408000, 'Đã thanh toán', 'Chuyển khoản ngân hàng', '2025-05-01 11:51:30');
-
 -- --------------------------------------------------------
 
 --
@@ -180,14 +149,6 @@ CREATE TABLE `giohang` (
   `thoigian` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Dumping data for table `giohang`
---
-
-INSERT INTO `giohang` (`idgh`, `idkh`, `idsp`, `tensp`, `giagoc`, `giagiam`, `soluong`, `thanhtien`, `thoigian`) VALUES
-(8, 3, 10, 'Túi Đeo Chéo Nam Nữ MLB Chính ', 89000, 89000, 1, 89000, '2025-05-01 08:40:35'),
-(9, 3, 11, 'Túi đeo chéo BRANDON thời tr', 195000, 195000, 1, 195000, '2025-05-02 05:04:39');
-
 -- --------------------------------------------------------
 
 --
@@ -201,13 +162,6 @@ CREATE TABLE `hoadon` (
   `tiennhan` decimal(10,0) NOT NULL,
   `tienthoi` decimal(10,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Dumping data for table `hoadon`
---
-
-INSERT INTO `hoadon` (`idhd`, `iddh`, `idnv`, `tiennhan`, `tienthoi`) VALUES
-(1, 3, 3, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -348,7 +302,7 @@ CREATE TABLE `sanpham` (
 --
 
 INSERT INTO `sanpham` (`idsp`, `tensp`, `giaban`, `soluong`, `anh`, `iddm`, `thoigianthemsp`) VALUES
-(1, 'Balo Thời Trang Kiểu Ulzzang Vải Chống Thấm Cao Cấp. Cặp Balo Cho Nam Nữ Đa năng Mintas 284', 159000, 10, 'picture/balo1.png', 3, '2025-04-24 16:07:42'),
+(1, 'Balo Thời Trang Kiểu Ulzzang Vải Chống Thấm Cao Cấp. Cặp Balo Cho Nam Nữ Đa năng Mintas 284', 159000, 10, 'picture/balo1.png', 3, '2025-05-02 22:19:49'),
 (2, 'Mẫu Balo Thời Trang Unisex Siêu Rộng Chống Nước, Có ngăn laptop chống sóc, Cỡ lớn đa năng đựng laptop hoặc đựng quần áo', 109000, 10, 'picture/balo2.png', 3, '2025-04-06 14:25:59'),
 (3, 'BALO UNISEX BoyMusic Và OnePiece THỜI TRANG. Balo Vải 3 Lớp Dày Chống Thấm Nước Mintas 300.', 109000, 10, 'picture/balo3.png', 3, '2025-04-06 14:25:59'),
 (4, 'Ba Lô Laptop Tích Hợp USB Cao Cấp PRAZA BL174', 149000, 10, 'picture/balo4.png', 3, '2025-04-06 14:25:59'),
@@ -572,13 +526,13 @@ ALTER TABLE `yeucaudonhang`
 -- AUTO_INCREMENT for table `chattructuyen`
 --
 ALTER TABLE `chattructuyen`
-  MODIFY `idchat` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idchat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `chitietdonhang`
 --
 ALTER TABLE `chitietdonhang`
-  MODIFY `idctdh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idctdh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `danhgia`
@@ -596,19 +550,19 @@ ALTER TABLE `danhmucsp`
 -- AUTO_INCREMENT for table `donhang`
 --
 ALTER TABLE `donhang`
-  MODIFY `iddh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `iddh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `giohang`
 --
 ALTER TABLE `giohang`
-  MODIFY `idgh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `idgh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `hoadon`
 --
 ALTER TABLE `hoadon`
-  MODIFY `idhd` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idhd` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `khxoatk`

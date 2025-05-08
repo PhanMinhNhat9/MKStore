@@ -84,7 +84,7 @@
     <title>Trang chủ</title>
     <link rel="stylesheet" href="fontawesome/css/all.min.css">
     <link rel="stylesheet" href="sweetalert2/sweetalert2.min.css">
-    <link rel="stylesheet" href="tailwind_sample_project/output.css">
+    <link href="tailwind/dist/output.css" rel="stylesheet">
     <script src="sweetalert2/sweetalert2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
