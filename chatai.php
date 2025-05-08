@@ -73,7 +73,7 @@
   </div>
 
   <script>
-    const OPENROUTER_API_KEY = ''; // ⚠️ Dán API key tại đây
+    const OPENROUTER_API_KEY = '';
     const MODEL_ID = 'openai/gpt-4o';
 
     function appendMessage(role, content) {
