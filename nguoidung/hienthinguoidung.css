@@ -162,6 +162,7 @@ body {
     .profile-container {
         flex-direction: column;  /* Đặt các phần tử trong .profile-container theo chiều dọc */
         padding: 10px;
+        margin: auto;
     }
 
     .profile-section {
