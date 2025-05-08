@@ -139,7 +139,7 @@
 
                         <!-- Input file để chọn ảnh mới -->
                         <div class="custom-file-upload">
-                            <label for="anh_moi" 
+                            <label 
                                 onclick="openModal('../<?= htmlspecialchars($user['anh']) ?>', <?= $user['iduser'] ?>)"
                             >
                                 <i class="fas fa-image"></i> Chọn ảnh mới
@@ -299,7 +299,10 @@
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const hamburgerBtn = document.querySelector('.hamburger');
+    if (hamburgerBtn) {
     const icon = hamburgerBtn.querySelector('i');
+    // Tiếp tục xử lý với icon nếu cần
+} 
 
     sidebar.classList.toggle('collapsed');
     const isExpanded = !sidebar.classList.contains('collapsed');
@@ -319,39 +322,56 @@ function toggleSidebar() {
 window.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     const hamburgerBtn = document.querySelector('.hamburger');
-    const icon = hamburgerBtn.querySelector('i');
-
     const savedState = localStorage.getItem('sidebarState');
 
-    if (savedState === 'collapsed') {
-        sidebar.classList.add('collapsed');
-        icon.classList.remove('fa-times');
-        icon.classList.add('fa-bars');
-        hamburgerBtn.setAttribute('aria-expanded', false);
-    } else {
-        sidebar.classList.remove('collapsed');
-        icon.classList.remove('fa-bars');
-        icon.classList.add('fa-times');
-        hamburgerBtn.setAttribute('aria-expanded', true);
+    if (sidebar && hamburgerBtn) {
+        const icon = hamburgerBtn.querySelector('i');
+
+        if (savedState === 'collapsed') {
+            sidebar.classList.add("collapsed");
+
+            if (icon) {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+
+            hamburgerBtn.setAttribute('aria-expanded', false);
+        } else {
+            sidebar.classList.remove('collapsed');
+
+            if (icon) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            }
+
+            hamburgerBtn.setAttribute('aria-expanded', true);
+        }
     }
 });
+
 document.addEventListener("DOMContentLoaded", function () {
     const hamburgerBtn = document.querySelector(".hamburger");
     const sidebar = document.getElementById("sidebar");
 
-    // Thêm sự kiện rê chuột
-    hamburgerBtn.addEventListener("mouseenter", function () {
-        if (sidebar.classList.contains("collapsed")) {
-            toggleSidebar();
-        }
-    });
+    document.addEventListener("DOMContentLoaded", function () {
+    const hamburgerBtn = document.querySelector(".hamburger");
+    const sidebar = document.getElementById("sidebar");
 
-   
-    sidebar.addEventListener("mouseleave", function () {
+    if (hamburgerBtn && sidebar) {
+        // Thêm sự kiện rê chuột
+        hamburgerBtn.addEventListener("mouseenter", function () {
+            if (sidebar.classList.contains("collapsed")) {
+                toggleSidebar();
+            }
+        });
+        sidebar.addEventListener("mouseleave", function () {
         if (!sidebar.classList.contains("collapsed")) {
             toggleSidebar();
         }
     });
+    }
+});
+
 });
 
 
