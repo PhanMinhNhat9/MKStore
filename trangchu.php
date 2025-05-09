@@ -653,52 +653,42 @@
     <?php
         if (isset($_GET['status'])) {
             if ($_GET['status'] === 'cnuserT') {
-                echo "<script>showCustomAlert('Thành Công!', 'Thông tin đã được cập nhật.', 'picture/success.png');</script>";
-                //echo "<script>showSuccessMessage('Thông tin đã được cập nhật.');</script>";
+                echo "<script>showCustomAlert('Thành Công!', 'Thông tin đã được cập nhật.', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
             } 
             else if ($_GET['status'] === 'cnuserF') {
-                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
-                //echo "<script>showErrorMessage('Thất bại!');</script>";
+                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
             }
             else if ($_GET['status'] === 'themuserT') {
-                echo "<script>showCustomAlert('Thành Công!', 'Người dùng đã được thêm vào danh sách!', 'picture/success.png');</script>";
-                //echo "<script>showSuccessMessage('Thành Công!', 'Người dùng đã được thêm vào danh sách!', 'picture/success.png');</script>";
+                echo "<script>showCustomAlert('Thành Công!', 'Người dùng đã được thêm vào danh sách!', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
             } 
             else if ($_GET['status'] === 'themuserF') {
-                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
-                //echo "<script>showErrorMessage('Thất bại!', '', 'picture/error.png');</script>";
+                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
             }
             else if ($_GET['status'] === 'cnspT') {
-                echo "<script>showCustomAlert('Thành Công!', 'Thông tin sản phẩm đã được cập nhật thành công!', 'picture/success.png');</script>";
-                //echo "<script>showSuccessMessage('Thành Công!', 'Thông tin sản phẩm đã được cập nhật thành công!', 'picture/success.png');</script>";
+                echo "<script>showCustomAlert('Thành Công!', 'Thông tin sản phẩm đã được cập nhật thành công!', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
             } 
             else if ($_GET['status'] === 'cnspF') {
-                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
-                //echo "<script>showErrorMessage('Thất bại!', '', 'picture/error.png');</script>";
+                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 
+
+        3000);</script>";
             }
             else if ($_GET['status'] === 'themspT') {
-                echo "<script>showCustomAlert('Thành Công!', 'Sản phẩm đã được thêm thành công!', 'picture/success.png');</script>";
-                //echo "<script>showSuccessMessage('Thành Công!', 'Sản phẩm đã được thêm thành công!', 'picture/success.png');</script>";
+                echo "<script>showCustomAlert('Thành Công!', 'Sản phẩm đã được thêm thành công!', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
             } 
             else if ($_GET['status'] === 'themspF') {
-                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
-                //echo "<script>showErrorMessage('Thất bại!', '', 'picture/error.png');</script>";
+                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
             }
             else if ($_GET['status'] === 'xoaspT') {
-                echo "<script>showCustomAlert('Thành Công!', 'Xóa sản phẩm thành công!', 'picture/success.png');</script>";
-                //echo "<script>showSuccessMessage('Thành Công!', 'Xóa sản phẩm thành công!', 'picture/success.png');</script>";
+                echo "<script>showCustomAlert('Thành Công!', 'Xóa sản phẩm thành công!', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
             } 
             else if ($_GET['status'] === 'xoaspF') {
-                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
-                //echo "<script>showErrorMessage('Thất bại!', '', 'picture/error.png');</script>";
+                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
             }
             else if ($_GET['status'] === 'cnanhuserT') {
-                echo "<script>showCustomAlert('Thành Công!', 'Cập nhật ảnh thành công!', 'picture/success.png');</script>";
-                //echo "<script>showSuccessMessage('Thành Công!', 'Cập nhật ảnh thành công!', 'picture/success.png');</script>";
+                echo "<script>showCustomAlert('Thành Công!', 'Cập nhật ảnh thành công!', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
             } 
             else if ($_GET['status'] === 'cnanhuserF') {
-                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
-                //echo "<script>showErrorMessage('Thất bại!', '', 'picture/error.png');</script>";
+                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
             }
         }
     ?>
