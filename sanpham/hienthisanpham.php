@@ -3,7 +3,7 @@ require_once '../config.php';
 $pdo = connectDatabase();
 
 // Lấy danh mục
-$stmt_dm = $pdo->query("SELECT iddm, tendm, tendm, loaidm, icon, mota, thoigian FROM danhmucsp ORDER BY loaidm, iddm");
+$stmt_dm = $pdo->query("SELECT iddm, tendm, loaidm, icon, mota, thoigian FROM danhmucsp ORDER BY loaidm, iddm");
 $categories = $stmt_dm->fetchAll(PDO::FETCH_ASSOC);
 
 // Lấy sản phẩm có phân trang
@@ -26,7 +26,6 @@ $sql = "SELECT sp.idsp, sp.tensp, sp.giaban, sp.anh, sp.soluong, sp.iddm,
         LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
         LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm AND CURDATE() BETWEEN mg.ngayhieuluc AND mg.ngayketthuc";
 
-// Điều kiện lọc theo query và iddm
 if ($query !== '' && $dm !== '') {
     $sql .= " WHERE (sp.tensp LIKE :searchTerm) AND sp.iddm = :iddm";
     $params['searchTerm'] = "%$query%";
@@ -41,7 +40,6 @@ if ($query !== '' && $dm !== '') {
 
 $sql .= " GROUP BY sp.idsp ORDER BY sp.thoigianthemsp DESC LIMIT :limit OFFSET :offset";
 
-// Chuẩn bị và bind
 $stmt = $pdo->prepare($sql);
 foreach ($params as $key => $value) {
     $stmt->bindValue(':' . $key, $value, is_numeric($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
@@ -52,9 +50,7 @@ $stmt->execute();
 
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Tính tổng số trang
 $count_sql = "SELECT COUNT(DISTINCT sp.idsp) FROM sanpham sp";
-
 if ($query !== '' && $dm !== '') {
     $count_sql .= " WHERE (sp.tensp LIKE :searchTerm) AND sp.iddm = :iddm";
 } elseif ($query !== '') {
@@ -127,10 +123,6 @@ $total_pages = ceil($total_products / $limit);
             transition: background 0.2s;
         }
 
-        .dropdown-toggle:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
         .dropdown-toggle i {
             margin-right: 0.5rem;
         }
@@ -142,6 +134,18 @@ $total_pages = ceil($total_products / $limit);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             min-width: 200px;
             margin-top: 0.5rem;
+            display: none;
+            position: absolute;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            opacity: 1;
+            top: 40px;
         }
 
         .dropdown-item {
@@ -153,7 +157,7 @@ $total_pages = ceil($total_products / $limit);
 
         .dropdown-item:hover,
         .dropdown-item.selected {
-            background-color: #1e3a8a;
+            background-color:rgba(0, 68, 255, 0.51);
             color: white;
         }
 
@@ -196,6 +200,7 @@ $total_pages = ceil($total_products / $limit);
             position: relative;
         }
 
+
         .tooltip-custom:hover:after {
             content: attr(data-tooltip);
             position: absolute;
@@ -207,8 +212,11 @@ $total_pages = ceil($total_products / $limit);
             padding: 0.25rem 0.5rem;
             border-radius: 4px;
             font-size: 0.8rem;
-            white-space: nowrap;
-            z-index: 10;
+            max-width: 200px; /* Giới hạn chiều rộng */
+            word-wrap: break-word; /* Ngắt từ nếu cần */
+            white-space: normal; /* Cho phép xuống hàng */
+            z-index: 1000;
+            text-align: center; /* Tuỳ chọn: căn giữa nội dung */
         }
 
         .price {
@@ -328,25 +336,36 @@ $total_pages = ceil($total_products / $limit);
                 width: 100%;
                 justify-content: space-between;
             }
+
+            /* Vô hiệu hóa hover trên mobile, sử dụng hành vi nhấp của Bootstrap */
+            .dropdown:hover .dropdown-menu {
+                display: none;
+            }
+
+            .dropdown.show .dropdown-menu {
+                display: block;
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .btnthem {
-    background-color: #ffffff;
-    color: #5b8be3;
-    border: 2px solid #ffffff;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
+            background-color: #ffffff;
+            color: #5b8be3;
+            border: 2px solid #ffffff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
 
-.btnthem:hover {
-    background-color: #5b8be3;
-    color: #ffffff;
-    border-color: #ffffff;
-}
-
+        .btnthem:hover {
+            background-color: #5b8be3;
+            color: #ffffff;
+            border-color: #ffffff;
+        }
     </style>
 </head>
 <body>
@@ -378,7 +397,7 @@ $total_pages = ceil($total_products / $limit);
                 ?>
                 <?php foreach ($categoryTree as $parent): ?>
                     <div class="dropdown">
-                        <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="dropdown-toggle" type="button" aria-expanded="false">
                             <i class="fas fa-folder"></i>
                             <?= htmlspecialchars($parent['tendm']) ?>
                         </button>

@@ -50,9 +50,9 @@ if ($parentFilter !== 'all') {
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <script src="../script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <style>
         body {
             font-size: 0.9rem;
@@ -285,6 +285,12 @@ if ($parentFilter !== 'all') {
             </button>
             <h1 id="sidebar-title" class="d-none">Hệ Thống Bán Hàng</h1>
         </div>
+        <style>
+            .parentFilter {
+                color: #1e293b80;
+            }
+
+        </style>
         <form id="filter-form" class="filter-form px-3 d-none" method="GET" action="" aria-label="Filter categories by parent">
             <label for="parentFilter" class="form-label text-white small">Lọc danh mục cha:</label>
             <select id="parentFilter" name="parentFilter" class="form-select form-select-sm" aria-describedby="parentFilterDescription">

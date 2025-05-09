@@ -83,7 +83,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Danh Sách Người Dùng</title>
         <link rel="stylesheet" href="../fontawesome/css/all.min.css">
-        <link rel="stylesheet" href="hienthinguoidung.css?v=<?= time(); ?>">
+        <link rel="stylesheet" href="hienthinguoidung.css?v=<?= time() ?>">
         <script src="../sweetalert2/sweetalert2.min.js"></script>
         <script src="../script.js"></script>
     </head>
@@ -295,30 +295,33 @@
 
         <!-- JavaScript -->
         <script>
-
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const hamburgerBtn = document.querySelector('.hamburger');
+    let icon = null;
+
     if (hamburgerBtn) {
-    const icon = hamburgerBtn.querySelector('i');
-    // Tiếp tục xử lý với icon nếu cần
-} 
+        icon = hamburgerBtn.querySelector('i');
+    }
 
     sidebar.classList.toggle('collapsed');
     const isExpanded = !sidebar.classList.contains('collapsed');
 
-    if (isExpanded) {
-        icon.classList.remove('fa-bars');
-        icon.classList.add('fa-times');
-        localStorage.setItem('sidebarState', 'expanded');
-    } else {
-        icon.classList.remove('fa-times');
-        icon.classList.add('fa-bars');
-        localStorage.setItem('sidebarState', 'collapsed');
-    }
+    if (icon) {
+        if (isExpanded) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
+            localStorage.setItem('sidebarState', 'expanded');
+        } else {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+            localStorage.setItem('sidebarState', 'collapsed');
+        }
 
-    hamburgerBtn.setAttribute('aria-expanded', isExpanded);
+        hamburgerBtn.setAttribute('aria-expanded', isExpanded);
+    }
 }
+
 window.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     const hamburgerBtn = document.querySelector('.hamburger');
@@ -349,10 +352,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    const hamburgerBtn = document.querySelector(".hamburger");
-    const sidebar = document.getElementById("sidebar");
-
     document.addEventListener("DOMContentLoaded", function () {
     const hamburgerBtn = document.querySelector(".hamburger");
     const sidebar = document.getElementById("sidebar");
@@ -371,11 +370,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     }
 });
-
-});
-
-
-
             // Other functions
             function themnguoidung() {
                 window.location.href = "themnguoidung.php";

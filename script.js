@@ -214,14 +214,14 @@ function showSuccessMessage(message) {
     alertBox.innerText = message;
     alertBox.style.display = "flex";
     alertBox.classList.add("show");
-    let audio = new Audio('../amthanh/thanhcong.mp3'); 
+    let audio = new Audio('amthanh/thanhcong.mp3'); 
     audio.play();
     setTimeout(() => {
         alertBox.classList.remove("show");
         setTimeout(() => {
             alertBox.style.display = "none";
         }, 300);
-    }, 3000);
+    }, 30000);
 }
 
 function showErrorMessage(message) {
@@ -244,14 +244,17 @@ function showCustomAlert(title = "Thông báo!", text = "Nội dung thông báo.
         iconHtml: `<img src="${icon}" style="width: 50px; height: 50px; border: none;"/>`,
         background: "rgb(180, 237, 255)",
         color: "#1565c0",
-        width: "300px", 
+        width: "300px",
         padding: "5px",
-        confirmButtonText: 'OK', // Nút OK
+        confirmButtonText: 'OK',
         customClass: {
-            confirmButton: "swal-custom-button", // Đặt lớp tùy chỉnh cho nút xác nhận
-        }
+            confirmButton: "swal-custom-button",
+        },
+        timer: 3000, // tự động đóng sau 3 giây
+        showConfirmButton: false // ẩn nút OK để không cần bấm
     });
 }
+
 const style = document.createElement("style");
 style.innerHTML = `
     .swal-custom-button {
@@ -351,7 +354,7 @@ function handleSessionTimeout(sessionTimeoutInSeconds) {
 
     // Chuyển hướng về trang đăng nhập khi hết hạn
     setTimeout(function() {
-        window.location.href = '../auth/logout.php?timeout=1';
+        window.location.href = 'auth/logout.php?timeout=1';
     }, sessionTimeout);
 }
 
@@ -361,6 +364,7 @@ let selectedUserId = null;
 function openModal(imageSrc, userId) {
     document.getElementById('modalImage').src = imageSrc;
     document.getElementById('imageModal').style.display = "flex";
+    
     selectedUserId = userId;
     document.getElementById('iduser').value = selectedUserId;
 

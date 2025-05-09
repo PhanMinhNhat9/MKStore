@@ -330,6 +330,10 @@
                 padding-bottom: 10px;
                 padding-top: 0;
             }
+            .store-name {
+                display: block;
+                font-size: 2.2rem; /* text-3xl */
+            }
         }
     </style>
         <!-- Search Bar -->
@@ -493,23 +497,22 @@
 #adminDropdown {
     position: absolute;
     right: 0;     
-    left: 105%;
-    bottom: 50%;
-    background-color: white;
-    color:rgb(255, 255, 255);
-    border-radius: 10px;
+    left: 10%;
     width: 200px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    bottom: 120%;
+    /* Style & hiệu ứng */
+    background: rgba(30, 41, 59, 0.8);         
+    backdrop-filter: blur(2px); 
+    -webkit-backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 
+    color: white;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.3s ease;
-
-    background: rgba(30, 41, 59, 0.6);         /* Nền xanh nhạt trong suốt */
-    border-right: 1px solid rgba(255, 255, 255, 0.1);  /* Viền nhẹ bên phải */
-    border-radius: 16px;                          /* Bo góc mềm mại */
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);     /* Đổ bóng nhẹ */
     z-index: 10;
 }
 
@@ -578,32 +581,7 @@
         </div>
     </div> 
 </div>
-<script>
-    function ddadmin() {
-        const dropdown = document.getElementById("adminDropdown");
-        const taikhoanBtn = document.querySelector(".taikhoan");
 
-        const isHidden = !dropdown.classList.contains("dropdown-active");
-
-        dropdown.classList.toggle("dropdown-active", isHidden);
-        dropdown.classList.toggle("hidden", !isHidden);
-
-        taikhoanBtn.setAttribute("aria-expanded", isHidden);
-    }
-    
-    document.addEventListener('click', function(event) {
-        const dropdown = document.getElementById("adminDropdown");
-        const trigger = document.querySelector(".taikhoan");
-
-        if (
-            !dropdown.contains(event.target) &&
-            !trigger.contains(event.target)
-        ) {
-            dropdown.classList.remove("dropdown-active");
-            trigger.setAttribute("aria-expanded", "false");
-        }
-    });
-</script>
 </nav>
 <style>
     .main-content{
@@ -647,45 +625,80 @@
         </div>
     </footer>
 
+<style>
+    /* Alerts */
+    .alert {
+            position: fixed;
+            top: 50px;
+            margin-left: 50%;
+            padding: 0.75rem;
+            border-radius: 4px;
+            z-index: 1000;
+            display: none;
+        }
 
+        .alert-success {
+            background: #28a745;
+            color: white;
+        }
 
+        .alert-error {
+            background: #dc3545;
+            color: white;
+        }
+</style>
+    <!-- Alerts -->
+    <div id="success-alert" class="alert alert-success"></div>
+    <div id="error-alert" class="alert alert-error"></div>
     <?php
         if (isset($_GET['status'])) {
             if ($_GET['status'] === 'cnuserT') {
                 echo "<script>showCustomAlert('Thành Công!', 'Thông tin đã được cập nhật.', 'picture/success.png');</script>";
+                //echo "<script>showSuccessMessage('Thông tin đã được cập nhật.');</script>";
             } 
             else if ($_GET['status'] === 'cnuserF') {
                 echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
+                //echo "<script>showErrorMessage('Thất bại!');</script>";
             }
             else if ($_GET['status'] === 'themuserT') {
                 echo "<script>showCustomAlert('Thành Công!', 'Người dùng đã được thêm vào danh sách!', 'picture/success.png');</script>";
+                //echo "<script>showSuccessMessage('Thành Công!', 'Người dùng đã được thêm vào danh sách!', 'picture/success.png');</script>";
             } 
             else if ($_GET['status'] === 'themuserF') {
                 echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
+                //echo "<script>showErrorMessage('Thất bại!', '', 'picture/error.png');</script>";
             }
             else if ($_GET['status'] === 'cnspT') {
                 echo "<script>showCustomAlert('Thành Công!', 'Thông tin sản phẩm đã được cập nhật thành công!', 'picture/success.png');</script>";
+                //echo "<script>showSuccessMessage('Thành Công!', 'Thông tin sản phẩm đã được cập nhật thành công!', 'picture/success.png');</script>";
             } 
             else if ($_GET['status'] === 'cnspF') {
                 echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
+                //echo "<script>showErrorMessage('Thất bại!', '', 'picture/error.png');</script>";
             }
             else if ($_GET['status'] === 'themspT') {
                 echo "<script>showCustomAlert('Thành Công!', 'Sản phẩm đã được thêm thành công!', 'picture/success.png');</script>";
+                //echo "<script>showSuccessMessage('Thành Công!', 'Sản phẩm đã được thêm thành công!', 'picture/success.png');</script>";
             } 
             else if ($_GET['status'] === 'themspF') {
                 echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
+                //echo "<script>showErrorMessage('Thất bại!', '', 'picture/error.png');</script>";
             }
             else if ($_GET['status'] === 'xoaspT') {
                 echo "<script>showCustomAlert('Thành Công!', 'Xóa sản phẩm thành công!', 'picture/success.png');</script>";
+                //echo "<script>showSuccessMessage('Thành Công!', 'Xóa sản phẩm thành công!', 'picture/success.png');</script>";
             } 
             else if ($_GET['status'] === 'xoaspF') {
                 echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
+                //echo "<script>showErrorMessage('Thất bại!', '', 'picture/error.png');</script>";
             }
             else if ($_GET['status'] === 'cnanhuserT') {
                 echo "<script>showCustomAlert('Thành Công!', 'Cập nhật ảnh thành công!', 'picture/success.png');</script>";
+                //echo "<script>showSuccessMessage('Thành Công!', 'Cập nhật ảnh thành công!', 'picture/success.png');</script>";
             } 
             else if ($_GET['status'] === 'cnanhuserF') {
                 echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png');</script>";
+                //echo "<script>showErrorMessage('Thất bại!', '', 'picture/error.png');</script>";
             }
         }
     ?>
@@ -1078,17 +1091,44 @@
         });
 
 
+    function ddadmin() {
+        const dropdown = document.getElementById("adminDropdown");
+        const taikhoanBtn = document.querySelector(".taikhoan");
+
+        const isHidden = !dropdown.classList.contains("dropdown-active");
+
+        dropdown.classList.toggle("dropdown-active", isHidden);
+        dropdown.classList.toggle("hidden", !isHidden);
+
+        taikhoanBtn.setAttribute("aria-expanded", isHidden);
+    }
+    
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById("adminDropdown");
+        const trigger = document.querySelector(".taikhoan");
+
+        if (
+            !dropdown.contains(event.target) &&
+            !trigger.contains(event.target)
+        ) {
+            dropdown.classList.remove("dropdown-active");
+            trigger.setAttribute("aria-expanded", "false");
+        }
+    });
+
         // Toggle Menu for All Devices
         function toggleMenu() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('main-content');
             const hamburger = document.querySelector('.hamburger');
             const isExpanded = sidebar.classList.contains('translate-x-0');
-
+            // const dropdown = document.getElementById("adminDropdown");
+            // const trigger = document.querySelector(".taikhoan");
             if (isExpanded) {
                 sidebar.classList.remove('translate-x-0');
                 sidebar.classList.add('-translate-x-full');
                 hamburger.classList.remove('active');
+                // dropdown.style.left = "50%";
             } else {
                 sidebar.classList.remove('-translate-x-full');
                 sidebar.classList.add('translate-x-0');
@@ -1114,8 +1154,10 @@
                     hamburger.classList.remove('active');
                     hamburger.setAttribute('aria-expanded', 'false');
                     localStorage.setItem('sidebarStateadmin', 'collapsed');
+                    
                     dropdown.classList.remove("dropdown-active");
                     trigger.setAttribute("aria-expanded", "false");
+                    //dropdown.style.left = "50%";
                 }
             });
 
@@ -1164,16 +1206,20 @@
             const mainContent = document.getElementById('main-content');
             const hamburger = document.querySelector('.hamburger');
             const savedState = localStorage.getItem('sidebarStateadmin');
+            // const dropdown = document.getElementById("adminDropdown");
+            // const trigger = document.querySelector(".taikhoan");
             if (savedState === 'expanded') {
                 sidebar.classList.remove('-translate-x-full');
                 sidebar.classList.add('translate-x-0');
                 hamburger.classList.add('active');
                 hamburger.setAttribute('aria-expanded', 'true');
+                // dropdown.style.left = "50%";
             } else {
                 sidebar.classList.remove('translate-x-0');
                 sidebar.classList.add('-translate-x-full');
                 hamburger.classList.remove('active');
                 hamburger.setAttribute('aria-expanded', 'false');
+                // dropdown.style.left = "50%";
             }
 
             activateMenu();

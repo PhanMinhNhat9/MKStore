@@ -97,7 +97,7 @@ body {
     color: #007bff;
     font-size: 16px;
     transition: color 0.3s;
-    padding-left: 48%;
+    padding-left: 45%;
 }
 
 .edit-btn:hover {
@@ -154,6 +154,10 @@ body {
 .KHbtn-delete {
     background-color: #dc3545;
 }
+.KHbtn-confirm {
+    background-color:rgb(24, 156, 12);
+    color: white;
+}
 .custom-file-upload {
     margin-top: 10px;
     position: relative;
@@ -181,7 +185,6 @@ body {
 }
 
 .profile-grid-wrapper {
-    overflow-y: auto;  /* Cho phép cuộn ngang */
     -webkit-overflow-scrolling: touch;  /* Thêm hỗ trợ cuộn mượt trên thiết bị di động */
     height: 100vh;
     margin: auto;
@@ -237,24 +240,73 @@ body {
                     >
                 </div>
 
-                <!-- Input file để chọn ảnh mới -->
-                <div class="custom-file-upload">
-                    <label for="anh_moi" 
-                        onclick="openModal('../<?= htmlspecialchars($user['anh']) ?>', <?= $user['iduser'] ?>)"
-                    >
-                        <i class="fas fa-image"></i> Chọn ảnh mới
-                    </label>
-                </div>
 
-                <!-- Nút hành động -->
-                <div style="margin-top: 10px; display: flex; gap: 10px;">
-                    <button type="submit" name="capnhat_anh" class="KHbtn KHbtn-update">
-                        <i class="fas fa-upload"></i> Cập nhật ảnh
-                    </button>
-                    <button type="submit" name="xoa_anh" class="KHbtn KHbtn-delete" onclick="return confirm('Bạn có chắc muốn xóa ảnh này?')">
-                        <i class="fas fa-trash-alt"></i> Xóa ảnh
-                    </button>
-                </div>
+                <?php
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['capnhatanhuser'])) {
+    $kq = capnhatAnhUser();
+    if ($kq) {
+        echo "
+        <script>
+            window.top.location.href = '../trangchu.php?status=cnanhuserT';
+        </script>";
+    } else {
+        echo "
+        <script>
+            window.top.location.href = '../trangchu.php?status=cnanhuserF';
+        </script>";
+    }
+}
+?>
+
+<!-- Nút hành động -->
+<div style="margin-top: 10px; display: flex; gap: 10px; flex-direction: column;">
+    <form id="imageForm" action="" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="iduser" value="<?php echo htmlspecialchars($iduser ?? 1); ?>">
+        <input type="hidden" name="capnhatanhuser" value="1">
+        <input type="file" id="inputAnhMoi" name="fileInput" style="display: none;" accept="image/*">
+        <button type="button" id="updateButton" class="KHbtn KHbtn-update">
+            <i class="fas fa-upload"></i> Cập nhật ảnh
+        </button>
+        <div id="fileInputContainer" style="display: none; margin-top: 10px;">
+            <input type="file" id="visibleInputAnhMoi" name="fileInput" accept="image/*">
+            <button type="submit" id="confirmButton" class="KHbtn KHbtn-confirm">
+                <i class="fas fa-check"></i> Xác nhận
+            </button>
+        </div>
+        <button type="button" id="deleteButton" class="KHbtn KHbtn-delete" onclick="return confirm('Bạn có chắc muốn xóa ảnh đã chọn?');">
+            <i class="fas fa-trash-alt"></i> Xóa ảnh
+        </button>
+    </form>
+</div>
+
+<script>
+    const updateButton = document.getElementById('updateButton');
+    const fileInputContainer = document.getElementById('fileInputContainer');
+    const visibleInput = document.getElementById('visibleInputAnhMoi');
+    const deleteButton = document.getElementById('deleteButton');
+    const form = document.getElementById('imageForm');
+
+    // Khi bấm nút "Cập nhật ảnh"
+    updateButton.addEventListener('click', () => {
+        fileInputContainer.style.display = 'block'; // Hiển thị input file và nút xác nhận
+    });
+
+    // Khi form được submit (nút xác nhận)
+    form.addEventListener('submit', (e) => {
+        e.preventDefault(); // Ngăn submit mặc định để kiểm tra
+        if (visibleInput.files && visibleInput.files.length > 0) {
+            form.submit(); // Submit form nếu có file được chọn
+        } else {
+            alert('Vui lòng chọn một ảnh trước khi xác nhận.');
+        }
+    });
+
+    // Khi bấm nút "Xóa ảnh"
+    deleteButton.addEventListener('click', () => {
+        visibleInput.value = ''; // Reset input file
+        fileInputContainer.style.display = 'none'; // Ẩn input file và nút xác nhận
+    });
+</script>
             </section>
             <!-- Thông tin cá nhân -->
             <section class="profile-section">
