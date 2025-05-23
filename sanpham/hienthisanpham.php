@@ -11,7 +11,7 @@ $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $dm = isset($_GET['iddm']) ? trim($_GET['iddm']) : '';
 $products = [];
 $params = [];
-$limit = 8; // Số sản phẩm mỗi trang
+$limit = 10; // Số sản phẩm mỗi trang
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
@@ -99,6 +99,35 @@ $total_pages = ceil($total_products / $limit);
             top: 0;
             z-index: 1000;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .container-fluid {
+            transition: all 0.3s ease;
+        }
+
+        .container-fluid .header-content {
+            display: none; /* Ẩn header-content mặc định */
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        header:hover .container-fluid .header-content {
+            display: block; /* Hiện khi hover */
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hamburger {
+            display: inline-block;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            margin-right: 1rem;
         }
 
         .category-menu {
@@ -157,7 +186,7 @@ $total_pages = ceil($total_products / $limit);
 
         .dropdown-item:hover,
         .dropdown-item.selected {
-            background-color:rgba(0, 68, 255, 0.51);
+            background-color: rgba(0, 68, 255, 0.51);
             color: white;
         }
 
@@ -170,7 +199,7 @@ $total_pages = ceil($total_products / $limit);
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             background-color: white;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem; /* Giảm margin-bottom */
         }
 
         .product-card.out-of-stock {
@@ -180,17 +209,17 @@ $total_pages = ceil($total_products / $limit);
 
         .product-card img {
             width: 100%;
-            height: 200px;
+            height: 150px; /* Giảm chiều cao hình ảnh */
             object-fit: cover;
             border-radius: 8px 8px 0 0;
         }
 
         .product-card-body {
-            padding: 0.75rem;
+            padding: 0.5rem; /* Giảm padding */
         }
 
         .product-name {
-            font-size: 1rem;
+            font-size: 0.9rem; /* Giảm font chữ tên sản phẩm */
             font-weight: bold;
             margin-bottom: 0.5rem;
             position: relative;
@@ -199,7 +228,6 @@ $total_pages = ceil($total_products / $limit);
         .tooltip-custom {
             position: relative;
         }
-
 
         .tooltip-custom:hover:after {
             content: attr(data-tooltip);
@@ -212,11 +240,11 @@ $total_pages = ceil($total_products / $limit);
             padding: 0.25rem 0.5rem;
             border-radius: 4px;
             font-size: 0.8rem;
-            max-width: 200px; /* Giới hạn chiều rộng */
-            word-wrap: break-word; /* Ngắt từ nếu cần */
-            white-space: normal; /* Cho phép xuống hàng */
+            max-width: 200px;
+            word-wrap: break-word;
+            white-space: normal;
             z-index: 1000;
-            text-align: center; /* Tuỳ chọn: căn giữa nội dung */
+            text-align: center;
         }
 
         .price {
@@ -224,26 +252,26 @@ $total_pages = ceil($total_products / $limit);
         }
 
         .new-price {
-            font-size: 1.1rem;
+            font-size: 1rem; /* Giảm font chữ giá mới */
             color: #dc3545;
             font-weight: bold;
         }
 
         .old-price {
-            font-size: 0.9rem;
+            font-size: 0.8rem; /* Giảm font chữ giá cũ */
             color: #999;
             text-decoration: line-through;
             margin-right: 0.5rem;
         }
 
         .discount {
-            font-size: 0.9rem;
+            font-size: 0.8rem; /* Giảm font chữ giảm giá */
             color: #28a745;
             font-weight: bold;
         }
 
         .info p {
-            font-size: 0.85rem;
+            font-size: 0.75rem; /* Giảm font chữ thông tin */
             color: #666;
             margin-bottom: 0.25rem;
         }
@@ -303,8 +331,8 @@ $total_pages = ceil($total_products / $limit);
         /* Alerts */
         .alert {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 100px;
+            right: 500px;
             padding: 0.75rem;
             border-radius: 4px;
             z-index: 1000;
@@ -324,7 +352,7 @@ $total_pages = ceil($total_products / $limit);
         /* Responsive */
         @media (max-width: 768px) {
             .product-card-body {
-                font-size: 0.8rem;
+                font-size: 0.7rem; /* Giảm font chữ trên mobile */
             }
 
             .category-menu {
@@ -337,7 +365,6 @@ $total_pages = ceil($total_products / $limit);
                 justify-content: space-between;
             }
 
-            /* Vô hiệu hóa hover trên mobile, sử dụng hành vi nhấp của Bootstrap */
             .dropdown:hover .dropdown-menu {
                 display: none;
             }
@@ -346,6 +373,42 @@ $total_pages = ceil($total_products / $limit);
                 display: block;
                 opacity: 1;
                 transform: translateY(0);
+            }
+
+            .container-fluid.collapsed .header-content {
+                display: none !important; /* Ẩn header-content khi collapsed trên mobile */
+            }
+
+            .container-fluid.collapsed .category-menu {
+                display: none; /* Ẩn danh mục khi collapsed trên mobile */
+            }
+
+            header:hover .container-fluid .header-content {
+                display: none; /* Không hiện header-content khi hover trên mobile */
+            }
+
+            .container-fluid.collapsed:hover .category-menu {
+                display: none; /* Giữ danh mục ẩn khi collapsed trên mobile */
+            }
+        }
+
+        @media (min-width: 769px) {
+            .hamburger {
+                display: none; /* Ẩn hamburger trên desktop */
+            }
+
+            .container-fluid.collapsed .header-content {
+                display: none; /* Ẩn header-content mặc định trên desktop */
+            }
+
+            header:hover .container-fluid.collapsed .header-content {
+                display: block; /* Hiện header-content khi hover trên desktop */
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .container-fluid.collapsed .category-menu {
+                display: flex !important; /* Luôn hiển thị danh mục trên desktop */
             }
         }
 
@@ -375,13 +438,18 @@ $total_pages = ceil($total_products / $limit);
 
     <!-- Header with Dropdown Menus -->
     <header>
-        <div class="container-fluid">
-            <h1 class="h4 mb-3">Hệ Thống Bán Hàng</h1>
-            <?php if ($_SESSION['user']['quyen'] != 1): ?>
-                <button class="btnthem btn-primary btn-sm mb-3" onclick="themsanpham()" aria-label="Thêm sản phẩm">
-                    <i class="fas fa-plus-circle me-1"></i> Thêm Sản Phẩm
-                </button>
-            <?php endif; ?>
+        <div class="container-fluid collapsed">
+            <button class="hamburger" aria-label="Toggle menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-content">
+                <h1 class="h4 mb-3">Hệ Thống Bán Hàng</h1>
+                <?php if ($_SESSION['user']['quyen'] != 1): ?>
+                    <button class="btnthem btn-primary btn-sm mb-3" onclick="themsanpham()" aria-label="Thêm sản phẩm">
+                        <i class="fas fa-plus-circle me-1"></i> Thêm Sản Phẩm
+                    </button>
+                <?php endif; ?>
+            </div>
             <nav class="category-menu">
                 <?php
                 $categoryTree = [];
@@ -423,8 +491,7 @@ $total_pages = ceil($total_products / $limit);
     <!-- Main Content -->
     <main>
         <div class="container-fluid">
-            <h2 class="h5 mb-3 fw-bold text-primary">Sản Phẩm Theo Danh Mục</h2>
-            <section class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3">
+            <section class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3"> <!-- Tăng row-cols-lg-5 -->
                 <?php if (empty($products)): ?>
                     <div class="col">
                         <div class="no-products">Không tìm thấy sản phẩm.</div>
@@ -528,6 +595,20 @@ $total_pages = ceil($total_products / $limit);
         function themsanpham() {
             window.location.href = "themsanpham.php";
         }
+
+        // Toggle header content visibility on mobile
+        document.querySelector('.hamburger').addEventListener('click', function() {
+            const container = document.querySelector('.container-fluid');
+            container.classList.toggle('collapsed');
+            const categoryMenu = document.querySelector('.category-menu');
+            if (container.classList.contains('collapsed')) {
+                categoryMenu.style.display = 'none';
+                document.querySelector('.header-content').style.display = 'none';
+            } else {
+                categoryMenu.style.display = 'flex';
+                document.querySelector('.header-content').style.display = 'block';
+            }
+        });
     </script>
 </body>
 </html>

@@ -5,7 +5,7 @@
             $email = $_POST['email'];
             $hoten = $_POST['hoten'];
             $tendn = $_POST['tendn'];
-            $mk = $_POST['mk'];
+            $mk = $_POST['password']; // Fixed to match HTML form
             $sdt = $_POST['sdt'];
             $diachi = $_POST['diachi'];
            
@@ -21,7 +21,6 @@
                 echo "<script> alert('Mã xác thực đã được gửi!'); 
                                window.location.href = 'xacthuc.php';
                      </script>";
-
             } else {
                 echo "Gửi email thất bại!";
             }
@@ -74,19 +73,22 @@
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
-            /* Responsive */
-            @media (max-width: 768px) {
-            .bgkhung {
-                width: 300px;
-            }
+    /* Responsive */
+    @media (max-width: 768px) {
+        .bgkhung {
+            width: 300px;
         }
+    }
+    #loi {
+        color: #ff4d4d;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 via-blue-400 to-blue-800">
     <form method="post" class="bgkhung bg-white/20 p-6 rounded-2xl shadow-xl max-w-3xl mx-auto grid grid-cols-2 gap-4 text-white" id="registerForm">
-        <!-- Đã điều chỉnh h2 để chiếm 2 cột -->
         <h2 class="col-span-2 text-center text-2xl font-semibold mb-2 border-b border-white/30 pb-3">Đăng ký tài khoản</h2>
-        <!-- Cột trái -->
         <div>
             <label class="text-sm text-gray-200 block mb-1">Họ và tên</label>
             <div class="flex items-center bg-white/10 rounded-md px-3">
@@ -94,7 +96,6 @@
                 <input type="text" id="hoten" name="hoten" onkeypress="validateInput(event)" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off"/>
             </div>
         </div>
-
         <div>
             <label class="text-sm text-gray-200 block mb-1">Tên đăng nhập</label>
             <div class="flex items-center bg-white/10 rounded-md px-3">
@@ -102,7 +103,6 @@
                 <input type="text" id="tendn" name="tendn" oninput="removeInvalidChars(this)" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off"/>
             </div>
         </div>
-
         <div>
             <label class="text-sm text-gray-200 block mb-1">Email</label>
             <div class="flex items-center bg-white/10 rounded-md px-3">
@@ -110,8 +110,6 @@
                 <input type="email" id="email" name="email" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off" />
             </div>
         </div>
-
-        <!-- Cột phải -->
         <div>
             <label class="text-sm text-gray-200 block mb-1">Mật khẩu</label>
             <div class="flex items-center bg-white/10 rounded-md px-3">
@@ -119,7 +117,6 @@
                 <input type="password" id="password" name="password" class="w-full bg-transparent p-2 focus:outline-none" required/>
             </div>
         </div>
-
         <div>
             <label class="text-sm text-gray-200 block mb-1">Số điện thoại</label>
             <div class="flex items-center bg-white/10 rounded-md px-3">
@@ -127,7 +124,6 @@
                 <input type="text" id="sdt" name="sdt" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off"/>
             </div>
         </div>
-
         <div>
             <label class="text-sm text-gray-200 block mb-1">Địa chỉ</label>
             <div class="flex items-center bg-white/10 rounded-md px-3">
@@ -135,24 +131,19 @@
                 <input type="text" name="diachi" class="w-full bg-transparent p-2 focus:outline-none" required autocomplete="off"/>
             </div>
         </div>
-
-        <!-- Dòng cuối: checkbox và nút -->
         <div class="col-span-2 mt-4 flex flex-col items-center space-y-4">
             <label class="flex items-center space-x-2">
                 <input type="checkbox" id="showPassword" class="appearance-none h-4 w-4 rounded bg-white/20 checked:bg-blue-500 
                 checked:text-white flex items-center justify-center transition duration-150 ease-in-out" />
                 <span class="text-sm text-gray-200">Hiển thị mật khẩu</span>
             </label>
-
             <button type="submit" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 
                 hover:to-blue-500 text-white px-4 py-2 rounded-lg font-semibold shadow-md transition mx-auto"> Đăng ký
             </button>
-
             <div class="text-sm text-center text-white/100">
                 <span>Tôi đã có tài khoản:</span>
                 <a href="../auth/dangnhap.php" class="hover:underline">Đăng nhập</a>
             </div>
-            <!-- Lỗi -->
             <span id="loi"></span>
         </div>
     </form>
@@ -185,26 +176,24 @@
         const phoneRegex = /^0\d{9,10}$/;
         const nameRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
 
+        // Clear previous error messages
+        loiSpan.textContent = "";
+
         if (!emailRegex.test(email) || !isValidPassword(password) || !phoneRegex.test(phone) || !nameRegex.test(hoten)) {
-        e.preventDefault();
-        errors.push("Thông tin không hợp lệ. Vui lòng kiểm tra lại.");
+            e.preventDefault();
+            loiSpan.textContent = "Thông tin không hợp lệ. Vui lòng kiểm tra lại.";
         }
     });
 
     function validateInput(event) {
         const char = String.fromCharCode(event.which || event.keyCode);
-        
-        // Kiểm tra xem ký tự có phải là số hoặc ký tự đặc biệt không được phép nhập
         const invalidChars = /[~`!@#$%^&*()_\-+=\{\}\[\]\\|:;"'<,>.?/]/;
-        
-        // Kiểm tra xem ký tự có phải là số hoặc ký tự đặc biệt không hợp lệ
         if (/\d/.test(char) || invalidChars.test(char)) {
-            event.preventDefault(); // Ngừng nhập ký tự nếu là số hoặc ký tự đặc biệt
+            event.preventDefault();
         }
     }
 
     function removeInvalidChars(input) {
-        // Giữ lại chỉ chữ cái không dấu và số
         input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
     }
 
@@ -220,23 +209,18 @@
     
     document.getElementById("hoten").addEventListener("blur", function () {
         const fullName = this.value.trim();
-
         const usernameInput = document.querySelector("input[name='tendn']");
 
         if (fullName !== "") {
-            // Capitalize first letter of each word
             const capitalizedName = fullName
                 .split(" ")
                 .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
                 .join(" ");
             this.value = capitalizedName;
-
-            // Generate username from the last name
             const parts = capitalizedName.split(" ");
             const lastName = removeDiacritics(parts[parts.length - 1]);
             usernameInput.value = lastName + generateRandomString(4);
         } else {
-            // Nếu không nhập họ tên, xóa tên đăng nhập
             usernameInput.value = "";
         }
     });
@@ -247,6 +231,3 @@
 </script>
 </body>
 </html>
-
-
-

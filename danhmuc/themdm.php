@@ -4,9 +4,14 @@ require_once '../config.php';
 $errors = [];
 $loaidm = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
+// Lấy danh sách danh mục cha để hiển thị trong dropdown
+$pdo = connectDatabase();
+$stmt = $pdo->query("SELECT iddm, tendm FROM danhmucsp WHERE loaidm = 0 ORDER BY tendm");
+$parent_categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['themdmcon'])) {
     $tendm = trim($_POST['tendm']);
-    $loaidm = intval($_POST['loaidm']);
+    $loaidm = isset($_POST['loaidm']) ? intval($_POST['loaidm']) : 0;
     $mota = trim($_POST['mota']);
 
     // Ràng buộc tendm
@@ -19,13 +24,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['themdmcon'])) {
     }
 
     // Ràng buộc loaidm
-    if (empty($loaidm)) {
-        $errors['loaidm'] = "Vui lòng nhập loại danh mục.";
-    } elseif ($loaidm < 1) {
-        $errors['loaidm'] = "Loại danh mục phải là số dương.";
-    } else {
-        // Kiểm tra loaidm tồn tại
-        $pdo = connectDatabase();
+    if ($loaidm < 0) {
+        $errors['loaidm'] = "Loại danh mục phải là số không âm.";
+    } elseif ($loaidm > 0) { // Chỉ kiểm tra tồn tại nếu loaidm > 0
         $stmt = $pdo->prepare("SELECT iddm FROM danhmucsp WHERE iddm = :loaidm");
         $stmt->execute(['loaidm' => $loaidm]);
         if (!$stmt->fetch()) {
@@ -56,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['themdmcon'])) {
             $errors['icon'] = "Icon không được vượt quá 2MB.";
         } else {
             // Xử lý upload icon
-            $target_dir = "../uploads/";
+            $target_dir = "../icon/";
             $file_extension = pathinfo($_FILES['icon']['name'], PATHINFO_EXTENSION);
             $target_file = $target_dir . uniqid() . '.' . $file_extension;
             if (!move_uploaded_file($_FILES['icon']['tmp_name'], $target_file)) {
@@ -69,13 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['themdmcon'])) {
     if (empty($errors)) {
         $kq = themDMcon($tendm, $loaidm, $mota, $target_file);
         if ($kq['success']) {
-            echo "
-                <script>
-                    showCustomAlert('🐳 Thêm Thành Công!', 'Danh mục đã được thêm vào danh sách!', '../picture/success.png');
-                    setTimeout(function() {
-                        goBack();
-                    }, 3000);
-                </script>";
+            echo "<script>window.top.location.href = '../trangchu.php?status=themdmT';</script>";
         } else {
             $errors['general'] = $kq['message'];
         }
@@ -175,8 +170,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['themdmcon'])) {
                 </div>
                 <div class="col-md-6 mb-2">
                     <label for="loaidm"><i class="fas fa-list"></i> Loại danh mục</label>
-                    <input type="number" id="loaidm" name="loaidm" class="form-control" min="1" required value="<?= htmlspecialchars($loaidm ?? '') ?>">
-                    <div class="error" id="loaidmError"><?= isset($errors['loaidm']) ? $errors['loaidm'] : 'Loại danh mục phải là số dương.' ?></div>
+                    <select id="loaidm" name="loaidm" class="form-control" required>
+                        <option value="0" <?= $loaidm == 0 ? 'selected' : '' ?>>Danh mục gốc</option>
+                        <?php foreach ($parent_categories as $category): ?>
+                            <option value="<?= htmlspecialchars($category['iddm']) ?>" <?= $loaidm == $category['iddm'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($category['tendm']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <div class="error" id="loaidmError"><?= isset($errors['loaidm']) ? $errors['loaidm'] : 'Vui lòng chọn loại danh mục.' ?></div>
                 </div>
             </div>
 
@@ -206,12 +208,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['themdmcon'])) {
 
     <script>
         function goBack() {
-            window.history.back();
+            window.top.location.href = "../trangchu.php";
         }
 
         // Kiểm tra định dạng client-side
         const form = document.getElementById('categoryForm');
-        const inputs = form.querySelectorAll('input, textarea');
+        const inputs = form.querySelectorAll('input, textarea, select');
 
         function validateInput(input) {
             const errorElement = document.getElementById(`${input.id}Error`);
@@ -274,7 +276,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['themdmcon'])) {
                 if (input.required && input.value.trim() === '') {
                     input.classList.add('is-invalid');
                     const errorElement = document.getElementById(`${input.id}Error`);
-                    errorElement.textContent = `Vui lòng nhập ${input.placeholder.toLowerCase()}.`;
+                    errorElement.textContent = `Vui lòng ${input.tagName === 'SELECT' ? 'chọn' : 'nhập'} ${input.placeholder?.toLowerCase() || input.labels[0].textContent.toLowerCase()}.`;
                     errorElement.style.display = 'block';
                     hasError = true;
                 } else if (!input.checkValidity()) {

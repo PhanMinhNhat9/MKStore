@@ -21,7 +21,7 @@
         echo "
         <script>
             alert('Tài khoản của bạn đã bị xóa và sẽ được xóa hoàn toàn sau 30 ngày!');
-            window.location.href = 'logout.php';
+            window.location.href = 'auth/logout.php';
         </script>";
     }
 
@@ -688,6 +688,21 @@
                 echo "<script>showCustomAlert('Thành Công!', 'Cập nhật ảnh thành công!', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
             } 
             else if ($_GET['status'] === 'cnanhuserF') {
+                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
+            }
+            else if ($_GET['status'] === 'laylaispT') {
+                echo "<script>showCustomAlert('Lấy lại tài khoản thành công!', '', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
+            }
+            else if ($_GET['status'] === 'laylaispF') {
+                echo "<script>showCustomAlert('Lỗi khi cấp lại tài!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
+            }
+            else if ($_GET['status'] === 'themdmT') {
+                echo "<script>showCustomAlert('Thêm danh mục thành công', '', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
+            }
+            else if ($_GET['status'] === 'cndmT') {
+                echo "<script>showCustomAlert('Thành Công!', 'Cập nhật ảnh thành công!', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
+            } 
+            else if ($_GET['status'] === 'cndmF') {
                 echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
             }
         }

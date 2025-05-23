@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['themsp'])) {
     // Nếu không có lỗi, tiến hành thêm sản phẩm
     if (empty($errors)) {
         // Xử lý upload ảnh
-        $target_dir = "../uploads/";
+        $target_dir = "../picture/";
         $file_extension = pathinfo($_FILES['anh']['name'], PATHINFO_EXTENSION);
         $target_file = $target_dir . uniqid() . '.' . $file_extension;
 
@@ -215,7 +215,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['themsp'])) {
 
     <script>
         function goBack() {
-            window.history.back();
+            window.top.location.href = "../trangchu.php";
         }
 
         function handleImage(event = null) {

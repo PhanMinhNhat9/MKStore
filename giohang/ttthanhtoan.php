@@ -202,6 +202,7 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
         qrImage.src = '../picture/macode.jpg';
       } else {
         // Không cần cập nhật QR code cho tiền mặt vì khung bị ẩn
+        
       }
 
       // Cập nhật mã đơn hàng trong thông tin ví
@@ -218,7 +219,7 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
       const info = walletInfo.querySelector('.info');
 
       // Cập nhật thông tin VNPay
-      qrImage.src = '../picture/vnpay_qr.jpg'; // Thay bằng QR thực tế của bạn
+      qrImage.src = '../picture/qrvnpay.png'; // Thay bằng QR thực tế của bạn
       walletLogo.src = '../picture/vnpay.png';
       info.innerHTML = `
         <p><strong>Ví điện tử:</strong> VNPay</p>

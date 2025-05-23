@@ -247,6 +247,24 @@
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     <?php endif; ?>
+                                <?php elseif ($_SESSION['user']['quyen'] == 0): ?>
+                                    <?php if ( $user['quyen'] != 2589): ?>
+                                    <!-- Nút Cập nhật và Xóa cho tài khoản bình thường -->
+                                        <button 
+                                            onclick="capnhatnguoidung(<?= $user['iduser'] ?>)"
+                                            class="btn btn-update"
+                                            aria-label="Cập nhật người dùng"
+                                        >
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button 
+                                            onclick="xoanguoidung(<?= $user['iduser'] ?>)"
+                                            class="btn btn-delete"
+                                            aria-label="Xóa người dùng"
+                                        >
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
                         </article>
@@ -421,14 +439,15 @@ window.addEventListener('DOMContentLoaded', () => {
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            showCustomAlert('Thành công!', 'Tài khoản đã được xóa.', '../picture/success.png');
-                            setTimeout(() => location.reload(), 3000);
+                            // showCustomAlert('Thành công!', 'Tài khoản đã được xóa.', '../picture/success.png');
+                            // setTimeout(() => location.reload(), 30000);
+                            window.top.location.href = '../trangchu.php?status=laylaispT';
                         } else {
-                            showCustomAlert('Lỗi!', data.message, '../picture/error.png');
+                            // showCustomAlert('Lỗi!', data.message, '../picture/error.png');
                         }
                     })
                     .catch(error => {
-                        showCustomAlert('Lỗi!', 'Đã xảy ra lỗi khi xử lý.', '../picture/error.png');
+                        // showCustomAlert('Lỗi!', 'Đã xảy ra lỗi khi xử lý.', '../picture/error.png');
                     });
                 }
             }

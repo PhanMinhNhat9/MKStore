@@ -287,13 +287,11 @@ function themmgg() {
     window.location.href = "themmgg.php";
 }
 function capnhatmgg(idmgg) {
-    let encodedId = btoa(idmgg);
-    window.location.href = "capnhatmgg.php?id=" + encodeURIComponent(encodedId);
+    window.location.href = "capnhatmgg.php?id=" + encodeURIComponent(idmgg);
 }
 function xoamgg(idmgg) {
     if (confirm("Bạn có chắc chắn muốn xóa mã giảm giá này không?")) {
-        let encodedId = btoa(idmgg);
-        window.location.href = "xoamgg.php?id=" + encodeURIComponent(encodedId);
+        window.location.href = "xoamgg.php?id=" + encodeURIComponent(idmgg);
     }
 }
 // Hàm đăng xuất

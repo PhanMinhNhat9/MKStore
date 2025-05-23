@@ -196,7 +196,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['themnd'])) {
                     <i class="fas fa-user-tag"></i>
                     <select name="role" id="role" required>
                         <option value="">Chọn quyền</option>
-                        <option value="0">Admin</option>
+                        <option value="2589">Quản trị viên</option>
+                        <option value="0">Nhân viên</option>
                         <option value="1">User</option>
                     </select>
                     <div class="error" id="roleError"><?= isset($errors['role']) ? $errors['role'] : 'Vui lòng chọn quyền.' ?></div>
