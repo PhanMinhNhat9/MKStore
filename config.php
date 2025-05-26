@@ -12,14 +12,14 @@
     }
 
     function connectDatabase(): PDO {
-        $host = "localhost";  
-        $dbname = "u797172436_qua"; 
-        $username = "u797172436_qua";   
-        $password = "Nhta@22004335";   
         // $host = "localhost";  
-        // $dbname = "quanlybanpk"; 
-        // $username = "root";   
-        // $password = ""; 
+        // $dbname = "u797172436_qua"; 
+        // $username = "u797172436_qua";   
+        // $password = "Nhta@22004335";   
+        $host = "localhost";  
+        $dbname = "quanlybanpk"; 
+        $username = "root";   
+        $password = ""; 
         try {
             $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
             $options = [
