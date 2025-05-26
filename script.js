@@ -225,14 +225,14 @@ function showSuccessMessage(message) {
     alertBox.innerText = message;
     alertBox.style.display = "flex";
     alertBox.classList.add("show");
-    let audio = new Audio('amthanh/thanhcong.mp3'); 
+    let audio = new Audio('../amthanh/thanhcong.mp3'); 
     audio.play();
     setTimeout(() => {
         alertBox.classList.remove("show");
         setTimeout(() => {
             alertBox.style.display = "none";
         }, 300);
-    }, 30000);
+    }, 3000);
 }
 
 function showErrorMessage(message) {
