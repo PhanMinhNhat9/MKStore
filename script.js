@@ -44,6 +44,18 @@ function loadPhanHoi() {
     }, 100);
 }
 
+function xuatbaocao() {
+    localStorage.removeItem("homeButtonClicked");
+    setTimeout(() => {
+        let iframe = document.getElementById("Frame");
+        if (iframe) {
+            iframe.src = "baocaotk/xuatbaocao.php";
+        } else {
+            console.error("Không tìm thấy iframe có ID 'Frame'");
+        }
+    }, 100);
+}
+
 function loadThongBao() {
     localStorage.setItem('loadthongbao', 'true');
     const badge = document.querySelector('#menu-tb span');

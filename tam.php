@@ -1,469 +1,607 @@
+<?php 
+require_once '../config.php';
+$pdo = connectDatabase();
+
+// Lấy danh mục
+$stmt_dm = $pdo->query("SELECT iddm, tendm, loaidm, icon, mota, thoigian FROM danhmucsp ORDER BY loaidm, iddm");
+$categories = $stmt_dm->fetchAll(PDO::FETCH_ASSOC);
+
+// Lấy sản phẩm có phân trang và lọc giá
+$query = isset($_GET['query']) ? trim($_GET['query']) : '';
+$dm = isset($_GET['iddm']) ? trim($_GET['iddm']) : '';
+$min_price = isset($_GET['min_price']) && is_numeric($_GET['min_price']) ? (float)$_GET['min_price'] : '';
+$max_price = isset($_GET['max_price']) && is_numeric($_GET['max_price']) ? (float)$_GET['max_price'] : '';
+$products = [];
+$params = [];
+$limit = 10; // Số sản phẩm mỗi trang
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
+$sql = "SELECT sp.idsp, sp.tensp, sp.giaban, sp.anh, sp.soluong, sp.iddm,
+               COALESCE(SUM(ctdh.soluong), 0) AS soluong_daban,
+               COALESCE(AVG(dg.sosao), 0) AS trungbinhsao,
+               (sp.soluong - COALESCE(SUM(ctdh.soluong), 0)) AS soluong_conlai,
+               mg.phantram AS giamgia
+        FROM sanpham sp
+        LEFT JOIN chitietdonhang ctdh ON sp.idsp = ctdh.idsp
+        LEFT JOIN donhang dh ON ctdh.iddh = dh.iddh AND dh.trangthai = 'Đã thanh toán'
+        LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
+        LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm AND CURDATE() BETWEEN mg.ngayhieuluc AND mg.ngayketthuc";
+
+$conditions = [];
+if ($query !== '') {
+    $conditions[] = "sp.tensp LIKE :searchTerm";
+    $params['searchTerm'] = "%$query%";
+}
+if ($dm !== '') {
+    $conditions[] = "sp.iddm = :iddm";
+    $params['iddm'] = $dm;
+}
+if ($min_price !== '') {
+    $conditions[] = "sp.giaban >= :min_price";
+    $params['min_price'] = $min_price;
+}
+if ($max_price !== '') {
+    $conditions[] = "sp.giaban <= :max_price";
+    $params['max_price'] = $max_price;
+}
+
+if (!empty($conditions)) {
+    $sql .= " WHERE " . implode(" AND ", $conditions);
+}
+
+$sql .= " GROUP BY sp.idsp ORDER BY sp.thoigianthemsp DESC LIMIT :limit OFFSET :offset";
+
+$stmt = $pdo->prepare($sql);
+foreach ($params as $key => $value) {
+    $stmt->bindValue(':' . $key, $value, is_numeric($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+}
+$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
+
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$count_sql = "SELECT COUNT(DISTINCT sp.idsp) FROM sanpham sp";
+if (!empty($conditions)) {
+    $count_sql .= " WHERE " . implode(" AND ", $conditions);
+}
+
+$count_stmt = $pdo->prepare($count_sql);
+if ($query !== '') {
+    $count_stmt->bindValue(':searchTerm', "%$query%");
+}
+if ($dm !== '') {
+    $count_stmt->bindValue(':iddm', $dm);
+}
+if ($min_price !== '') {
+    $count_stmt->bindValue(':min_price', $min_price);
+}
+if ($max_price !== '') {
+    $count_stmt->bindValue(':max_price', $max_price);
+}
+$count_stmt->execute();
+
+$total_products = $count_stmt->fetchColumn();
+$total_pages = ceil($total_products / $limit);
+?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Hóa đơn bán hàng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sản Phẩm Theo Danh Mục - Hệ Thống Bán Hàng</title>
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="../sweetalert2/sweetalert2.min.js"></script>
-    <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="../script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
-
         body {
-            font-family: 'Roboto Mono', monospace;
-            background: #e7f0fb;
+            font-size: 0.9rem;
+            background-color: #f4f6f9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        /* Header */
+        header {
+            background-color: #3b82f6; /* Bright blue for a vibrant look */
+            color: white;
+            padding: 0.75rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-top {
             display: flex;
-            justify-content: center;
-            padding: 30px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
-        .receipt {
-            background: #fff;
-            width: 360px;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.2);
-            border: 1px solid #d0e3ff;
-            color: #003366;
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 1px;
         }
-        .receipt h2 {
-            text-align: center;
-            color: #0066cc;
-            margin-bottom: 4px;
+
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
-        .receipt .info, .receipt .total {
-            font-size: 14px;
-            margin-top: 10px;
+
+        .category-select {
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            background-color: white;
+            font-size: 0.9rem;
+            max-width: 250px;
+            outline: none;
         }
-        .receipt table {
+
+        .category-select option {
+            padding: 0.5rem;
+        }
+
+        .category-select option.child {
+            padding-left: 1.5rem;
+        }
+
+        .price-filter {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .price-filter input {
+            width: 110px;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .price-filter button, .clear-filter {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .price-filter button:hover, .clear-filter:hover {
+            background-color: #1e40af;
+        }
+
+        .btnthem {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s ease;
+        }
+
+        .btnthem:hover {
+            background-color: #059669;
+        }
+        /* Main Content */
+        main {
+            padding: 1rem;
+        }
+        .product-card {
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-card.out-of-stock {
+            opacity: 0.7;
+            background: #fee2e2;
+        }
+
+        .product-card img {
             width: 100%;
-            font-size: 14px;
-            border-collapse: collapse;
-            margin-top: 10px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
         }
-        .receipt table th,
-        .receipt table td {
-            text-align: left;
-            padding: 6px 4px;
+
+        .product-card-body {
+            padding: 0.5rem;
         }
-        .receipt table th {
-            border-bottom: 1px solid #bcd8f8;
-            color: #005bb5;
+
+        .product-name {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            position: relative;
         }
-        .receipt table tr:nth-child(even) {
-            background-color: #f5faff;
+
+        .tooltip-custom {
+            position: relative;
         }
-        .receipt .total {
-            border-top: 1px solid #bcd8f8;
-            padding-top: 10px;
-            margin-top: 10px;
-        }
-        .right {
-            text-align: right;
-        }
-        .center {
+
+        .tooltip-custom:hover:after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color:rgb(86, 120, 131);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            max-width: 200px;
+            word-wrap: break-word;
+            white-space: normal;
+            z-index: 1000;
             text-align: center;
         }
-        .small {
-            font-size: 12px;
-            text-align: center;
-            margin-top: 10px;
-            color: #555;
+
+        .price {
+            margin-bottom: 0.5rem;
         }
-        .bold {
+
+        .new-price {
+            font-size: 1rem;
+            color: #dc2626;
             font-weight: bold;
         }
-        .button-container {
+
+        .old-price {
+            font-size: 0.8rem;
+            color: #6b7280;
+            text-decoration: line-through;
+            margin-right: 0.5rem;
+        }
+
+        .discount {
+            font-size: 0.8rem;
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .info p {
+            font-size: 0.75rem;
+            color: #4b5563;
+            margin-bottom: 0.25rem;
+        }
+
+        .info i {
+            margin-right: 0.5rem;
+            color: #2563eb;
+        }
+
+        .action-button {
+            transition: all 0.2s ease;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            border: none;
+            background: #ffffff;
+        }
+
+        .action-button:hover {
+            background-color: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        .no-products {
+            text-align: center;
+            color: #4b5563;
+            font-size: 1rem;
+            padding: 1rem;
+        }
+
+        /* Pagination */
+        .pagination {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin: 15px 0 0;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
         }
-        .back-button, .export-button {
-            padding: 8px 16px;
-            background-color: #0066cc;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+
+        .btn-nav {
+            padding: 0.5rem 1rem;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.2s;
         }
-        .back-button:hover, .export-button:hover {
-            background-color: #005bb5;
+
+        .btn-nav:hover {
+            background: #1e40af;
+        }
+
+        .pagination span {
+            font-size: 0.9rem;
+            color: #1f2937;
+        }
+
+        /* Alerts */
+        .alert {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 0.75rem;
+            border-radius: 4px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .alert-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .alert-error {
+            background: #dc2626;
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .filter-group {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .category-select {
+                width: 100%;
+                max-width: none;
+            }
+
+            .price-filter input {
+                width: 100%;
+            }
+
+            .product-card-body {
+                font-size: 0.7rem;
+            }
         }
     </style>
 </head>
 <body>
-<?php
-require_once '../config.php';
-$pdo = connectDatabase();
+    <!-- Alerts -->
+    <div id="success-alert" class="alert alert-success"></div>
+    <div id="error-alert" class="alert alert-error"></div>
 
-$iddh = isset($_GET['iddh']) ? intval($_GET['iddh']) : 0;
+    <!-- Header -->
+    <header>
+        <div class="container-fluid">
+            <div class="header-top">
+                <h1 class="header-title">Quản lý sản phẩm</h1>
+                <div class="filter-group">
+                    <select class="category-select" onchange="filterByCategory(this.value)" aria-label="Chọn danh mục">
+                        <option value="">Tất cả danh mục</option>
+                        <?php
+                        $categoryTree = [];
+                        foreach ($categories as $category) {
+                            if ($category['loaidm'] == 0) {
+                                $categoryTree[$category['iddm']] = $category;
+                                $categoryTree[$category['iddm']]['children'] = [];
+                            } else {
+                                $categoryTree[$category['loaidm']]['children'][] = $category;
+                            }
+                        }
+                        foreach ($categoryTree as $parent): ?>
+                            <option value="<?= $parent['iddm'] ?>" <?= $dm == $parent['iddm'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($parent['tendm']) ?>
+                            </option>
+                            <?php foreach ($parent['children'] as $child): ?>
+                                <option value="<?= $child['iddm'] ?>" class="child" <?= $dm == $child['iddm'] ? 'selected' : '' ?>>
+                                    &nbsp;&nbsp;└ <?= htmlspecialchars($child['tendm']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    </select>
+                    <div class="price-filter">
+                        <input type="number" id="min-price" placeholder="Giá tối thiểu" value="<?= $min_price !== '' ? $min_price : '' ?>" aria-label="Giá tối thiểu">
+                        <input type="number" id="max-price" placeholder="Giá tối đa" value="<?= $max_price !== '' ? $max_price : '' ?>" aria-label="Giá tối đa">
+                        <button onclick="filterByPrice()">Lọc</button>
+                    </div>
+                    <button class="clear-filter" onclick="clearFilters()">Xóa lọc</button>
+                    <?php if ($_SESSION['user']['quyen'] != 1): ?>
+                        <button class="btnthem" onclick="themsanpham()" aria-label="Thêm sản phẩm">
+                            <i class="fas fa-plus-circle"></i> Thêm Sản Phẩm
+                        </button>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </header>
 
-if ($iddh > 0) {
-    $sql = "
-        SELECT sp.tensp, ctdh.soluong, ctdh.gia, ctdh.giagoc, ctdh.giagiam
-        FROM chitietdonhang ctdh
-        JOIN sanpham sp ON ctdh.idsp = sp.idsp
-        WHERE ctdh.iddh = :iddh
-    ";
+    <!-- Main Content -->
+    <main>
+        <div class="container-fluid">
+            <section class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
+                <?php if (empty($products)): ?>
+                    <div class="col">
+                        <div class="no-products">Không tìm thấy sản phẩm.</div>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($products as $row): ?>
+                        <?php
+                        $soluong_conlai = max(0, $row['soluong_conlai']);
+                        $classOutOfStock = ($soluong_conlai <= 0) ? "out-of-stock" : "";
+                        $giagoc = $row['giaban'];
+                        $phantram_giam = $row['giamgia'] ?? 0;
+                        $gia_sau_giam = ($phantram_giam > 0) ? $giagoc * (1 - $phantram_giam / 100) : $giagoc;
+                        ?>
+                        <div class="col">
+                            <article class="product-card <?= $classOutOfStock ?>">
+                                <img 
+                                    src="../<?= htmlspecialchars($row['anh']) ?>" 
+                                    alt="Ảnh sản phẩm" 
+                                    loading="lazy"
+                                >
+                                <div class="product-card-body">
+                                    <h3 class="product-name tooltip-custom" data-tooltip="<?= htmlspecialchars($row['tensp']) ?>">
+                                        <?= htmlspecialchars(mb_strimwidth($row['tensp'], 0, 50, "...")) ?>
+                                    </h3>
+                                    <div class="price">
+                                        <?php if ($phantram_giam > 0): ?>
+                                            <span class="old-price"><?= number_format($giagoc, 0, ",", ".") ?>đ</span>
+                                            <span class="discount">-<?= (int)$phantram_giam ?>%</span>
+                                            <span class="new-price"><?= number_format($gia_sau_giam, 0, ",", ".") ?>đ</span>
+                                        <?php else: ?>
+                                            <span class="new-price"><?= number_format($giagoc, 0, ",", ".") ?>đ</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="info">
+                                        <p><i class="fas fa-box"></i> SL: <strong><?= (int)$row['soluong'] ?></strong></p>
+                                        <p><i class="fas fa-shopping-cart"></i> Đã bán: <strong><?= (int)$row['soluong_daban'] ?></strong></p>
+                                        <p><i class="fas fa-warehouse"></i> Còn lại: <strong><?= ($soluong_conlai > 0 ? $soluong_conlai : 'Hết hàng') ?></strong></p>
+                                        <p><i class="fas fa-star"></i> <?= round($row['trungbinhsao'], 1) ?> sao</p>
+                                    </div>
+                                    <div class="d-flex gap-2 mt-2">
+                                        <?php if ($_SESSION['user']['quyen'] != 1): ?>
+                                            <button 
+                                                class="action-button text-primary tooltip-custom"
+                                                onclick="capnhatsanpham(<?= $row['idsp'] ?>)"
+                                                data-tooltip="Cập nhật sản phẩm"
+                                                aria-label="Cập nhật sản phẩm"
+                                            >
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button 
+                                                class="action-button text-danger tooltip-custom"
+                                                onclick="xoasanpham(<?= $row['idsp'] ?>)"
+                                                data-tooltip="Xóa sản phẩm"
+                                                aria-label="Xóa sản phẩm"
+                                            >
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        <?php endif; ?>
+                                        <?php if ($soluong_conlai > 0): ?>
+                                            <button 
+                                                class="action-button text-success tooltip-custom"
+                                                onclick="themvaogiohang(<?= (int)$row['idsp'] ?>, <?= (int)$row['soluong_daban'] ?>)"
+                                                data-tooltip="Thêm vào giỏ hàng"
+                                                aria-label="Thêm vào giỏ hàng"
+                                            >
+                                                <i class="fas fa-cart-plus"></i>
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </section>
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':iddh', $iddh, PDO::PARAM_INT);
-    $stmt->execute();
+            <!-- Pagination -->
+            <nav class="pagination">
+                <?php
+                $baseUrl = '?';
+                $urlParams = [];
+                if ($query !== '') {
+                    $urlParams[] = 'query=' . urlencode($query);
+                }
+                if ($dm !== '') {
+                    $urlParams[] = 'iddm=' . urlencode($dm);
+                }
+                if ($min_price !== '') {
+                    $urlParams[] = 'min_price=' . urlencode($min_price);
+                }
+                if ($max_price !== '') {
+                    $urlParams[] = 'max_price=' . urlencode($max_price);
+                }
+                if (!empty($urlParams)) {
+                    $baseUrl .= implode('&', $urlParams) . '&';
+                }
+                ?>
+                <?php if ($page > 1): ?>
+                    <a href="<?= $baseUrl ?>page=<?= $page - 1 ?>" class="btn-nav">← Trước</a>
+                <?php endif; ?>
+                <span>Trang <?= $page ?> / <?= $total_pages ?></span>
+                <?php if ($page < $total_pages): ?>
+                    <a href="<?= $baseUrl ?>page=<?= $page + 1 ?>" class="btn-nav">Sau →</a>
+                <?php endif; ?>
+            </nav>
+        </div>
+    </main>
 
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} else {
-    echo "ID đơn hàng không hợp lệ!";
-}
-?>
-
-<div class="receipt">
-    <h2>MKStore</h2>
-    <div class="center">Địa chỉ: 73 Nguyễn Huệ, phường 2, thành phố Vĩnh Long, tỉnh Vĩnh Long </div>
-    <div class="center">SĐT: 0702 804 594</div>
-    <hr style="border: none; border-top: 1px dashed #a2c7f5; margin: 10px 0;">
-
-    <div class="info">
-        <?php date_default_timezone_set('Asia/Ho_Chi_Minh'); ?>
-        <div>📅 Ngày: <?= date('d/m/Y H:i:s') ?></div>
-        <div>🧾 Mã ĐH: <?= $iddh ?></div>
-        <?php 
-            $stmt = $pdo->prepare("SELECT hoten FROM user WHERE iduser = :iduser");
-            $stmt->bindParam(':iduser', $_SESSION['user']['iduser'], PDO::PARAM_INT);
-            $stmt->execute();
-        
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        ?>
-        <div>👤 Thu ngân: <?= htmlspecialchars($row['hoten']) ?> </div>
-    </div>
-    <?php
-        $hoten=$row['hoten'];
-        echo $hoten;
-    ?>
-    <table>
-        <thead>
-        <tr>
-            <th>Sản phẩm</th>
-            <th>SL</th>
-            <th class="right">Giá gốc</th>
-            <th class="right">Giá giảm</th>
-            <th class="right">Thành tiền</th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($data as $row) { ?>
-        <tr>
-            <td><?= htmlspecialchars($row['tensp']) ?></td>
-            <td><?= $row['soluong'] ?></td>
-            <td class="right"><?= number_format($row['giagoc'], 0, ',', '.') ?> VNĐ</td>
-            <td class="right"><?= number_format($row['giagiam'], 0, ',', '.') ?> VNĐ</td>
-            <td class="right"><?= number_format($row['gia'], 0, ',', '.') ?> VNĐ</td>
-        </tr>
-        <?php } ?>
-        </tbody>
-    </table>
-    <?php
-        $tienmat = isset($_GET['amount']) ? intval($_GET['amount']) : 0;
-        $tienthoi = isset($_GET['tienthoi']) ? intval($_GET['tienthoi']) : 0;
-
-        $sql = "SELECT tongtien FROM donhang WHERE iddh = :iddh LIMIT 1";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':iddh', $iddh, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    ?>
-    <div class="total">
-        <div class="bold">Tổng cộng: <span class="right"><?= number_format($result['tongtien'], 0, ',', '.') ?> VNĐ</span></div>
-        <div>Tiền mặt: <span class="right"><?= number_format($tienmat, 0, ',', '.') ?> VNĐ</span></div>
-        <div>Tiền thối: <span class="right"><?= number_format($tienthoi, 0, ',', '.') ?> VNĐ</span></div>
-    </div>
-
-    <div class="small">
-        --- Cảm ơn quý khách đã mua hàng tại MKStore ---<br>
-        Giữ hóa đơn để đổi/trả hàng trong vòng 3 ngày.
-    </div>
-
-    <div class="button-container">
-        <button class="back-button">Trở về</button>
-        <button class="export-button">Xuất hóa đơn</button>
-    </div>
-</div>
-<?php
-$idnv = $_SESSION['user']['iduser'] ?? null;
-    if ($iddh > 0 && $idnv !== null) {
-        $stmt = $pdo->prepare("
-            INSERT INTO hoadon (iddh, idnv, tiennhan, tienthoi) 
-            VALUES (:iddh, :idnv, :tiennhan, :tienthoi)
-        ");
-        $stmt->execute([
-            ':iddh' => $iddh,
-            ':idnv' => $idnv,
-            ':tiennhan' => $tienmat,
-            ':tienthoi' => $tienthoi
-        ]);
-    } else {
-        echo "Thiếu thông tin để thêm hóa đơn!";
-    }
-?>
-
-<script>
-// Chuyển dữ liệu PHP sang JavaScript
-const invoiceData = {
-    iddh: <?= json_encode($iddh) ?>,
-    hoten: <?= json_encode($hoten ?? 'Không xác định') ?>,
-    ngay: <?= json_encode(date('d/m/Y H:i:s')) ?>,
-    tongtien: <?= json_encode(number_format($result['tongtien'] ?? 0, 0, ',', '.')) ?>,
-    tienmat: <?= json_encode(number_format($tienmat, 0, ',', '.')) ?>,
-    tienthoi: <?= json_encode(number_format($tienthoi, 0, ',', '.')) ?>,
-    items: [
-        <?php foreach ($data as $row) { ?>
-        {
-            tensp: <?= json_encode($row['tensp']) ?>,
-            soluong: <?= json_encode($row['soluong']) ?>,
-            giagoc: <?= json_encode(number_format($row['giagoc'], 0, ',', '.')) ?>,
-            giagiam: <?= json_encode(number_format($row['giagiam'], 0, ',', '.')) ?>,
-            gia: <?= json_encode(number_format($row['gia'], 0, ',', '.')) ?>
-        },
-        <?php } ?>
-    ]
-};
-
-// Gỡ lỗi: Kiểm tra dữ liệu invoiceData
-console.log('invoiceData:', invoiceData);
-
-// Xử lý nút Trở về
-document.querySelector('.back-button').addEventListener('click', function() {
-    Swal.fire({
-        title: 'Xác nhận',
-        text: 'Bạn có muốn quay về trang chủ không?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Hủy',
-        buttonsStyling: true,
-        customClass: {
-            confirmButton: 'btn btn-primary',
-            cancelButton: 'btn btn-secondary'
+    <!-- JavaScript -->
+    <script>
+        function themsanpham() {
+            window.location.href = "themsanpham.php";
         }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = '../trangchu.php';
+
+        function filterByCategory(iddm) {
+            const url = new URL(window.location);
+            if (iddm) {
+                url.searchParams.set('iddm', iddm);
+            } else {
+                url.searchParams.delete('iddm');
+            }
+            url.searchParams.delete('page'); // Reset to page 1
+            window.location.href = url.toString();
         }
-    });
-});
 
-// Xử lý nút Xuất hóa đơn
-document.querySelector('.export-button').addEventListener('click', function() {
-    const { Document, Packer, Paragraph, Table, TableRow, TableCell, WidthType, TextRun, AlignmentType } = docx;
+        function filterByPrice() {
+            const minPrice = document.getElementById('min-price').value;
+            const maxPrice = document.getElementById('max-price').value;
+            const url = new URL(window.location);
+            
+            if (minPrice) {
+                url.searchParams.set('min_price', minPrice);
+            } else {
+                url.searchParams.delete('min_price');
+            }
+            if (maxPrice) {
+                url.searchParams.set('max_price', maxPrice);
+            } else {
+                url.searchParams.delete('max_price');
+            }
+            url.searchParams.delete('page'); // Reset to page 1
+            window.location.href = url.toString();
+        }
 
-    // Tạo tài liệu Word
-    const doc = new Document({
-        sections: [{
-            properties: {},
-            children: [
-                // Tiêu đề
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "MKStore",
-                            bold: true,
-                            size: 32,
-                            color: "0066CC"
-                        })
-                    ],
-                    alignment: AlignmentType.CENTER
-                }),
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "Địa chỉ: 73 Nguyễn Huệ, phường 2, thành phố Vĩnh Long, tỉnh Vĩnh Long",
-                            size: 24
-                        })
-                    ],
-                    alignment: AlignmentType.CENTER
-                }),
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "SĐT: 0702 804 594",
-                            size: 24
-                        })
-                    ],
-                    alignment: AlignmentType.CENTER
-                }),
-                new Paragraph({ text: "" }),
-
-                // Thông tin hóa đơn
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: `📅 Ngày: ${invoiceData.ngay}`,
-                            size: 24
-                        })
-                    ]
-                }),
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: `🧾 Mã ĐH: ${invoiceData.iddh}`,
-                            size: 24
-                        })
-                    ]
-                }),
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: `👤 Thu ngân: ${invoiceData.hoten || 'Không xác định'}`,
-                            size: 24
-                        })
-                    ]
-                }),
-                new Paragraph({ text: "" }),
-
-                // Bảng sản phẩm
-                new Table({
-                    width: {
-                        size: 100,
-                        type: WidthType.PERCENTAGE
-                    },
-                    rows: [
-                        new TableRow({
-                            children: [
-                                new TableCell({
-                                    children: [new Paragraph({ text: "Sản phẩm", bold: true })],
-                                    width: { size: 40, type: WidthType.PERCENTAGE }
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph({ text: "SL", bold: true })],
-                                    width: { size: 10, type: WidthType.PERCENTAGE }
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph({ text: "Giá gốc", bold: true, alignment: AlignmentType.RIGHT })],
-                                    width: { size: 15, type: WidthType.PERCENTAGE }
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph({ text: "Giá giảm", bold: true, alignment: AlignmentType.RIGHT })],
-                                    width: { size: 15, type: WidthType.PERCENTAGE }
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph({ text: "Thành tiền", bold: true, alignment: AlignmentType.RIGHT })],
-                                    width: { size: 20, type: WidthType.PERCENTAGE }
-                                })
-                            ]
-                        }),
-                        ...invoiceData.items.map(item => 
-                            new TableRow({
-                                children: [
-                                    new TableCell({
-                                        children: [new Paragraph({ text: item.tensp || '' })]
-                                    }),
-                                    new TableCell({
-                                        children: [new Paragraph({ text: item.soluong.toString() })]
-                                    }),
-                                    new TableCell({
-                                        children: [new Paragraph({ text: `${item.giagoc} VNĐ`, alignment: AlignmentType.RIGHT })]
-                                    }),
-                                    new TableCell({
-                                        children: [new Paragraph({ text: `${item.giagiam} VNĐ`, alignment: AlignmentType.RIGHT })]
-                                    }),
-                                    new TableCell({
-                                        children: [new Paragraph({ text: `${item.gia} VNĐ`, alignment: AlignmentType.RIGHT })]
-                                    })
-                                ]
-                            })
-                        )
-                    ]
-                }),
-
-                // Tổng tiền
-                new Paragraph({ text: "" }),
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "Tổng cộng: ",
-                            bold: true,
-                            size: 24
-                        }),
-                        new TextRun({
-                            text: `${invoiceData.tongtien} VNĐ`,
-                            size: 24
-                        })
-                    ],
-                    alignment: AlignmentType.RIGHT
-                }),
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "Tiền mặt: ",
-                            size: 24
-                        }),
-                        new TextRun({
-                            text: `${invoiceData.tienmat} VNĐ`,
-                            size: 24
-                        })
-                    ],
-                    alignment: AlignmentType.RIGHT
-                }),
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "Tiền thối: ",
-                            size: 24
-                        }),
-                        new TextRun({
-                            text: `${invoiceData.tienthoi} VNĐ`,
-                            size: 24
-                        })
-                    ],
-                    alignment: AlignmentType.RIGHT
-                }),
-
-                // Chân trang
-                new Paragraph({ text: "" }),
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "--- Cảm ơn quý khách đã mua hàng tại MKStore ---",
-                            size: 20
-                        })
-                    ],
-                    alignment: AlignmentType.CENTER
-                }),
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "Giữ hóa đơn để đổi/trả hàng trong vòng 3 ngày.",
-                            size: 20
-                        })
-                    ],
-                    alignment: AlignmentType.CENTER
-                })
-            ]
-        }]
-    });
-
-    // Tạo và tải file Word
-    Packer.toBlob(doc).then(blob => {
-        saveAs(blob, `HoaDon_MaDH_${invoiceData.iddh}.docx`);
-        Swal.fire({
-            title: 'Thành công',
-            text: 'Hóa đơn đã được xuất thành công!',
-            icon: 'success',
-            confirmButtonText: 'OK'
-        });
-    }).catch(error => {
-        console.error('Lỗi khi xuất file Word:', error);
-        Swal.fire({
-            title: 'Lỗi',
-            text: 'Không thể xuất hóa đơn. Vui lòng thử lại!',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-    });
-});
-</script>
+        function clearFilters() {
+            const url = new URL(window.location);
+            url.searchParams.delete('iddm');
+            url.searchParams.delete('min_price');
+            url.searchParams.delete('max_price');
+            url.searchParams.delete('page');
+            window.location.href = url.toString();
+        }
+    </script>
 </body>
 </html>

@@ -12,7 +12,7 @@ try {
 $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $status = isset($_GET['status']) ? trim($_GET['status']) : 'all';
 
-// Xây dựng truy vấn SQL
+// Xây dựng truy vấn SQL cho đơn hàng
 try {
     $params = [];
     $sql = "SELECT iddh, sdt, tenkh, tongtien, trangthai, hientrang, phuongthuctt, thoigian FROM donhang";
@@ -46,6 +46,16 @@ try {
     $stmtOrders = $pdo->prepare($sql);
     $stmtOrders->execute($params);
     $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
+
+    // Kiểm tra trạng thái yêu cầu hủy cho mỗi đơn hàng
+    $cancelRequests = [];
+    $stmtCancel = $pdo->prepare("SELECT iddh FROM yeucaudonhang WHERE iddh = :iddh");
+    foreach ($orders as $order) {
+        $stmtCancel->execute(['iddh' => $order['iddh']]);
+        if ($stmtCancel->fetch()) {
+            $cancelRequests[$order['iddh']] = true;
+        }
+    }
 } catch (PDOException $e) {
     die("Lỗi truy vấn CSDL: " . $e->getMessage());
 }
@@ -83,7 +93,6 @@ try {
             line-height: 1.4;
         }
 
-        /* Navbar */
         #navbar {
             position: fixed;
             top: 0;
@@ -106,8 +115,8 @@ try {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            max-width: 650px; /* Adjusted for wider elements */
-            flex-wrap: nowrap; /* Keep items on one row */
+            max-width: 650px;
+            flex-wrap: nowrap;
         }
 
         .navbar-filter .form-control {
@@ -115,9 +124,9 @@ try {
             border: 1px solid var(--border-color);
             font-size: 0.875rem;
             padding: 0.5rem 0.75rem;
-            max-width: 400px; /* Wider search bar */
+            max-width: 400px;
             width: 100%;
-            min-width: 200px; /* Prevent collapse */
+            min-width: 200px;
         }
 
         .navbar-filter .form-select {
@@ -125,7 +134,7 @@ try {
             border: 1px solid var(--border-color);
             font-size: 0.875rem;
             padding: 0.5rem 0.75rem;
-            max-width: 200px; /* Wider select */
+            max-width: 200px;
             width: 100%;
             min-width: 150px;
         }
@@ -137,11 +146,10 @@ try {
         }
 
         .navbar-filter .action-button {
-            padding: 0.5rem 0.75rem; /* Match input height */
+            padding: 0.5rem 0.75rem;
             font-size: 0.875rem;
         }
 
-        /* Hamburger */
         .hamburger {
             width: 24px;
             height: 18px;
@@ -181,12 +189,10 @@ try {
             transform: rotate(-45deg);
         }
 
-        /* Main Content */
         main {
             padding: 1rem;
         }
 
-        /* Card Layout */
         .order-container {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -201,6 +207,7 @@ try {
             padding: 0.8rem;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             min-width: 200px;
+            position: relative;
         }
 
         .order-card:hover {
@@ -248,7 +255,6 @@ try {
             justify-content: flex-end;
         }
 
-        /* Buttons */
         .action-button {
             padding: 0.4rem 0.8rem;
             border-radius: 6px;
@@ -285,8 +291,10 @@ try {
             background-color: var(--danger-color);
             color: white;
         }
-
-        /* Inputs and Selects */
+        .btn-kp {
+            background-color: var(--accent-color);
+            color: white;
+        }
         .form-control-sm, .form-select-sm {
             font-size: 0.75rem;
             padding: 0.3rem 0.6rem;
@@ -301,7 +309,6 @@ try {
             box-shadow: 0 0 0 0.15rem rgba(59, 130, 246, 0.25);
         }
 
-        /* Tooltip */
         .tooltip-custom {
             position: relative;
         }
@@ -322,7 +329,21 @@ try {
             margin-top: 0.4rem;
         }
 
-        /* Empty State */
+        .cancel-pending {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--danger-color);
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
         .empty-state {
             text-align: center;
             padding: 1.5rem;
@@ -341,7 +362,6 @@ try {
             font-size: 0.875rem;
         }
 
-        /* Responsive */
         @media (max-width: 1200px) {
             .order-container {
                 grid-template-columns: repeat(3, 1fr);
@@ -411,6 +431,11 @@ try {
                 padding: 0.3rem 0.6rem;
                 font-size: 0.7rem;
             }
+
+            .cancel-pending {
+                font-size: 0.65rem;
+                padding: 0.25rem 0.5rem;
+            }
         }
 
         @media (max-width: 576px) {
@@ -426,14 +451,18 @@ try {
                 padding: 0.25rem 0.5rem;
                 font-size: 0.65rem;
             }
+
+            .cancel-pending {
+                font-size: 0.6rem;
+                padding: 0.2rem 0.4rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
     <nav id="navbar" class="navbar navbar-expand-md">
         <div class="container-fluid">
-            <a class="navbar-brand text-white" href="#">Hệ Thống Bán Hàng</a>
+            <a class="navbar-brand text-white" href="#">Quản Lý Đơn Hàng</a>
             <button class="hamburger d-md-none" aria-label="Toggle Filter" onclick="toggleFilter()">
                 <span></span>
                 <span></span>
@@ -451,6 +480,7 @@ try {
                                 class="form-control"
                                 placeholder="Tìm mã đơn/tên KH"
                                 aria-label="Tìm kiếm đơn hàng"
+                                style="width:500px"
                             >
                             <button type="submit" class="action-button btn-primary" aria-label="Tìm kiếm">
                                 <i class="fas fa-search"></i>
@@ -461,6 +491,7 @@ try {
                             name="status"
                             class="form-select"
                             aria-describedby="statusFilterDescription"
+                            style="width:500px"
                         >
                             <option value="all" <?= $status === 'all' ? 'selected' : '' ?>>Tất cả</option>
                             <option value="Chưa thanh toán" <?= $status === 'Chưa thanh toán' ? 'selected' : '' ?>>Chưa thanh toán</option>
@@ -472,8 +503,6 @@ try {
             </div>
         </div>
     </nav>
-
-    <!-- Main Content -->
     <main id="main-content">
         <div class="container-fluid">
             <?php if (empty($orders)): ?>
@@ -485,6 +514,12 @@ try {
                 <div class="order-container" aria-describedby="orderContainerDescription">
                     <?php foreach ($orders as $order): ?>
                         <div class="order-card">
+                            <?php if (isset($cancelRequests[$order['iddh']])): ?>
+                                <div class="cancel-pending">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Yêu cầu hủy chờ xử lý
+                                </div>
+                            <?php endif; ?>
                             <h3>Mã ĐH: <?= htmlspecialchars($order['iddh']) ?></h3>
                             <div class="order-info">
                                 <div>
@@ -625,23 +660,38 @@ try {
                                 </div>
                                 <div>
                                     <label>Hủy Đơn:</label>
-                                    <?php if (in_array($order['hientrang'], ['Chờ xác nhận', 'Đã xác nhận', 'Đang đóng gói']) && in_array($order['trangthai'], ['Chưa thanh toán'])): ?>
-                                        <form action="yeucauhuydon.php" method="POST">
-                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
-                                            <input type="hidden" name="idkh" value="<?= htmlspecialchars($_SESSION['user']['iduser']) ?>">
-                                            <input type="hidden" name="iddh" value="<?= htmlspecialchars($order['iddh']) ?>">
-                                            <button
-                                                type="submit"
-                                                class="action-button btn-danger tooltip-custom"
-                                                data-tooltip="Hủy đơn hàng"
-                                                aria-label="Hủy đơn hàng"
-                                                onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')"
-                                            >
-                                                <i class="fas fa-times me-1"></i>Hủy
-                                            </button>
-                                        </form>
+                                    <?php if (isset($cancelRequests[$order['iddh']])): ?>
+                                        <form action="khoiphucdonhang.php" method="POST">
+                                                <input type="hidden" name="idkh" value="<?= htmlspecialchars($_SESSION['user']['iduser']) ?>">
+                                                <input type="hidden" name="iddh" value="<?= htmlspecialchars($order['iddh']) ?>">
+                                                <button
+                                                    type="submit"
+                                                    class="action-button btn-kp tooltip-custom"
+                                                    data-tooltip="Khôi phục đơn hàng"
+                                                    aria-label="Khôi phục đơn hàng"
+                                                    onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')"
+                                                >
+                                                    <i class="fas fa-times me-1"></i>Khôi phục
+                                                </button>
+                                            </form>
                                     <?php else: ?>
-                                        <span class="text-muted">Không thể hủy!</span>
+                                        <?php if (in_array($order['hientrang'], ['Chờ xác nhận', 'Đã xác nhận', 'Đang đóng gói']) && in_array($order['trangthai'], ['Chưa thanh toán'])): ?>
+                                            <form action="yeucauhuydon.php" method="POST">
+                                                <input type="hidden" name="idkh" value="<?= htmlspecialchars($_SESSION['user']['iduser']) ?>">
+                                                <input type="hidden" name="iddh" value="<?= htmlspecialchars($order['iddh']) ?>">
+                                                <button
+                                                    type="submit"
+                                                    class="action-button btn-danger tooltip-custom"
+                                                    data-tooltip="Hủy đơn hàng"
+                                                    aria-label="Hủy đơn hàng"
+                                                    onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')"
+                                                >
+                                                    <i class="fas fa-times me-1"></i>Hủy
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <span class="text-muted">Không thể hủy!</span>
+                                        <?php endif; ?>
                                     <?php endif; ?>
                                 </div>
                                 <div>
@@ -673,8 +723,6 @@ try {
             <?php endif; ?>
         </div>
     </main>
-
-    <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
         function toggleFilter() {

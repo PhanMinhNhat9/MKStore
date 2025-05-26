@@ -326,7 +326,7 @@
         #home-icon-toggle {
             position: fixed;
             left: 16px;
-            top: 23px;
+            top: 34px;
             z-index: 1000;
             width: 40px;
             height: 40px;
@@ -352,7 +352,7 @@
         @media (max-width: 768px) {
             #home-icon-toggle {
                 left: 12px;
-                top: 28px;
+                top: 40px;
                 width: 44px;
                 height: 44px;
             }
@@ -364,11 +364,11 @@
                 z-index: 100; /* Đảm bảo sidebar nằm trên các thành phần khác */
             }
             .store-name {
-                font-size: 1.6rem;
+                font-size: 2rem;
             }
             .logoTD {
-                height: 40px;
-                width: 40px;
+                height: 80px;
+                width: 80px;
             }
             .input-container {
                 max-width: 100%;
@@ -559,7 +559,7 @@
     </button>
 
     <!-- Navbar -->
-    <nav class="bg-white px-4 py-1 shadow-sm">
+    <nav class="bg-white px-4 py-4 shadow-sm">
         <div class="flex flex-col md:flex-row items-center md:items-center md:justify-between">
             <div id="navbar-logo" class="logo-container">
                 <img src="picture/logoshop.png" alt="Logo Cửa Hàng" class="logoTD">
@@ -611,6 +611,9 @@
                                 <?= $thongbaoCount ?>
                             </span>
                         <?php endif; ?>
+                    </div>
+                    <div class="menu-item" onclick="xuatbaocao()" aria-label="Quay về trang chủ">
+                        <i class="fas fa-file-invoice"></i> Xuất báo cáo
                     </div>
                 <?php endif; ?>
                 <div class="menusidebar">
@@ -732,7 +735,9 @@
             'cndmT' => ['Thành Công!', 'Cập nhật ảnh thành công!', 'picture/success.png'],
             'cndmF' => ['Thất bại!', '', 'picture/error.png'],
             'nhanhangT' => ['Bạn đã nhận hàng thành công!','picture/success.png'],
-            'nhanhangF' => ['Cập nhật trạng thái nhận hàng thất bại!','picture/error.png']
+            'nhanhangF' => ['Cập nhật trạng thái nhận hàng thất bại!','picture/error.png'],
+            'khoiphucdhT' => ['Bạn đã khôi phục đơn hàng thành công!','picture/success.png'],
+            'khoiphucdhF' => ['Bạn không thể khôi phục đơn hàng!','picture/error.png']
         ];
         if (isset($_GET['status']) && isset($statusMessages[$_GET['status']])) {
             $msg = $statusMessages[$_GET['status']];

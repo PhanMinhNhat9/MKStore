@@ -68,10 +68,6 @@ try {
                                         <input type="hidden" name="trangthai" value="Hủy đơn">
                                         <button type="submit" name="action" value="xacnhan" class="btn btn-confirm">Xác nhận</button>
                                     </form>
-                                    <!-- <form method="post" action="xuly_thongbao.php">
-                                        <input type="hidden" name="idyc" value="<?= $yc['idyc'] ?>">
-                                        <button type="submit" name="action" value="huy" class="btn btn-cancel">Hủy</button>
-                                    </form> -->
                                 </td>
                             </tr>
                         <?php endforeach; ?>

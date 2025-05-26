@@ -215,14 +215,13 @@ $total_pages = ceil($total_products / $limit);
         main {
             padding: 1rem;
         }
-
         .product-card {
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             background-color: white;
             margin-bottom: 0.5rem;
         }
-
+        
         .product-card.out-of-stock {
             opacity: 0.7;
             background: #fee2e2;
@@ -370,32 +369,71 @@ $total_pages = ceil($total_products / $limit);
             color: white;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
-            .header-top {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+    .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-            .filter-group {
-                width: 100%;
-                flex-direction: column;
-                align-items: stretch;
-            }
+    .filter-group {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-            .category-select {
-                width: 100%;
-                max-width: none;
-            }
+    .category-select {
+        width: 100%;
+        max-width: none;
+    }
 
-            .price-filter input {
-                width: 100%;
-            }
+    .price-filter input {
+        width: 100%;
+    }
 
-            .product-card-body {
-                font-size: 0.7rem;
-            }
-        }
+    /* Điều chỉnh lưới sản phẩm */
+    .row-cols-1 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Hiển thị 2 cột trên di động */
+        gap: 0.5rem; /* Giảm khoảng cách giữa các ô */
+    }
+
+    .product-card {
+        font-size: 0.8rem; /* Giảm kích thước chữ */
+    }
+
+    .product-card img {
+        height: 100px; /* Giảm chiều cao ảnh */
+    }
+
+    .product-card-body {
+        padding: 0.4rem; /* Giảm padding */
+    }
+
+    .product-name {
+        font-size: 0.8rem; /* Giảm kích thước tên sản phẩm */
+    }
+
+    .price {
+        font-size: 0.75rem; /* Giảm kích thước giá */
+    }
+
+    .new-price {
+        font-size: 0.85rem; /* Giảm kích thước giá mới */
+    }
+
+    .old-price, .discount {
+        font-size: 0.7rem; /* Giảm kích thước giá cũ và giảm giá */
+    }
+
+    .info p {
+        font-size: 0.65rem; /* Giảm kích thước thông tin */
+    }
+
+    .action-button {
+        padding: 0.2rem 0.4rem; /* Giảm kích thước nút */
+        font-size: 0.7rem; /* Giảm kích thước chữ nút */
+    }
+}
     </style>
 </head>
 <body>
@@ -451,8 +489,8 @@ $total_pages = ceil($total_products / $limit);
     <!-- Main Content -->
     <main>
         <div class="container-fluid">
-            <section class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
-                <?php if (empty($products)): ?>
+            <section class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+                    <?php if (empty($products)): ?>
                     <div class="col">
                         <div class="no-products">Không tìm thấy sản phẩm.</div>
                     </div>
