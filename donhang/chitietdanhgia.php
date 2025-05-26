@@ -10,7 +10,7 @@ try {
 }
 
 // ID đơn hàng
-$iddh = 2;
+$iddh = isset($_POST['iddh']) ? $_POST['iddh'] : null;
 
 // Truy vấn chi tiết đánh giá
 try {

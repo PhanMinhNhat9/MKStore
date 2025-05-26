@@ -52,15 +52,15 @@
 <head>
     <!-- Thiết lập mã hóa ký tự và giao diện responsive -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     
     <!-- Tiêu đề trang -->
     <title>Đăng nhập</title>
 
     <!-- Kết nối các tệp CSS và JavaScript bên ngoài -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="icon" href="../picture/logoTD.png" type="image/png">
 
     <!-- Cấu hình Tailwind CSS -->
@@ -68,7 +68,22 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { poppins: ['Poppins', 'sans-serif'] }
+                    fontFamily: { inter: ['Inter', 'sans-serif'] },
+                    animation: {
+                        'gradient': 'gradient 10s ease infinite',
+                        'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        gradient: {
+                            '0%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                            '100%': { backgroundPosition: '0% 50%' },
+                        },
+                        pulse: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.5' },
+                        }
+                    }
                 }
             }
         }
@@ -77,12 +92,17 @@
     <!-- CSS nội bộ -->
     <style>
         /* Thiết lập phông chữ toàn cục và nền gradient động */
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background: linear-gradient(45deg, #6b7280, #3b82f6, #8b5cf6, #ec4899);
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6, #7c3aed, #db2777);
             background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
-            min-h-screen flex items-center justify-center;
+            animation: gradient 10s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+            padding: 1rem;
         }
 
         /* Tùy chỉnh giao diện checkbox hiển thị mật khẩu */
@@ -92,45 +112,90 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 0.75rem;
+            font-size: 0.9rem;
             width: 100%;
             height: 100%;
         }
 
-        /* Hiệu ứng chuyển động cho nền gradient */
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Tùy chỉnh input khi focus */
+        input:focus {
+            outline: none;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
+        /* Hiệu ứng hover và active cho nút */
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Responsive cho thiết bị di động */
+        @media (max-width: 640px) {
             .bgkhung {
-                width: 300px;
+                width: 100%;
+                max-width: 340px;
+                padding: 1.5rem;
+            }
+
+            /* Tăng kích thước chữ và trường nhập */
+            label {
+                font-size: 0.95rem;
+            }
+
+            input {
+                font-size: 1rem;
+                padding: 0.75rem;
+            }
+
+            button {
+                font-size: 1.1rem;
+                padding: 0.85rem;
+            }
+
+            .text-sm {
+                font-size: 0.9rem;
+            }
+
+            /* Đảm bảo khung đăng nhập không bị che bởi bàn phím ảo */
+            body {
+                padding-bottom: 10rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .bgkhung {
+                max-width: 300px;
+            }
+
+            input, button {
+                font-size: 0.95rem;
             }
         }
     </style>
 </head>
 
-<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 via-blue-400 to-blue-800">
+<body>
     <!-- Khung đăng nhập với hiệu ứng kính mờ -->
-    <div class="bgkhung bg-white/20 backdrop-blur-xl p-8 rounded-2xl shadow-2xl text-white space-y-6">
+    <div class="bgkhung bg-white/10 backdrop-blur-2xl p-6 rounded-3xl shadow-xl text-white w-full max-w-md space-y-6 transition-all duration-300">
         <!-- Phần tiêu đề -->
-        <div class="flex justify-center border-b border-white/30 pb-3">
-            <span class="text-2xl font-semibold tracking-wide">Đăng nhập</span>
+        <div class="flex justify-center border-b border-white/20 pb-4">
+            <span class="text-2xl sm:text-3xl font-semibold tracking-tight">Đăng nhập</span>
         </div>
 
         <!-- Hiển thị thông báo lỗi nếu có -->
         <?php if (!empty($_SESSION['login_error'])): ?>
-            <div id="loi" class="bg-red-500/80 text-white text-sm text-center px-4 py-2 rounded shadow">
+            <div id="loi" class="bg-red-600/90 text-white text-sm sm:text-base text-center px-4 py-3 rounded-lg shadow-md animate-pulse">
                 <?= $_SESSION['login_error']; unset($_SESSION['login_error']); ?>
             </div>
         <?php endif; ?>
 
         <!-- Hiển thị đồng hồ đếm ngược nếu tài khoản bị khóa -->
         <?php if ($lockTime > 0): ?>
-            <div id="countdown" class="text-yellow-200 text-sm text-center font-medium"></div>
+            <div id="countdown" class="text-amber-300 text-sm sm:text-base text-center font-medium bg-gray-800/50 px-4 py-2 rounded-lg"></div>
         <?php endif; ?>
 
         <!-- Biểu mẫu đăng nhập -->
@@ -140,45 +205,49 @@
 
             <!-- Trường nhập tên đăng nhập -->
             <div>
-                <label class="text-sm text-gray-200">Tên đăng nhập</label>
-                <div class="flex items-center bg-white/20 rounded px-3 mt-1">
-                    <i class="fa fa-user text-white mr-2"></i>
+                <label class="text-sm sm:text-base font-medium text-gray-100">Tên đăng nhập</label>
+                <div class="flex items-center bg-white/10 rounded-lg px-3 py-2.5 mt-1 transition-all duration-300 hover:bg-white/20">
+                    <i class="fa-solid fa-user text-white mr-3 text-lg"></i>
                     <input type="text" name="tendn"
-                           class="w-full p-2 bg-transparent text-white focus:outline-none"
-                           required autocomplete="off">
+                           class="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none"
+                           placeholder="Nhập tên đăng nhập"
+                           required autocomplete="username">
                 </div>
             </div>
 
             <!-- Trường nhập mật khẩu -->
             <div>
-                <label class="text-sm text-gray-200">Mật khẩu</label>
-                <div class="flex items-center bg-white/20 rounded px-3 mt-1">
-                    <i class="fa fa-lock text-white mr-2"></i>
+                <label class="text-sm sm:text-base font-medium text-gray-100">Mật khẩu</label>
+                <div class="flex items-center bg-white/10 rounded-lg px-3 py-2.5 mt-1 transition-all duration-300 hover:bg-white/20">
+                    <i class="fa-solid fa-lock text-white mr-3 text-lg"></i>
                     <input type="password" name="matkhau" id="password"
-                           class="w-full p-2 bg-transparent text-white focus:outline-none"
-                           required>
+                           class="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none"
+                           placeholder="Nhập mật khẩu"
+                           required autocomplete="current-password">
                 </div>
             </div>
 
             <!-- Checkbox hiển thị mật khẩu -->
-            <div class="flex items-center gap-2 text-sm text-gray-200">
+            <div class="flex items-center gap-3 text-sm sm:text-base text-gray-200">
                 <input type="checkbox" id="showPassword" 
-                       class="appearance-none h-4 w-4 rounded bg-white/20 checked:bg-blue-500 
-                       checked:text-white flex items-center justify-center transition duration-150 ease-in-out" />
-                <label for="showPassword">Hiển thị mật khẩu</label>
+                       class="appearance-none h-6 w-6 rounded bg-white/20 checked:bg-blue-600 
+                       checked:text-white flex items-center justify-center transition duration-200 ease-in-out cursor-pointer" />
+                <label for="showPassword" class="cursor-pointer">Hiển thị mật khẩu</label>
             </div>
 
             <!-- Nút gửi biểu mẫu -->
             <button type="submit"
-                    class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 
-                    hover:to-blue-500 text-white py-2 rounded-lg font-semibold shadow-md transition">
-                Đăng nhập
+                    class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 
+                    hover:to-indigo-500 text-white py-3.5 rounded-lg font-semibold shadow-lg transition-all 
+                    duration-300 flex items-center justify-center relative overflow-hidden group touch-manipulation">
+                <span class="relative z-10">Đăng nhập</span>
+                <span class="absolute inset-0 bg-blue-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
             </button>
 
             <!-- Liên kết quên mật khẩu và đăng ký -->
-            <div class="text-sm text-center text-white/100">
-                <a href="../auth/quenmk.php" class="hover:underline">Quên mật khẩu?</a> |
-                <a href="../auth/dangky.php" class="hover:underline">Đăng ký</a>
+            <div class="text-sm sm:text-base text-center text-gray-200">
+                <a href="../auth/quenmk.php" class="hover:text-blue-300 transition-colors">Quên mật khẩu?</a> |
+                <a href="../auth/dangky.php" class="hover:text-blue-300 transition-colors">Đăng ký</a>
             </div>
         </form>
     </div>

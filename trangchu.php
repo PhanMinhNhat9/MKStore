@@ -1,14 +1,11 @@
 <?php
     include "config.php";
     $pdo = connectDatabase();
-    // Bắt đầu session nếu chưa có
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
 
-    // Kiểm tra xem admin đã đăng nhập chưa
-    if (isset($_SESSION['user'])) {
-    } else {
+    if (!isset($_SESSION['user'])) {
         header("Location: auth/dangnhap.php");
         exit();
     }
@@ -18,29 +15,21 @@
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($result) {
-        echo "
-        <script>
-            alert('Tài khoản của bạn đã bị xóa và sẽ được xóa hoàn toàn sau 30 ngày!');
-            window.location.href = 'auth/logout.php';
-        </script>";
+        echo "<script>alert('Tài khoản của bạn đã bị xóa và sẽ được xóa hoàn toàn sau 30 ngày!'); window.location.href = 'auth/logout.php';</script>";
     }
 
     define('SESSION_TIMEOUT', 1800);
 
     if (isset($_SESSION['last_activity'])) {
         $inactive_time = time() - $_SESSION['last_activity'];
-        error_log("Session inactive time: $inactive_time seconds"); // Debug log
+        error_log("Session inactive time: $inactive_time seconds");
     }
-    // Cập nhật lại thời gian hoạt động cuối cùng
     $_SESSION['last_activity'] = time();
-    // Làm mới session ID để tăng cường bảo mật (kiểm tra session trước khi gọi)
     if (session_status() == PHP_SESSION_ACTIVE) {
         session_regenerate_id(true);
     }
+    session_write_close();
 
-    session_write_close(); // Đảm bảo session được ghi lại ngay lập tức
-
-    // Lấy thông tin admin từ session
     $stmt = $pdo->prepare("SELECT `hoten`, `anh`, `email`, `sdt` FROM `user` WHERE iduser = :iduser");
     $stmt->execute(['iduser' => $_SESSION['user']['iduser']]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -49,8 +38,7 @@
     $admin_email = htmlspecialchars($result['email'], ENT_QUOTES, 'UTF-8');
     $admin_phone = htmlspecialchars($result['sdt'], ENT_QUOTES, 'UTF-8');
     $admin_avatar = !empty($result['anh']) ? htmlspecialchars($result['anh'], ENT_QUOTES, 'UTF-8') : "https://i.pravatar.cc/100";
-    
-    // Lấy danh sách sản phẩm từ cơ sở dữ liệu
+
     try {
         $sql = "SELECT idsp, tensp, iddm FROM sanpham";
         $stmt = $pdo->prepare($sql);
@@ -61,14 +49,8 @@
         $products = [];
     }
 
-    // Xóa tài khoản người dùng bị đánh dấu xóa sau 30 ngày
     try {
-        $sql = "DELETE FROM user
-                WHERE iduser IN (
-                    SELECT iduser
-                    FROM khxoatk
-                    WHERE DATEDIFF(CURDATE(), ngaykh) >= 30
-                )";
+        $sql = "DELETE FROM user WHERE iduser IN (SELECT iduser FROM khxoatk WHERE DATEDIFF(CURDATE(), ngaykh) >= 30)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
     } catch (PDOException $e) {
@@ -87,66 +69,31 @@
     <link href="tailwind/dist/output.css" rel="stylesheet">
     <script src="sweetalert2/sweetalert2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
     <script src="script.js"></script>
     <link rel="icon" href="picture/logoTD.png" type="image/png">
     <style>
-        /* Hamburger chung */
-        .hamburger {
-            width: 26px;
-            height: 24px;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.3s ease;
+        :root {
+            --primary-color: #ff6200;
+            --secondary-color: #0288d1;
+            --bg-light: #f5f5f5;
+            --bg-white: #ffffff;
+            --text-dark: #212121;
+            --text-light: #757575;
+            --sidebar-width: 240px;
+            --sidebar-width-mobile: 200px;
         }
 
-        /* Các thanh */
-        .hamburger span {
-            display: block;
-            position: absolute;
-            height: 3px;
-            width: 100%;
-            background:rgb(255, 255, 255);
-            border-radius: 3px;
-            opacity: 1;
-            left: 0;
-            transform: rotate(0deg);
-            transition: all 0.3s ease;
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Vị trí từng thanh */
-        .hamburger span:nth-child(1) {
-            top: 0px;
-        }
-
-        .hamburger span:nth-child(2) {
-            top: 8px;
-        }
-
-        .hamburger span:nth-child(3) {
-            top: 16px;
-        }
-
-        /* Trạng thái active - chuyển sang dấu X */
-        .hamburger.active span:nth-child(1) {
-            top: 8px;
-            transform: rotate(45deg);
-            background: #ffffff;
-        }
-
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-            left: -60px;
-        }
-
-        .hamburger.active span:nth-child(3) {
-            top: 8px;
-            transform: rotate(-45deg);
-            background: #ffffff;
-        }
-
-        /* Dropdown animation */
         .dropdown-hidden {
             opacity: 0;
             transform: translateY(-10px);
@@ -159,37 +106,45 @@
             pointer-events: auto;
         }
 
-        /* Scrollbar styling */
         iframe::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         iframe::-webkit-scrollbar-thumb {
-            background-color: #4b5563;
+            background-color: var(--primary-color);
             border-radius: 4px;
         }
 
         iframe::-webkit-scrollbar-track {
-            background-color: #e5e7eb;
+            background-color: var(--bg-light);
         }
 
         .store-name {
             font-family: 'Abril Fatface', serif;
-            font-size: 2.6rem; /* text-3xl */
+            font-size: 2.6rem;
+            font-weight: 600;
             letter-spacing: 2px;
             text-transform: uppercase;
             animation: colorShift 6s infinite ease-in-out, glowEffect 3s infinite ease-in-out;
             transition: transform 0.3s ease-in-out;
         }
 
-
-        @keyframes colorShift {
-            0%   { color: #0ea5e9; }   /* Xanh dương (sky-500) */
-            33%  { color: #22c55e; }   /* Xanh lá (green-500) */
-            66%  { color: #f97316; }   /* Cam (orange-500) */
-            100% { color: #0ea5e9; }   /* Quay lại xanh dương */
+        .sidebar-storename {
+            font-family: 'Abril Fatface', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: colorShift 6s infinite ease-in-out, glowEffect 3s infinite ease-in-out;
+            transition: transform 0.3s ease-in-out;
         }
 
+        @keyframes colorShift {
+            0%   { color: #0ea5e9; }
+            33%  { color: #22c55e; }
+            66%  { color: #f97316; }
+            100% { color: #0ea5e9; }
+        }
 
         @keyframes glowEffect {
             0% {
@@ -206,25 +161,49 @@
             }
         }
 
-        .logoTD {
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: opacity 0.3s ease;
+            justify-content: center;
+        }
+
+        .logo-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar-logoTD {
             display: flex;
             height: 80px;
             width: 80px;
             align-items: center;
+        }
+
+        .sidebar-logoTD:hover {
+            transform: scale(1.1) rotateY(15deg);
+            filter: drop-shadow(0 0 14px rgba(0, 255, 255, 0.8));
+        }
+
+        .logoTD {
+            display: flex;
+            height: 80px;
+            width: 80px;
+            margin-left: 50px;
+            align-items: center;
             animation: rotateYSoft 7s linear infinite, glowPulse 2.5s ease-in-out infinite;
             transform-style: preserve-3d;
-            backface-visibility: visible; /* <== không cho logo biến mất khi quay nghiêng */
+            backface-visibility: visible;
             transition: transform 0.4s ease-in-out, filter 0.4s ease-in-out;
             filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.4));
         }
 
-        /* Hover: zoom nhẹ + nghiêng */
         .logoTD:hover {
             transform: scale(1.1) rotateY(15deg);
             filter: drop-shadow(0 0 14px rgba(0, 255, 255, 0.8));
         }
 
-        /* Xoay quanh trục Y liên tục nhưng không mất hình */
         @keyframes rotateYSoft {
             0%   { transform: rotateY(0deg); }
             25%  { transform: rotateY(-180deg); }
@@ -233,563 +212,576 @@
             100% { transform: rotateY(0deg); }
         }
 
-        /* Glow mượt */
-        @keyframes glowPulse {
-            0%, 100% {
-                filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.4));
-            }
-            50% {
-                filter: drop-shadow(0 0 14px rgba(0, 255, 255, 0.8));
-            }
+        .logoTD:hover {
+            transform: scale(1.1);
         }
 
         .input-container {
-    position: relative;
-    width: 260px;
-}
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+        }
 
-.input-field {
-    width: 100%;
-    padding: 10px 36px 10px 36px; /* chừa cả trái (search) và phải (mic) */
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    outline: none;
-    transition: 0.3s ease;
-    box-shadow: 0 0 0 rgba(0, 123, 255, 0);
-}
+        .input-field {
+            width: 100%;
+            padding: 12px 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: var(--bg-white);
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
 
-.input-field:focus {
-    border-color: #2196f3;
-    box-shadow: 0 0 6px rgba(33, 150, 243, 0.5);
-    background-color: #f0faff;
-}
+        .input-field:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(255, 98, 0, 0.2);
+        }
 
-.icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #2196f3;
-    font-size: 16px;
-}
+        .icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 18px;
+        }
 
-.mic-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: #333;
-    font-size: 18px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-}
+        .mic-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
 
-.mic-icon:hover {
-    color: #e53935;
-}
+        .mic-icon:hover {
+            color: var(--primary-color);
+        }
 
-.mic-icon.listening i {
-    color: #e53935;
-    animation: pulse 1s infinite;
-}
+        .mic-icon.listening i {
+            color: var(--primary-color);
+            animation: pulse 1s infinite;
+        }
 
-@keyframes pulse {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.3); opacity: 0.6; }
-    100% { transform: scale(1); opacity: 1; }
-}
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.6; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
-.mic-status.hidden {
-    display: none;
-}
+        .mic-status.hidden {
+            display: none;
+        }
 
+        #sidebar {
+            width: 300px;
+            background: var(--bg-white);
+            color: var(--text-dark);
+            border-right: 1px solid #e0e0e0;
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            z-index: 50;
+        }
 
-    </style>
-</head>
-<body class="bg-gray-100 font-sans">
-    <!-- Navbar -->
-    <nav class="bg-white px-2 py-0 shadow-md">
-    <div class="flex flex-col md:flex-row items-center md:items-center md:justify-between">
-        <div class="flex items-center space-x-2 animate-fade-in">
-            <img src="picture/logoshop.png" alt="Logo Cửa Hàng"
-                class="logoTD cursor-pointer"
-                id="logoTrigger"
-                onclick="toggleMenu()">
-                <span class="store-name hidden md:flex font-semibold text-blue-700 tracking-wide items-center gap-1">
-                MONKEY STORE
-            </span>
-        </div>
-    <style>
-        /* Responsive */
+        #sidebar-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        #sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--bg-white);
+        }
+
+        #sidebar-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #sidebar-menu::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        #sidebar-menu::-webkit-scrollbar-track {
+            background-color: var(--bg-white);
+        }
+
+        #home-icon-toggle {
+            position: fixed;
+            left: 16px;
+            top: 23px;
+            z-index: 1000;
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, background-color 0.3s ease, left 0.3s ease;
+        }
+
+        #home-icon-toggle:hover {
+            transform: scale(1.1);
+            background: #e55a00;
+        }
+
+        #home-icon-toggle.sidebar-expanded {
+            left: calc(var(--sidebar-width-mobile) + 120px);
+        }
+
         @media (max-width: 768px) {
-            .timkiem {
-                padding-bottom: 10px;
-                padding-top: 0;
+            #home-icon-toggle {
+                left: 12px;
+                top: 28px;
+                width: 44px;
+                height: 44px;
+            }
+            #home-icon-toggle.sidebar-expanded {
+                left: calc(var(--sidebar-width-mobile) + 80px);
+            }
+            #sidebar {
+                width: 270px;
+                z-index: 100; /* Đảm bảo sidebar nằm trên các thành phần khác */
             }
             .store-name {
-                display: block;
-                font-size: 2.2rem; /* text-3xl */
+                font-size: 1.6rem;
+            }
+            .logoTD {
+                height: 40px;
+                width: 40px;
+            }
+            .input-container {
+                max-width: 100%;
+            }
+            .input-field {
+                font-size: 0.9rem;
+                padding: 10px 36px;
+                margin-bottom: 5px;
+                margin-top: 5px;
+            }
+            .icon, .mic-icon {
+                font-size: 16px;
+            }
+            #sidebar-header h2 {
+                font-size: 1.25rem;
+            }
+            .menu-item {
+                padding: 10px 14px;
+                font-size: 0.9rem;
+                gap: 10px;
+            }
+            .menu-item i {
+                font-size: 1rem;
+            }
+            .menusidebar h2, .menutaikhoan p {
+                font-size: 0.95rem;
+            }
+            .menutaikhoan .taikhoan {
+                padding: 12px;
+            }
+            #adminDropdown {
+                width: 180px;
+                right: 8px;
+            }
+            #adminDropdown img {
+                width: 48px;
+                height: 48px;
+            }
+            #adminDropdown p {
+                font-size: 0.85rem;
+            }
+            .btndx {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+
+        .menu-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-dark);
+        }
+
+        .menu-item:hover {
+            background-color: #f0f0f0;
+            transform: translateX(4px);
+        }
+
+        .menu-item.active {
+            background-color: #fff3e0;
+            color: var(--primary-color);
+        }
+
+        .menusidebar {
+            padding: 16px;
+        }
+
+        .menutaikhoan {
+            padding: 16px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        #adminDropdown {
+            position: absolute;
+            width: 220px;
+            left: 22px;
+            bottom: 100%;
+            background: var(--bg-white);
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            color: var(--text-dark);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        #adminDropdown.dropdown-active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .btndx {
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btndx:hover {
+            background-color: #f0f0f0;
+            color: var(--primary-color);
+        }
+
+        .main-content {
+            flex: 1 1 auto;
+            width: 100%;
+            height: 75vh;
+            min-width: 300px;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 769px) {
+            .main-content.expanded {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                width: 100%;
+            }
+            .main-content.expanded {
+                width: 100%; /* Không thay đổi width */
+                margin-left: 0; /* Không đẩy nội dung */
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .alert-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .alert-error {
+            background: #f44336;
+            color: white;
+        }
+
+        footer {
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            footer {
+                padding: 12px;
+            }
+            footer .text-sm {
+                font-size: 0.85rem;
+            }
+            footer .max-w-7xl {
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
             }
         }
     </style>
-        <!-- Search Bar -->
-        <div class="timkiem">
-            <div class="flex items-center space-x-2 w-full ">
+</head>
+<body>
+    <!-- Home Icon Button -->
+    <button id="home-icon-toggle" aria-label="Mở menu">
+        <i class="fas fa-home"></i>
+    </button>
+
+    <!-- Navbar -->
+    <nav class="bg-white px-4 py-1 shadow-sm">
+        <div class="flex flex-col md:flex-row items-center md:items-center md:justify-between">
+            <div id="navbar-logo" class="logo-container">
+                <img src="picture/logoshop.png" alt="Logo Cửa Hàng" class="logoTD">
+                <span class="store-name">MONKEY STORE</span>
+            </div>
+            <div class="ml-auto md:mt-0 w-full md:w-auto">
                 <div class="input-container">
                     <i class="fas fa-search icon"></i>
-                    <input type="text" placeholder="Tìm kiếm" class="input-field search-bar" onkeyup="handleSearch(this.value)"     
-                    aria-label="Tìm kiếm sản phẩm, người dùng hoặc đơn hàng" style="color: black">
-                
-                <button id="mic-btn" 
-                    class="mic-icon mic-btn" 
-                    aria-label="Tìm kiếm bằng giọng nói">
-                    <i class="fas fa-microphone mr-2"></i>
-                    <span class="mic-status hidden text-sm text-red-600"> Đang <br> lắng <br> nghe...</span>
-                </button>
+                    <input type="text" placeholder="Tìm kiếm sản phẩm...." class="input-field search-bar" onkeyup="handleSearch(this.value)" aria-label="Tìm kiếm sản phẩm, người dùng hoặc đơn hàng">
+                    <button id="mic-btn" class="mic-icon mic-btn" aria-label="Tìm kiếm bằng giọng nói">
+                        <i class="fas fa-microphone"></i>
+                        <span class="mic-status hidden text-sm text-red-600">Đang lắng nghe...</span>
+                    </button>
                 </div>
             </div>
-        </div>                   
-        <div id="search-results" class="mt-2 w-full md:w-64 bg-white text-gray-800 rounded-md shadow-lg hidden"></div>
-    </div>
+            <div id="search-results" class="mt-2 w-full md:w-96 bg-white rounded-md shadow-sm hidden"></div>
+        </div>
     </nav>
-    
-<style>
-    #sidebar {
-    width: 270px;
-    background: rgba(30, 41, 59, 0.4); /* màu xanh xám đậm, 60% độ mờ */
-    backdrop-filter: blur(2px); 
-    -webkit-backdrop-filter: blur(12px); /* Safari support */
-    color: white;
-    border-right: 1px solid rgba(255, 255, 255, 0.1); /* viền mờ */
-    }
-</style>
 
     <!-- Sidebar Menu -->
-<nav id="sidebar" class="bg-[#2d3748] text-white fixed top-0 left-0 h-full transition-all duration-300 z-50 -translate-x-full" aria-label="Menu điều hướng">
-
-<style>
-    .menusidebar {
-        padding: 16px 16px 0 16px;
-    }
-</style>
-<!-- Tiêu đề Sidebar -->
-<div class="menusidebar flex items-center justify-between">
-    <h2 class="text-xl font-semibold">Menu</h2>
-    <button id="sidebarClose" class="hamburger w-6 h-5 relative" aria-label="Đóng menu" onclick="toggleMenu()">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
-</div>
-<!-- Danh sách menu -->
-<div class="flex flex-col p-4">
-    <?php if ($_SESSION['user']['quyen'] != 1): ?>
-        <button 
-        class="flex items-center gap-2 px-4 py-2 hover:bg-gray-600 text-white rounded-xl  transition duration-200 w-full md:w-auto"
-            onclick="clearLocalStorage()" 
-            aria-label="Xóa mô hình TensorFlow">
-            <i class="fas fa-eraser mr-1"></i> Model
-        </button>
-    <?php endif; ?>
-
-    <button 
-        class="flex items-center gap-2 px-4 py-2 hover:bg-gray-600 text-white rounded-xl  transition duration-200 w-full md:w-auto"            
-        onclick="handleHomeClick()" 
-        aria-label="Quay về trang chủ">
-        <i class="fas fa-home mr-1"></i> Trang chủ
-    </button>
-
-    <!-- Thông báo -->
-    <?php
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM yeucaudonhang WHERE trangthai = 0");
-        $stmt->execute();
-        $thongbaoCount = (int) $stmt->fetchColumn();
-    ?>
-    <?php if ($_SESSION['user']['quyen'] != 1): ?>
-        <button 
-            class="relative flex items-center gap-2 px-4 py-2 hover:bg-gray-600 text-white rounded-xl transition duration-200 w-full md:w-auto"                
-            id="menu-tb" 
-            onclick="loadThongBao()" 
-            aria-label="Xem thông báo">
-            <i class="fas fa-bell mr-1"></i> Thông báo
-            <?php if ($thongbaoCount > 0): ?>
-                <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-2 py-1" aria-label="Số lượng thông báo chưa xem">
-                    <?= $thongbaoCount ?>
-                </span>
-            <?php endif; ?>
-        </button>
-    <?php endif; ?>
-</div>
-
-<!-- Tiêu đề Sidebar -->
-<div class="flex items-center justify-between">
-    <h2 class="menusidebar text-xl font-semibold">Quản lý các tiện ích</h2>
-</div>
-
-<!-- Danh sách menu -->
-<div class="flex flex-col p-4">
-
-    <!-- Người dùng -->
-    <?php if ($_SESSION['user']['quyen'] != 1): ?>
-        <div class="menu-item p-2 rounded-md hover:bg-gray-600 cursor-pointer" id="menu-user" onclick="loadDLUser()" aria-label="Quản lý người dùng">
-            <i class="fas fa-users mr-2"></i> Quản lý người dùng
-        </div>
-    <?php else: ?>
-        <div class="menu-item p-2 m-0 rounded-md hover:bg-gray-600 cursor-pointer" id="menu-user" onclick="loadDLUser()" aria-label="Quản lý tài khoản cá nhân">
-            <i class="fas fa-users mr-2"></i> Quản lý tài khoản cá nhân
-        </div>
-    <?php endif; ?>
-
-    <!-- Sản phẩm -->
-    <?php if ($_SESSION['user']['quyen'] != 1): ?>
-        <div class="menu-item p-2 rounded-md hover:bg-gray-600 cursor-pointer" id="menu-product" onclick="loadDLSanpham()" aria-label="Quản lý sản phẩm">
-            <i class="fas fa-box mr-2"></i> Quản lý sản phẩm
-        </div>
-    <?php else: ?>
-        <div class="menu-item p-2 rounded-md hover:bg-gray-600 cursor-pointer" id="menu-product" onclick="loadDLSanpham()" aria-label="Quản lý mua sắm">
-            <i class="fas fa-box mr-2"></i> Quản lý mua sắm
-        </div>
-    <?php endif; ?>
-
-    <!-- Danh mục & Khuyến mãi (Chỉ admin) -->
-    <?php if ($_SESSION['user']['quyen'] != 1): ?>
-        <div class="menu-item p-2 rounded-md hover:bg-gray-600 cursor-pointer" id="menu-category" onclick="loadDLDanhmuc()" aria-label="Quản lý danh mục">
-            <i class="fas fa-list mr-2"></i> Quản lý danh mục
-        </div>
-        <div class="menu-item p-2 rounded-md hover:bg-gray-600 cursor-pointer" id="menu-discount" onclick="loadDLMGG()" aria-label="Quản lý khuyến mãi">
-            <i class="fas fa-tags mr-2"></i> Quản lý khuyến mãi
-        </div>
-    <?php endif; ?>
-
-    <!-- Đơn hàng -->
-    <?php if ($_SESSION['user']['quyen'] != 1): ?>
-        <div class="menu-item p-2 rounded-md hover:bg-gray-600 cursor-pointer" id="menu-order" onclick="loadDLDonhang()" aria-label="Quản lý đơn hàng">
-            <i class="fas fa-chart-bar mr-2"></i> Quản lý đơn hàng
-        </div>
-    <?php else: ?>
-        <div class="menu-item p-2 rounded-md hover:bg-gray-600 cursor-pointer" id="menu-order" onclick="loadDLDonhang()" aria-label="Quản lý đơn mua hàng">
-            <i class="fas fa-chart-bar mr-2"></i> Quản lý đơn mua hàng
-        </div>
-    <?php endif; ?>
-
-    <!-- Giỏ hàng & Hỗ trợ -->
-    <div class="menu-item p-2 rounded-md hover:bg-gray-600 cursor-pointer" id="menu-gh" onclick="loadGH()" aria-label="Giỏ hàng">
-        <i class="fas fa-shopping-cart mr-2"></i> Giỏ hàng
-    </div>
-    <div class="menu-item p-2 rounded-md hover:bg-gray-600 cursor-pointer" id="menu-support" onclick="loadPhanHoi()" aria-label="Hỗ trợ khách hàng">
-        <i class="fas fa-headset mr-2"></i> Hỗ trợ khách hàng
-    </div>
-</div>
-<style>
-    .menutaikhoan {
-        padding: 0 0 0 8px;
-    }
-    /* Phần tử cha của dropdown phải có position: relative */
-.relative {
-    position: relative;
-}
-
-/* Định vị dropdown */
-#adminDropdown {
-    position: absolute;
-    right: 0;     
-    left: 10%;
-    width: 200px;
-    bottom: 120%;
-    /* Style & hiệu ứng */
-    background: rgba(30, 41, 59, 0.8);         
-    backdrop-filter: blur(2px); 
-    -webkit-backdrop-filter: blur(12px);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-
-    color: white;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    z-index: 10;
-}
-
-/* Khi active */
-#adminDropdown.dropdown-active {
-        opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-
-    animation: dropdownFadeIn 0.8s ease forwards;
-}
-@keyframes dropdownFadeIn {
-    0% {
-        opacity: 0;
-        transform: translateX(-10px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-.btndx {
-    transition: all 0.3s ease; /* Mượt mà */
-}
-
-.btndx:hover {
-    color: white;
-    transform: scale(1.05); 
-    text-shadow: 0 4px 15px rgb(0, 255, 13); /* Đổ bóng đỏ */
-}
-</style>
-
-
-<!-- Danh sách menu -->
-<div class="menutaikhoan flex flex-col">
-    <div class="relative w-full md:w-auto">
-        <button 
-            class="taikhoan flex items-center gap-2 px-3 py-2 font-medium rounded-md hover:bg-gray-600"
-            onclick="ddadmin()" 
-            aria-label="Tài khoản admin" 
-            aria-expanded="false">
-            <img src="<?= $admin_avatar ?>" alt="Avatar" class="w-8 h-8 rounded-full object-cover border border-blue-200 shadow-sm">
-            <span class="text-white font-sans"><?= !empty($admin_name) ? $admin_name : "Admin"; ?></span>
-        </button>
-
-        <div 
-            id="adminDropdown"
-            class="dropdowntk absolute bg-white text-gray-800 hidden z-50 animate-fade-in"
-        >
-            <div class="p-4 border-b text-center">
-                <img src="<?= $admin_avatar ?>" alt="Avatar admin"
-                    class="w-20 h-20 rounded-full mx-auto shadow-md border-4 border-indigo-200 hover:scale-105 transition transform"
-                    id="menu-ttcn"
-                    onclick="taikhoancn()" 
-                    aria-label="Xem thông tin cá nhân">
-                <p class="font-bold mt-3 text-lg"><?= $admin_name ?></p>
-                <p class="text-sm "><?= $admin_phone ?></p>
-                <p class="text-sm italic"><?= $admin_email ?></p>
+    <nav id="sidebar" class="fixed top-0 left-0 h-full transition-all duration-300 z-50 -translate-x-full" aria-label="Menu điều hướng">
+        <div class="flex flex-col h-full">
+            <div id="sidebar-logo" class="logo-container hidden p-4 border-b border-gray-200">
+                <img src="picture/logoshop.png" alt="Logo Cửa Hàng" class="sidebar-logoTD">
+                <span class="sidebar-storename">MONKEY STORE</span>
             </div>
-            <div 
-                class="btndx p-3 text-center font-medium cursor-pointer"
-                onclick="logout()" 
-                aria-label="Đăng xuất">
-                <i class="fas fa-sign-out-alt mr-1"></i> Đăng xuất
+            <div id="sidebar-header">
+                <h2 class="text-lg font-semibold text-gray-800 flex-1 text-center">Menu</h2>
+            </div>
+            <div id="sidebar-menu">
+                <?php if ($_SESSION['user']['quyen'] != 1): ?>
+                    <div class="menu-item" onclick="clearLocalStorage()" aria-label="Xóa mô hình TensorFlow">
+                        <i class="fas fa-eraser"></i> Model
+                    </div>
+                <?php endif; ?>
+                <div class="menu-item" onclick="handleHomeClick()" aria-label="Quay về trang chủ">
+                    <i class="fas fa-home"></i> Trang chủ
+                </div>
+                <?php
+                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM yeucaudonhang WHERE trangthai = 0");
+                    $stmt->execute();
+                    $thongbaoCount = (int) $stmt->fetchColumn();
+                ?>
+                <?php if ($_SESSION['user']['quyen'] != 1): ?>
+                    <div class="menu-item relative" id="menu-tb" onclick="loadThongBao()" aria-label="Xem thông báo">
+                        <i class="fas fa-bell"></i> Thông báo
+                        <?php if ($thongbaoCount > 0): ?>
+                            <span class="absolute top-0 right-2 bg-red-500 text-white text-xs rounded-full px-2 py-0.5" aria-label="Số lượng thông báo chưa xem">
+                                <?= $thongbaoCount ?>
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+                <div class="menusidebar">
+                    <h2 class="text-lg font-semibold text-gray-800">Quản lý</h2>
+                </div>
+                <?php if ($_SESSION['user']['quyen'] != 1): ?>
+                    <div class="menu-item" id="menu-user" onclick="loadDLUser()" aria-label="Quản lý người dùng">
+                        <i class="fas fa-users"></i> Người dùng
+                    </div>
+                <?php else: ?>
+                    <div class="menu-item" id="menu-user" onclick="loadDLUser()" aria-label="Quản lý tài khoản cá nhân">
+                        <i class="fas fa-users"></i> Tài khoản cá nhân
+                    </div>
+                <?php endif; ?>
+                <?php if ($_SESSION['user']['quyen'] != 1): ?>
+                    <div class="menu-item" id="menu-product" onclick="loadDLSanpham()" aria-label="Quản lý sản phẩm">
+                        <i class="fas fa-box"></i> Sản phẩm
+                    </div>
+                <?php else: ?>
+                    <div class="menu-item" id="menu-product" onclick="loadDLSanpham()" aria-label="Quản lý mua sắm">
+                        <i class="fas fa-box"></i> Mua sắm
+                    </div>
+                <?php endif; ?>
+                <?php if ($_SESSION['user']['quyen'] != 1): ?>
+                    <div class="menu-item" id="menu-category" onclick="loadDLDanhmuc()" aria-label="Quản lý danh mục">
+                        <i class="fas fa-list"></i> Danh mục
+                    </div>
+                    <div class="menu-item" id="menu-discount" onclick="loadDLMGG()" aria-label="Quản lý khuyến mãi">
+                        <i class="fas fa-tags"></i> Khuyến mãi
+                    </div>
+                <?php endif; ?>
+                <?php if ($_SESSION['user']['quyen'] != 1): ?>
+                    <div class="menu-item" id="menu-order" onclick="loadDLDonhang()" aria-label="Quản lý đơn hàng">
+                        <i class="fas fa-chart-bar"></i> Đơn hàng
+                    </div>
+                <?php else: ?>
+                    <div class="menu-item" id="menu-order" onclick="loadDLDonhang()" aria-label="Quản lý đơn mua hàng">
+                        <i class="fas fa-chart-bar"></i> Đơn mua hàng
+                    </div>
+                <?php endif; ?>
+                <div class="menu-item" id="menu-gh" onclick="loadGH()" aria-label="Giỏ hàng">
+                    <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                </div>
+                <div class="menu-item" id="menu-support" onclick="loadPhanHoi()" aria-label="Hỗ trợ khách hàng">
+                    <i class="fas fa-headset"></i> Hỗ trợ
+                </div>
+            </div>
+            <div class="menutaikhoan">
+                <div class="relative">
+                    <button class="flex items-center gap-3 p-3 w-full rounded-md hover:bg-gray-100 taikhoan" onclick="ddadmin()" aria-label="Tài khoản admin" aria-expanded="false">
+                        <img src="<?= $admin_avatar ?>" alt="Avatar" class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                        <span class="font-medium text-gray-800"><?= !empty($admin_name) ? $admin_name : "Admin"; ?></span>
+                    </button>
+                    <div id="adminDropdown" class="dropdowntk hidden">
+                        <div class="p-4 border-b text-center">
+                            <img src="<?= $admin_avatar ?>" alt="Avatar admin" class="w-16 h-16 rounded-full mx-auto border-2 border-gray-200" id="menu-ttcn" onclick="taikhoancn()" aria-label="Xem thông tin cá nhân">
+                            <p class="font-semibold mt-2 text-gray-800"><?= $admin_name ?></p>
+                            <p class="text-sm text-gray-600"><?= $admin_phone ?></p>
+                            <p class="text-sm text-gray-600 italic"><?= $admin_email ?></p>
+                        </div>
+                        <div class="btndx" onclick="logout()" aria-label="Đăng xuất">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div> 
-</div>
+    </nav>
 
-</nav>
-<style>
-    .main-content{
-        padding: 0;
-        bottom: -100px; 
-    }
-    .chan {
-        margin: 0;
-    }
-</style>
     <!-- Main Content -->
-    <div class="main-content flex-1 p-4 transition-all duration-300" id="main-content">
-        <iframe id="Frame" src="" 
-            class="frame w-full h-[calc(100vh-136px)] md:h-[calc(100vh-136px)] border-none" 
-            scrolling="auto" aria-label="Nội dung chính">
-        </iframe>
+    <div class="main-content" id="main-content">
+        <iframe id="Frame" src="" class="w-full h-full border-none" scrolling="auto" aria-label="Nội dung chính"></iframe>
     </div>
 
-    <footer class="bg-white border-t border-gray-300 text-gray-700 px-4 py-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center space-y-6 md:space-y-0">
-            <!-- Bên trái -->
+    <footer class="bg-white border-t border-gray-200 text-gray-600 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
             <div class="text-center md:text-left text-sm">
                 <span>© 2025 M'K STORE - All rights reserved.</span>
             </div>
-
-            <!-- Ở giữa -->
-            <div class="items-center md:items-start text-sm space-y-1 space-x-4">
-                <span><i class="fas fa-map-marker-alt mr-2"></i>Địa chỉ: 73 Nguyễn Huệ, P.2, TP. Vĩnh Long</span>
+            <div class="flex flex-col md:flex-row items-center md:items-start text-sm gap-2 md:gap-4">
+                <span onclick="ggmap()"><i class="fas fa-map-marker-alt mr-2"></i>Địa chỉ: 73 Nguyễn Huệ, P.2, TP. Vĩnh Long</span>
                 <span><i class="fas fa-phone mr-2"></i>0702 8045 94</span>
             </div>
-
-            <!-- Bên phải -->
             <div class="flex gap-4 text-sm">
-                <a href="#" class="text-blue-600 hover:underline" aria-label="Zalo">
+                <a href="https://zalo.me/0702804594" class="text-blue-600 hover:underline" aria-label="Zalo">
                     <i class="fab fa-facebook-messenger mr-1"></i>Zalo
                 </a>
-                <a href="#" class="text-blue-600 hover:underline" aria-label="Facebook">
+                <a href="https://www.messenger.com/t/29094943980089871/" class="text-blue-600 hover:underline" aria-label="Facebook">
                     <i class="fab fa-facebook mr-1"></i>Facebook
                 </a>
             </div>
         </div>
     </footer>
-
-<style>
-    /* Alerts */
-    .alert {
-            position: fixed;
-            top: 50px;
-            margin-left: 50%;
-            padding: 0.75rem;
-            border-radius: 4px;
-            z-index: 1000;
-            display: none;
-        }
-
-        .alert-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .alert-error {
-            background: #dc3545;
-            color: white;
-        }
-</style>
+<script>
+    function ggmap() {
+        window.location.href="https://www.google.com/maps?q=73+Nguyễn+Huệ,+Phường+1,+Vĩnh+Long,+85000,+Việt+Nam";
+    }
+</script>
     <!-- Alerts -->
     <div id="success-alert" class="alert alert-success"></div>
     <div id="error-alert" class="alert alert-error"></div>
     <?php
-        if (isset($_GET['status'])) {
-            if ($_GET['status'] === 'cnuserT') {
-                echo "<script>showCustomAlert('Thành Công!', 'Thông tin đã được cập nhật.', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            } 
-            else if ($_GET['status'] === 'cnuserF') {
-                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            }
-            else if ($_GET['status'] === 'themuserT') {
-                echo "<script>showCustomAlert('Thành Công!', 'Người dùng đã được thêm vào danh sách!', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            } 
-            else if ($_GET['status'] === 'themuserF') {
-                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            }
-            else if ($_GET['status'] === 'cnspT') {
-                echo "<script>showCustomAlert('Thành Công!', 'Thông tin sản phẩm đã được cập nhật thành công!', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            } 
-            else if ($_GET['status'] === 'cnspF') {
-                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 
-
-        3000);</script>";
-            }
-            else if ($_GET['status'] === 'themspT') {
-                echo "<script>showCustomAlert('Thành Công!', 'Sản phẩm đã được thêm thành công!', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            } 
-            else if ($_GET['status'] === 'themspF') {
-                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            }
-            else if ($_GET['status'] === 'xoaspT') {
-                echo "<script>showCustomAlert('Thành Công!', 'Xóa sản phẩm thành công!', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            } 
-            else if ($_GET['status'] === 'xoaspF') {
-                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            }
-            else if ($_GET['status'] === 'cnanhuserT') {
-                echo "<script>showCustomAlert('Thành Công!', 'Cập nhật ảnh thành công!', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            } 
-            else if ($_GET['status'] === 'cnanhuserF') {
-                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            }
-            else if ($_GET['status'] === 'laylaispT') {
-                echo "<script>showCustomAlert('Lấy lại tài khoản thành công!', '', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            }
-            else if ($_GET['status'] === 'laylaispF') {
-                echo "<script>showCustomAlert('Lỗi khi cấp lại tài!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            }
-            else if ($_GET['status'] === 'themdmT') {
-                echo "<script>showCustomAlert('Thêm danh mục thành công', '', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            }
-            else if ($_GET['status'] === 'cndmT') {
-                echo "<script>showCustomAlert('Thành Công!', 'Cập nhật ảnh thành công!', 'picture/success.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            } 
-            else if ($_GET['status'] === 'cndmF') {
-                echo "<script>showCustomAlert('Thất bại!', '', 'picture/error.png'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
-            }
+        $statusMessages = [
+            'cnuserT' => ['Thành Công!', 'Thông tin đã được cập nhật.', 'picture/success.png'],
+            'cnuserF' => ['Thất bại!', '', 'picture/error.png'],
+            'themuserT' => ['Thành Công!', 'Người dùng đã được thêm vào danh sách!', 'picture/success.png'],
+            'themuserF' => ['Thất bại!', '', 'picture/error.png'],
+            'cnspT' => ['Thành Công!', 'Thông tin sản phẩm đã được cập nhật thành công!', 'picture/success.png'],
+            'cnspF' => ['Thất bại!', '', 'picture/error.png'],
+            'themspT' => ['Thành Công!', 'Sản phẩm đã được thêm thành công!', 'picture/success.png'],
+            'themspF' => ['Thất bại!', '', 'picture/error.png'],
+            'xoaspT' => ['Thành Công!', 'Xóa sản phẩm thành công!', 'picture/success.png'],
+            'xoaspF' => ['Thất bại!', '', 'picture/error.png'],
+            'cnanhuserT' => ['Thành Công!', 'Cập nhật ảnh thành công!', 'picture/success.png'],
+            'cnanhuserF' => ['Thất bại!', '', 'picture/error.png'],
+            'laylaispT' => ['Lấy lại tài khoản thành công!', '', 'picture/success.png'],
+            'laylaispF' => ['Lỗi khi cấp lại tài!', '', 'picture/error.png'],
+            'themdmT' => ['Thêm danh mục thành công', '', 'picture/success.png'],
+            'cndmT' => ['Thành Công!', 'Cập nhật ảnh thành công!', 'picture/success.png'],
+            'cndmF' => ['Thất bại!', '', 'picture/error.png'],
+            'nhanhangT' => ['Bạn đã nhận hàng thành công!','picture/success.png'],
+            'nhanhangF' => ['Cập nhật trạng thái nhận hàng thất bại!','picture/error.png']
+        ];
+        if (isset($_GET['status']) && isset($statusMessages[$_GET['status']])) {
+            $msg = $statusMessages[$_GET['status']];
+            echo "<script>showCustomAlert('{$msg[0]}', '{$msg[1]}', '{$msg[2]}'); setTimeout(() => { window.location.href='trangchu.php'; }, 3000);</script>";
         }
     ?>
-    <!-- JavaScript -->
+
     <script>
-        // Lấy products từ PHP
         const rawProducts = <?php echo json_encode($products); ?>;
-        console.log("Raw Products:", rawProducts); // Debug
         const products = rawProducts.map(p => ({
             id: parseInt(p.idsp, 10) || 0,
             name: p.tensp || 'unknown',
             category: String(p.iddm ?? 'unknown')
         })).filter(p => p.id > 0);
-        console.log("Processed Products:", products); // Debug
 
-        // Kiểm tra nếu products rỗng (chỉ áp dụng cho menu-product)
         function checkEmptyProducts() {
             if (products.length === 0) {
-                console.warn("No products found. Disabling TensorFlow.js search.");
-                document.getElementById('search-results').innerHTML = '<div>Không có sản phẩm để tìm kiếm. Vui lòng thêm sản phẩm.</div>';
+                document.getElementById('search-results').innerHTML = '<div class="p-2 bg-white rounded-md shadow-sm">Không có sản phẩm để tìm kiếm. Vui lòng thêm sản phẩm.</div>';
                 return true;
             }
             return false;
         }
 
-        // Chuẩn hóa từ khóa
         const keywordMapping = {
-            'backpack': 'balo',
-            'cặp': 'balo',
-            'túi đeo lưng': 'balo',
-            'túi đi học': 'balo',
-            'ba lô': 'balo',
-            'bag': 'túi',
-            'túi xách': 'túi',
-            'túi đeo': 'túi',
-            'wallet': 'ví',
-            'clutch': 'ví',
-            'ví tiền': 'ví',
-            'watch': 'đồng hồ',
-            'đồng hồ đeo tay': 'đồng hồ',
-            'đồng hồ thời trang': 'đồng hồ',
-            'leather': 'da',
-            'đồ da': 'da',
-            'phụ kiện da': 'da',
-            'eye': 'mắt',
-            'mỹ phẩm mắt': 'mắt',
-            'phấn mắt': 'mắt',
-            'lip': 'môi',
-            'son môi': 'môi',
-            'mỹ phẩm môi': 'môi',
-            'tool': 'dụng cụ',
-            'phụ kiện': 'dụng cụ',
-            'đồ dùng': 'dụng cụ',
-            'necklace': 'vòng cổ',
-            'dây chuyền': 'vòng cổ',
-            'chuỗi ngọc': 'vòng cổ',
-            'vongco': 'vòng cổ',
-            'bracelet': 'vòng lắc',
-            'vòng tay': 'vòng lắc',
-            'lắc': 'vòng lắc',
-            'ring': 'nhẫn',
-            'nhẫn đính hôn': 'nhẫn',
-            'nhẫn cưới': 'nhẫn',
-            'nhẫn vàng 18k': 'nhẫn',
-            'earring': 'bông tai',
-            'khuyên tai': 'bông tai',
-            'hoa tai': 'bông tai',
-            'teddy bear': 'gấu bông',
-            'gấu teddy': 'gấu bông',
-            'thú nhồi bông': 'gấu bông'
+            'backpack': 'balo', 'cặp': 'balo', 'túi đeo lưng': 'balo', 'túi đi học': 'balo', 'ba lô': 'balo',
+            'bag': 'túi', 'túi xách': 'túi', 'túi đeo': 'túi',
+            'wallet': 'ví', 'clutch': 'ví', 'ví tiền': 'ví',
+            'watch': 'đồng hồ', 'đồng hồ đeo tay': 'đồng hồ', 'đồng hồ thời trang': 'đồng hồ',
+            'leather': 'da', 'đồ da': 'da', 'phụ kiện da': 'da',
+            'eye': 'mắt', 'mỹ phẩm mắt': 'mắt', 'phấn mắt': 'mắt',
+            'lip': 'môi', 'son môi': 'môi', 'mỹ phẩm môi': 'môi',
+            'tool': 'dụng cụ', 'phụ kiện': 'dụng cụ', 'đồ dùng': 'dụng cụ',
+            'necklace': 'vòng cổ', 'dây chuyền': 'vòng cổ', 'chuỗi ngọc': 'vòng cổ', 'vongco': 'vòng cổ',
+            'bracelet': 'vòng lắc', 'vòng tay': 'vòng lắc', 'lắc': 'vòng lắc',
+            'ring': 'nhẫn', 'nhẫn đính hôn': 'nhẫn', 'nhẫn cưới': 'nhẫn', 'nhẫn vàng 18k': 'nhẫn',
+            'earring': 'bông tai', 'khuyên tai': 'bông tai', 'hoa tai': 'bông tai',
+            'teddy bear': 'gấu bông', 'gấu teddy': 'gấu bông', 'thú nhồi bông': 'gấu bông'
         };
 
-        // Tạo trainingData động với từ khóa phong phú (chỉ khi menu-product)
         let trainingData = [];
         let vocabulary = [];
         function prepareTrainingData() {
             trainingData = products.map(product => {
-                console.log("Processing product:", product); // Debug
                 const categoryKeywords = (product.category && product.category.trim() !== '') 
-                    ? product.category.toLowerCase().split(/\s+/) 
-                    : [];
+                    ? product.category.toLowerCase().split(/\s+/) : [];
                 const productNameWords = product.name.toLowerCase().split(/\s+/).filter(word => !/^\d+$/.test(word));
                 return {
                     keywords: [
-                        ...productNameWords,
-                        ...categoryKeywords,
+                        ...productNameWords, ...categoryKeywords,
                         ...(product.name.toLowerCase().includes("balo") ? ["cặp", "backpack", "túi đeo lưng", "túi đi học"] : []),
                         ...(product.name.toLowerCase().includes("túi") ? ["bag", "túi xách", "túi đeo"] : []),
                         ...(product.name.toLowerCase().includes("ví") ? ["wallet", "clutch", "ví tiền"] : []),
@@ -807,28 +799,17 @@
                     productId: product.id
                 };
             });
-            console.log("Training Data:", trainingData); // Debug
-
-            // Tạo vocabulary
             vocabulary = products.length > 0 ? [...new Set(trainingData.flatMap(item => item.keywords))] : [];
-            console.log("Vocabulary size:", vocabulary.length); // Debug
-            console.log("Vocabulary:", vocabulary); // Debug
-
-            // Kiểm tra và xóa mô hình cũ nếu vocabulary thay đổi
             const currentVocabulary = JSON.stringify(vocabulary);
             const savedVocabulary = localStorage.getItem('search-vocabulary');
             if (savedVocabulary !== currentVocabulary) {
-                console.log("Vocabulary changed, clearing old model");
                 localStorage.removeItem('search-model');
                 localStorage.setItem('search-vocabulary', currentVocabulary);
             }
         }
 
         function keywordsToVector(keywords) {
-            const vector = vocabulary.map(word => keywords.includes(word) ? 1 : 0);
-            console.log("Input vector size:", vector.length); // Debug
-            console.log("Input vector:", vector); // Debug
-            return vector;
+            return vocabulary.map(word => keywords.includes(word) ? 1 : 0);
         }
 
         let xs = null;
@@ -840,76 +821,39 @@
 
         async function trainModel() {
             if (products.length === 0) {
-                console.warn("Cannot train model: No products available.");
                 return null;
             }
-
-            console.log("Training new model with vocabulary size:", vocabulary.length);
             const model = tf.sequential();
-            model.add(tf.layers.dense({
-                units: 32, // Tăng số units
-                activation: 'relu',
-                inputShape: [vocabulary.length]
-            }));
-            model.add(tf.layers.dense({
-                units: 16, // Thêm tầng ẩn
-                activation: 'relu'
-            }));
-            model.add(tf.layers.dense({
-                units: Math.max(...products.map(p => p.id)) + 1 || 1,
-                activation: 'softmax'
-            }));
-
-            model.compile({
-                optimizer: tf.train.adam(0.005), // Giảm learning rate
-                loss: 'sparseCategoricalCrossentropy',
-                metrics: ['accuracy']
-            });
-
-            await model.fit(xs, ys, {
-                epochs: 150, // Tăng số epoch
-                verbose: 0,
-                callbacks: {
-                    onEpochEnd: (epoch, logs) => {
-                        console.log(`Epoch ${epoch}: loss = ${logs.loss}, accuracy = ${logs.acc}`);
-                    }
-                }
-            });
-
+            model.add(tf.layers.dense({ units: 32, activation: 'relu', inputShape: [vocabulary.length] }));
+            model.add(tf.layers.dense({ units: 16, activation: 'relu' }));
+            model.add(tf.layers.dense({ units: Math.max(...products.map(p => p.id)) + 1 || 1, activation: 'softmax' }));
+            model.compile({ optimizer: tf.train.adam(0.005), loss: 'sparseCategoricalCrossentropy', metrics: ['accuracy'] });
+            await model.fit(xs, ys, { epochs: 150, verbose: 0 });
             await model.save('localstorage://search-model');
-            console.log("Model saved");
             return model;
         }
 
         async function loadModel() {
             if (products.length === 0) {
-                console.warn("Cannot load model: No products available.");
                 return null;
             }
-
             try {
-                console.log("Loading model...");
                 const model = await tf.loadLayersModel('localstorage://search-model');
                 const expectedShape = model.layers[0].input.shape[1];
                 if (expectedShape !== vocabulary.length) {
-                    console.log("Input shape mismatch, retraining model");
                     localStorage.removeItem('search-model');
                     return await trainModel();
                 }
                 return model;
             } catch (e) {
-                console.error("Error loading model:", e);
                 return await trainModel();
             }
         }
 
         async function predictProduct(searchQuery) {
             if (checkEmptyProducts()) {
-                console.warn("Cannot predict: No products available.");
                 return null;
             }
-
-            // Chuẩn hóa query trước khi dự đoán
             let normalizedQuery = searchQuery.toLowerCase();
             for (let [keyword, mapped] of Object.entries(keywordMapping)) {
                 if (normalizedQuery.includes(keyword)) {
@@ -917,23 +861,16 @@
                 }
             }
             const keywords = normalizedQuery.split(/\s+/);
-            console.log("Normalized query keywords:", keywords); // Debug
-
             const inputVector = tf.tensor2d([keywordsToVector(keywords)]);
             const model = await loadModel();
             if (!model) return null;
             const prediction = model.predict(inputVector);
             const predictedId = tf.argMax(prediction, axis=1).dataSync()[0];
-            console.log("Predicted ID:", predictedId); // Debug
             const product = products.find(p => p.id === predictedId) || null;
-            console.log("Predicted product:", product); // Debug
-
-            // Fallback nếu dự đoán không chính xác
             if (!product) {
                 for (let keyword of keywords) {
                     const matchedProduct = products.find(p => p.name.toLowerCase().includes(keyword));
                     if (matchedProduct) {
-                        console.log("Fallback: Found product with keyword", keyword, ":", matchedProduct);
                         return matchedProduct;
                     }
                 }
@@ -949,27 +886,22 @@
                 const resultsDiv = document.getElementById('search-results');
                 resultsDiv.innerHTML = '';
                 const activeMenu = getActiveMenu();
-
                 if (activeMenu === "menu-product") {
-                    // Chuẩn bị dữ liệu huấn luyện và mô hình chỉ khi ở menu-product
                     prepareTrainingData();
                     prepareTrainingTensors();
                     if (query) {
                         if (checkEmptyProducts()) {
-                            console.log("Đang tìm kiếm theo key (query) khi (products.length === 0): " + query);
                             searchProducts(query);
                             return;
                         }
-                        
                         try {
                             const predictedProduct = await predictProduct(query);
                             if (predictedProduct) {
                                 resultsDiv.innerHTML = `
-                                    <div class="search-result p-2 bg-gray-100 rounded-md">
+                                    <div class="search-result p-2 bg-white rounded-md shadow-sm">
                                         <span>${predictedProduct.name}</span>
                                     </div>
                                 `;
-                                // Truyền từ khóa chuẩn hóa thay vì tên sản phẩm
                                 let normalizedQuery = query.toLowerCase();
                                 for (let [keyword, mapped] of Object.entries(keywordMapping)) {
                                     if (normalizedQuery.includes(keyword)) {
@@ -977,41 +909,20 @@
                                         break;
                                     }
                                 }
-                                console.log("Đang tìm kiếm theo kết quả dự đoán: " + normalizedQuery);
                                 searchProducts(normalizedQuery);
                             } else {
-                                resultsDiv.innerHTML = '<div class="p-2 bg-gray-100 rounded-md">Không tìm thấy sản phẩm</div>';
-                                console.log("Đang tìm kiếm theo key (query) khi (predictedProduct là false): " + query);
+                                resultsDiv.innerHTML = '<div class="p-2 bg-white rounded-md shadow-sm">Không tìm thấy sản phẩm</div>';
                                 searchProducts(query);
                             }
                         } catch (e) {
-                            console.error("Error in handleSearch:", e);
-                            resultsDiv.innerHTML = '<div class="p-2 bg-gray-100 rounded-md">Lỗi khi tìm kiếm. Vui lòng thử lại.</div>';
-                            console.log("Đang tìm kiếm theo key (query): " + query);
+                            resultsDiv.innerHTML = '<div class="p-2 bg-white rounded-md shadow-sm">Lỗi khi tìm kiếm. Vui lòng thử lại.</div>';
                             searchProducts(query);
                         }
                     } else {
-                        console.log("Đang tìm kiếm theo key (query) khi lỗi (predictedProduct): " + query);
                         searchProducts(query);
                     }
-                } else {
-                    if (activeMenu === "menu-user") searchUsers(query);
-                    if (activeMenu === "menu-order") searchDonHang(query);
-                    if (activeMenu === "menu-support") searchPhanHoi(query);
-                }
+                } 
             }, 300);
-        }
-
-        function searchUsers(query) {
-            setTimeout(() => {
-                let iframe = document.getElementById("Frame");
-                if (iframe) {
-                    iframe.src = "nguoidung/hienthinguoidung.php?query=" + encodeURIComponent(query);
-                    console.log("Iframe updated (users):", iframe.src); // Debug
-                } else {
-                    console.error("Không tìm thấy iframe có ID 'Frame'");
-                }
-            }, 100);
         }
 
         function searchProducts(query) {
@@ -1019,40 +930,11 @@
                 let iframe = document.getElementById("Frame");
                 if (iframe) {
                     iframe.src = "sanpham/hienthisanpham.php?query=" + encodeURIComponent(query);
-                    console.log("Iframe updated (products):", iframe.src); // Debug
                     iframe.onload = function() {
-                        console.log("Iframe loaded successfully");
                         if (iframe.contentDocument && iframe.contentDocument.body.innerHTML.trim() === "") {
-                            console.warn("Iframe content is empty");
-                            iframe.contentDocument.body.innerHTML = '<div class="no-data-message p-4 text-gray-500">Không có sản phẩm nào để hiển thị.</div>';
+                            iframe.contentDocument.body.innerHTML = '<div class="p-4 text-gray-500">Không có sản phẩm nào để hiển thị.</div>';
                         }
                     };
-                } else {
-                    console.error("Không tìm thấy iframe có ID 'Frame'");
-                }
-            }, 100);
-        }
-
-        function searchDonHang(query) {
-            setTimeout(() => {
-                let iframe = document.getElementById("Frame");
-                if (iframe) {
-                    iframe.src = "donhang/hienthidonhang.php?query=" + encodeURIComponent(query);
-                    console.log("Iframe updated (orders):", iframe.src); // Debug
-                } else {
-                    console.error("Không tìm thấy iframe có ID 'Frame'");
-                }
-            }, 100);
-        }
-
-        function searchPhanHoi(query) {
-            setTimeout(() => {
-                let iframe = document.getElementById("Frame");
-                if (iframe) {
-                    iframe.src = "phanhoi/hienthiphanhoi.php?query=" + encodeURIComponent(query);
-                    console.log("Iframe updated (support):", iframe.src); // Debug
-                } else {
-                    console.error("Không tìm thấy iframe có ID 'Frame'");
                 }
             }, 100);
         }
@@ -1061,199 +943,202 @@
             const micButton = document.getElementById("mic-btn");
             const micStatus = micButton.querySelector(".mic-status");
             const searchBar = document.querySelector(".search-bar");
-
             if (!('webkitSpeechRecognition' in window)) {
                 alert("Trình duyệt không hỗ trợ tìm kiếm bằng giọng nói.");
                 micButton.disabled = true;
                 return;
             }
-
             const recognition = new webkitSpeechRecognition();
             recognition.continuous = false;
             recognition.interimResults = false;
             recognition.lang = "vi-VN";
-
             micButton.addEventListener("click", () => {
                 micButton.classList.add("listening");
                 micStatus.classList.remove("hidden");
                 recognition.start();
             });
-
             recognition.onresult = (event) => {
                 const speechResult = event.results[0][0].transcript;
                 searchBar.value = speechResult;
                 handleSearch(speechResult);
             };
-
             recognition.onerror = (event) => {
                 console.error("Lỗi nhận dạng giọng nói:", event.error);
             };
-
             recognition.onend = () => {
                 micButton.classList.remove("listening");
                 micStatus.classList.add("hidden");
             };
         });
 
-
-    function ddadmin() {
-        const dropdown = document.getElementById("adminDropdown");
-        const taikhoanBtn = document.querySelector(".taikhoan");
-
-        const isHidden = !dropdown.classList.contains("dropdown-active");
-
-        dropdown.classList.toggle("dropdown-active", isHidden);
-        dropdown.classList.toggle("hidden", !isHidden);
-
-        taikhoanBtn.setAttribute("aria-expanded", isHidden);
-    }
-    
-    document.addEventListener('click', function(event) {
-        const dropdown = document.getElementById("adminDropdown");
-        const trigger = document.querySelector(".taikhoan");
-
-        if (
-            !dropdown.contains(event.target) &&
-            !trigger.contains(event.target)
-        ) {
-            dropdown.classList.remove("dropdown-active");
-            trigger.setAttribute("aria-expanded", "false");
+        function ddadmin() {
+            const dropdown = document.getElementById("adminDropdown");
+            const taikhoanBtn = document.querySelector(".taikhoan");
+            if (!dropdown || !taikhoanBtn) return;
+            const isHidden = !dropdown.classList.contains("dropdown-active");
+            dropdown.classList.toggle("dropdown-active", isHidden);
+            dropdown.classList.toggle("hidden", !isHidden);
+            taikhoanBtn.setAttribute("aria-expanded", isHidden);
         }
-    });
 
-        // Toggle Menu for All Devices
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById("adminDropdown");
+            const trigger = document.querySelector(".taikhoan");
+            if (dropdown && trigger && !dropdown.contains(event.target) && !trigger.contains(event.target)) {
+                dropdown.classList.remove("dropdown-active");
+                trigger.setAttribute("aria-expanded", "false");
+            }
+        });
+
         function toggleMenu() {
             const sidebar = document.getElementById('sidebar');
+            const homeIconToggle = document.getElementById('home-icon-toggle');
+            const navbarLogo = document.getElementById('navbar-logo');
+            const sidebarLogo = document.getElementById('sidebar-logo');
             const mainContent = document.getElementById('main-content');
-            const hamburger = document.querySelector('.hamburger');
             const isExpanded = sidebar.classList.contains('translate-x-0');
-            // const dropdown = document.getElementById("adminDropdown");
-            // const trigger = document.querySelector(".taikhoan");
+
             if (isExpanded) {
                 sidebar.classList.remove('translate-x-0');
                 sidebar.classList.add('-translate-x-full');
-                hamburger.classList.remove('active');
-                // dropdown.style.left = "50%";
+                navbarLogo.classList.remove('hidden');
+                sidebarLogo.classList.add('hidden');
+                homeIconToggle.classList.remove('sidebar-expanded');
             } else {
                 sidebar.classList.remove('-translate-x-full');
                 sidebar.classList.add('translate-x-0');
-                hamburger.classList.add('active');
+                navbarLogo.classList.add('hidden');
+                sidebarLogo.classList.remove('hidden');
+                homeIconToggle.classList.add('sidebar-expanded');
             }
-
-            hamburger.setAttribute('aria-expanded', !isExpanded);
+            homeIconToggle.setAttribute('aria-expanded', !isExpanded);
             localStorage.setItem('sidebarStateadmin', isExpanded ? 'collapsed' : 'expanded');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
-            const hamburger = document.querySelector('.hamburger');
-            const logo = document.getElementById('logoTrigger');
-            const dropdown = document.getElementById("adminDropdown");
-            const trigger = document.querySelector(".taikhoan");
+            const homeIconToggle = document.getElementById('home-icon-toggle');
+            const navbarLogo = document.getElementById('navbar-logo');
+            const sidebarLogo = document.getElementById('sidebar-logo');
+            const mainContent = document.getElementById('main-content');
+            const searchBox = document.querySelector('.input-container');
+            const savedState = localStorage.getItem('sidebarStateadmin');
 
-            // Ẩn sidebar khi chuột rời sidebar
-            sidebar.addEventListener('mouseleave', () => {
-                if (sidebar.classList.contains('translate-x-0')) {
-                    sidebar.classList.remove('translate-x-0');
-                    sidebar.classList.add('-translate-x-full');
-                    hamburger.classList.remove('active');
-                    hamburger.setAttribute('aria-expanded', 'false');
-                    localStorage.setItem('sidebarStateadmin', 'collapsed');
-                    
-                    dropdown.classList.remove("dropdown-active");
-                    trigger.setAttribute("aria-expanded", "false");
-                    //dropdown.style.left = "50%";
+            let firstVisitAfterLogin = localStorage.getItem('firstVisitAfterLogin');
+            if (firstVisitAfterLogin === null) {
+                firstVisitAfterLogin = 'true';
+                localStorage.setItem('firstVisitAfterLogin', 'true');
+            }
+
+            // Sidebar logic
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('-translate-x-full');
+                navbarLogo.classList.remove('hidden');
+                sidebarLogo.classList.add('hidden');
+                mainContent.classList.remove('expanded');
+                homeIconToggle.classList.remove('sidebar-expanded');
+                homeIconToggle.setAttribute('aria-expanded', 'false');
+            } else if (savedState === 'expanded') {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                navbarLogo.classList.add('hidden');
+                sidebarLogo.classList.remove('hidden');
+                mainContent.classList.add('expanded');
+                homeIconToggle.classList.add('sidebar-expanded');
+                homeIconToggle.setAttribute('aria-expanded', 'true');
+            } else {
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('-translate-x-full');
+                navbarLogo.classList.remove('hidden');
+                sidebarLogo.classList.add('hidden');
+                mainContent.classList.remove('expanded');
+                homeIconToggle.classList.remove('sidebar-expanded');
+                homeIconToggle.setAttribute('aria-expanded', 'false');
+            }
+
+            homeIconToggle.addEventListener('click', toggleMenu);
+            activateMenu();
+
+            const handleMenuClick = (menuId, loadFunction, showSearch = false) => {
+                document.getElementById(menuId)?.addEventListener('click', () => {
+                    if (showSearch) {
+                        searchBox.style.display = 'block';
+                    } else {
+                        searchBox.style.display = 'none';
+                    }
+                    loadFunction();
+                    localStorage.removeItem('profileMenuClicked');
+                });
+            };
+
+            // Thiết lập các menu và hành vi tương ứng
+            handleMenuClick("menu-user", loadDLUser, false);
+            handleMenuClick("menu-product", loadDLSanpham, true);
+            handleMenuClick("menu-category", loadDLDanhmuc, false);
+            handleMenuClick("menu-order", loadDLDonhang, false);
+            handleMenuClick("menu-discount", loadDLMGG, false);
+            handleMenuClick("menu-support", loadPhanHoi, false);
+            handleMenuClick("menu-gh", loadGH, false);
+
+            // Lần load đầu tiên sau đăng nhập
+            setTimeout(() => {
+                let id = getActiveMenu();
+                if (id === "menu-user") {
+                    searchBox.style.display = 'none';
+                    loadDLUser();
+                } else if (id === "menu-product") {
+                    searchBox.style.display = 'block';
+                    loadDLSanpham();
+                } else if (id === "menu-category") {
+                    searchBox.style.display = 'none';
+                    loadDLDanhmuc();
+                } else if (id === "menu-order") {
+                    searchBox.style.display = 'none';
+                    loadDLDonhang();
+                } else if (id === "menu-discount") {
+                    searchBox.style.display = 'none';
+                    loadDLMGG();
+                } else if (id === "menu-support") {
+                    searchBox.style.display = 'none';
+                    loadPhanHoi();
+                } else if (id === "menu-gh") {
+                    searchBox.style.display = 'none';
+                    loadGH();
                 }
-            });
-
-            // Hiện lại sidebar khi rê chuột vào logo
-            logo.addEventListener('mouseenter', () => {
-                if (sidebar.classList.contains('-translate-x-full')) {
-                    sidebar.classList.remove('-translate-x-full');
-                    sidebar.classList.add('translate-x-0');
-                    hamburger.classList.add('active');
-                    hamburger.setAttribute('aria-expanded', 'true');
-                    localStorage.setItem('sidebarStateadmin', 'expanded');
-                }
-            });
-        });
+                localStorage.removeItem('profileMenuClicked');
+            }, 100);
+        });                 
 
 
-        // Handle Home Click
         function handleHomeClick() {
             goBackHome();
             localStorage.setItem('homeButtonClicked', 'true');
         }
 
-        // Load Profile
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            if (localStorage.getItem('homeButtonClicked') === 'true') {
+                goBackHome();
+            }
+        });
+
         function taikhoancn() {
             loadTaiKhoanCN();
             localStorage.setItem('profileMenuClicked', 'true');
             localStorage.removeItem("activeMenu");
             localStorage.removeItem("homeButtonClicked");
-            document.querySelectorAll(".menu-item").forEach(item => {
-                item.classList.remove("active");
-            });
+            document.querySelectorAll(".menu-item").forEach(item => item.classList.remove("active"));
         }
 
-        // Handle Session Timeout
-        handleSessionTimeout(<?= SESSION_TIMEOUT ?>);
-
-        // Load Page State
-        window.addEventListener('load', function() {
-            if (localStorage.getItem('homeButtonClicked') === 'true') {
-                goBackHome();
-            }
+        document.addEventListener('DOMContentLoaded', (event) => {
             if (localStorage.getItem('profileMenuClicked') === 'true') {
                 loadTaiKhoanCN();
             }
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            const hamburger = document.querySelector('.hamburger');
-            const savedState = localStorage.getItem('sidebarStateadmin');
-            // const dropdown = document.getElementById("adminDropdown");
-            // const trigger = document.querySelector(".taikhoan");
-            if (savedState === 'expanded') {
-                sidebar.classList.remove('-translate-x-full');
-                sidebar.classList.add('translate-x-0');
-                hamburger.classList.add('active');
-                hamburger.setAttribute('aria-expanded', 'true');
-                // dropdown.style.left = "50%";
-            } else {
-                sidebar.classList.remove('translate-x-0');
-                sidebar.classList.add('-translate-x-full');
-                hamburger.classList.remove('active');
-                hamburger.setAttribute('aria-expanded', 'false');
-                // dropdown.style.left = "50%";
-            }
-
-            activateMenu();
-            setTimeout(() => {
-                let id = getActiveMenu();
-                if (id === "menu-user") {
-                    loadDLUser(); 
-                    localStorage.removeItem('profileMenuClicked');
-                } else if (id === "menu-product") {
-                    loadDLSanpham();
-                    localStorage.removeItem('profileMenuClicked');
-                } else if (id === "menu-category") {
-                    loadDLDanhmuc(); 
-                    localStorage.removeItem('profileMenuClicked');
-                } else if (id === "menu-order") { 
-                    loadDLDonhang();
-                    localStorage.removeItem('profileMenuClicked');
-                } else if (id === "menu-discount") {
-                    loadDLMGG();
-                    localStorage.removeItem('profileMenuClicked');
-                } else if (id === "menu-support") { 
-                    loadPhanHoi();
-                    localStorage.removeItem('profileMenuClicked');
-                } else if (id === "menu-gh") {
-                    loadGH();
-                    localStorage.removeItem('profileMenuClicked');
-                }
-            }, 100);
         });
+
+        handleSessionTimeout(<?= SESSION_TIMEOUT ?>);
     </script>
 </body>
 </html>
+<?php

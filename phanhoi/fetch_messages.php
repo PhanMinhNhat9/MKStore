@@ -2,23 +2,24 @@
 require_once '../config.php';
 $pdo = connectDatabase();
 
+if (!isset($_SESSION['user']['iduser'])) {
+    header('Content-Type: application/json; charset=utf-8');
+    http_response_code(401);
+    echo json_encode(['error' => 'Unauthorized']);
+    exit();
+}
+
 $id_nhan = isset($_GET['id']) ? intval(base64_decode($_GET['id'])) : 0;
 $id_gui = $_SESSION['user']['iduser'];
 
 if ($id_nhan <= 0) {
-    die(json_encode(['error' => 'ID người nhận không hợp lệ']));
+    header('Content-Type: application/json; charset=utf-8');
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid recipient ID']);
+    exit();
 }
 
-// Cập nhật trạng thái tin nhắn đã xem
-$update_sql = "UPDATE chattructuyen SET daxem = 1 WHERE idgui = :id_nhan AND idnhan = :id_gui AND daxem = 0";
-$update_stmt = $pdo->prepare($update_sql);
-$update_stmt->execute([
-    'id_nhan' => $id_nhan,
-    'id_gui' => $id_gui
-]);
-
-// Truy vấn danh sách tin nhắn
-$sql = "SELECT * FROM chattructuyen 
+$sql = "SELECT idgui, noidung, thoigian, daxem FROM chattructuyen 
         WHERE (idgui = :id_gui AND idnhan = :id_nhan) 
            OR (idgui = :id_nhan_2 AND idnhan = :id_gui_2) 
         ORDER BY thoigian ASC";
@@ -31,6 +32,7 @@ $stmt->execute([
 ]);
 $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 echo json_encode(['messages' => $messages]);
+exit();
 ?>

@@ -16,7 +16,7 @@
         // $dbname = "u797172436_qua"; 
         // $username = "u797172436_qua";   
         // $password = "Nhta@22004335";   
-                $host = "localhost";  
+        $host = "localhost";  
         $dbname = "quanlybanpk"; 
         $username = "root";   
         $password = ""; 
@@ -76,7 +76,6 @@
                 'diachi' => $user['diachi'],
                 'quyen' => $user['quyen']
             ];
-            
             if (in_array($_SESSION['user']['quyen'], [0, 1, 2589])) {
                 header("Location: ../trangchu.php");
                 exit();

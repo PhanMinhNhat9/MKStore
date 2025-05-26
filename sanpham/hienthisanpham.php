@@ -6,9 +6,11 @@ $pdo = connectDatabase();
 $stmt_dm = $pdo->query("SELECT iddm, tendm, loaidm, icon, mota, thoigian FROM danhmucsp ORDER BY loaidm, iddm");
 $categories = $stmt_dm->fetchAll(PDO::FETCH_ASSOC);
 
-// Lấy sản phẩm có phân trang
+// Lấy sản phẩm có phân trang và lọc giá
 $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $dm = isset($_GET['iddm']) ? trim($_GET['iddm']) : '';
+$min_price = isset($_GET['min_price']) && is_numeric($_GET['min_price']) ? (float)$_GET['min_price'] : '';
+$max_price = isset($_GET['max_price']) && is_numeric($_GET['max_price']) ? (float)$_GET['max_price'] : '';
 $products = [];
 $params = [];
 $limit = 10; // Số sản phẩm mỗi trang
@@ -26,16 +28,26 @@ $sql = "SELECT sp.idsp, sp.tensp, sp.giaban, sp.anh, sp.soluong, sp.iddm,
         LEFT JOIN danhgia dg ON sp.idsp = dg.idsp
         LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm AND CURDATE() BETWEEN mg.ngayhieuluc AND mg.ngayketthuc";
 
-if ($query !== '' && $dm !== '') {
-    $sql .= " WHERE (sp.tensp LIKE :searchTerm) AND sp.iddm = :iddm";
+$conditions = [];
+if ($query !== '') {
+    $conditions[] = "sp.tensp LIKE :searchTerm";
     $params['searchTerm'] = "%$query%";
+}
+if ($dm !== '') {
+    $conditions[] = "sp.iddm = :iddm";
     $params['iddm'] = $dm;
-} elseif ($query !== '') {
-    $sql .= " WHERE sp.tensp LIKE :searchTerm";
-    $params['searchTerm'] = "%$query%";
-} elseif ($dm !== '') {
-    $sql .= " WHERE sp.iddm = :iddm";
-    $params['iddm'] = $dm;
+}
+if ($min_price !== '') {
+    $conditions[] = "sp.giaban >= :min_price";
+    $params['min_price'] = $min_price;
+}
+if ($max_price !== '') {
+    $conditions[] = "sp.giaban <= :max_price";
+    $params['max_price'] = $max_price;
+}
+
+if (!empty($conditions)) {
+    $sql .= " WHERE " . implode(" AND ", $conditions);
 }
 
 $sql .= " GROUP BY sp.idsp ORDER BY sp.thoigianthemsp DESC LIMIT :limit OFFSET :offset";
@@ -51,12 +63,8 @@ $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $count_sql = "SELECT COUNT(DISTINCT sp.idsp) FROM sanpham sp";
-if ($query !== '' && $dm !== '') {
-    $count_sql .= " WHERE (sp.tensp LIKE :searchTerm) AND sp.iddm = :iddm";
-} elseif ($query !== '') {
-    $count_sql .= " WHERE sp.tensp LIKE :searchTerm";
-} elseif ($dm !== '') {
-    $count_sql .= " WHERE sp.iddm = :iddm";
+if (!empty($conditions)) {
+    $count_sql .= " WHERE " . implode(" AND ", $conditions);
 }
 
 $count_stmt = $pdo->prepare($count_sql);
@@ -65,6 +73,12 @@ if ($query !== '') {
 }
 if ($dm !== '') {
     $count_stmt->bindValue(':iddm', $dm);
+}
+if ($min_price !== '') {
+    $count_stmt->bindValue(':min_price', $min_price);
+}
+if ($max_price !== '') {
+    $count_stmt->bindValue(':max_price', $max_price);
 }
 $count_stmt->execute();
 
@@ -84,110 +98,117 @@ $total_pages = ceil($total_products / $limit);
     <script src="../sweetalert2/sweetalert2.min.js"></script>
     <script src="../script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
     <style>
         body {
             font-size: 0.9rem;
             background-color: #f4f6f9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
 
         /* Header */
         header {
-            background-color: #5b8be3;
+            background-color: #3b82f6; /* Bright blue for a vibrant look */
             color: white;
-            padding: 1rem;
+            padding: 0.75rem 1rem;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .container-fluid {
-            transition: all 0.3s ease;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .container-fluid .header-content {
-            display: none; /* Ẩn header-content mặc định */
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-
-        header:hover .container-fluid .header-content {
-            display: block; /* Hiện khi hover */
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .hamburger {
-            display: inline-block;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            margin-right: 1rem;
-        }
-
-        .category-menu {
+        .header-top {
             display: flex;
+            align-items: center;
+            justify-content: space-between;
             gap: 1rem;
             flex-wrap: wrap;
         }
 
-        .dropdown {
-            position: relative;
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 1px;
         }
 
-        .dropdown-toggle {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 0.9rem;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
+
+        .filter-group {
             display: flex;
             align-items: center;
-            transition: background 0.2s;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
-        .dropdown-toggle i {
-            margin-right: 0.5rem;
-        }
-
-        .dropdown-menu {
-            background-color: white;
-            border: 1px solid #dee2e6;
+        .category-select {
+            padding: 0.5rem;
             border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            min-width: 200px;
-            margin-top: 0.5rem;
-            display: none;
-            position: absolute;
-            z-index: 1000;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.2s ease, transform 0.2s ease;
+            border: 1px solid #d1d5db;
+            background-color: white;
+            font-size: 0.9rem;
+            max-width: 250px;
+            outline: none;
         }
 
-        .dropdown:hover .dropdown-menu {
-            display: block;
-            opacity: 1;
-            top: 40px;
+        .category-select option {
+            padding: 0.5rem;
         }
 
-        .dropdown-item {
-            color: #333;
-            padding: 0.5rem 1rem;
+        .category-select option.child {
+            padding-left: 1.5rem;
+        }
+
+        .price-filter {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .price-filter input {
+            width: 110px;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
             font-size: 0.85rem;
-            transition: background 0.2s;
+            outline: none;
         }
 
-        .dropdown-item:hover,
-        .dropdown-item.selected {
-            background-color: rgba(0, 68, 255, 0.51);
+        .price-filter button, .clear-filter {
+            background-color: #2563eb;
             color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .price-filter button:hover, .clear-filter:hover {
+            background-color: #1e40af;
+        }
+
+        .btnthem {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s ease;
+        }
+
+        .btnthem:hover {
+            background-color: #059669;
         }
 
         /* Main Content */
@@ -199,27 +220,27 @@ $total_pages = ceil($total_products / $limit);
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             background-color: white;
-            margin-bottom: 0.5rem; /* Giảm margin-bottom */
+            margin-bottom: 0.5rem;
         }
 
         .product-card.out-of-stock {
             opacity: 0.7;
-            background: #f8d7da;
+            background: #fee2e2;
         }
 
         .product-card img {
             width: 100%;
-            height: 150px; /* Giảm chiều cao hình ảnh */
+            height: 150px;
             object-fit: cover;
             border-radius: 8px 8px 0 0;
         }
 
         .product-card-body {
-            padding: 0.5rem; /* Giảm padding */
+            padding: 0.5rem;
         }
 
         .product-name {
-            font-size: 0.9rem; /* Giảm font chữ tên sản phẩm */
+            font-size: 0.9rem;
             font-weight: bold;
             margin-bottom: 0.5rem;
             position: relative;
@@ -235,7 +256,7 @@ $total_pages = ceil($total_products / $limit);
             bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #1e3a8a;
+            background-color:rgb(86, 120, 131);
             color: white;
             padding: 0.25rem 0.5rem;
             border-radius: 4px;
@@ -252,33 +273,33 @@ $total_pages = ceil($total_products / $limit);
         }
 
         .new-price {
-            font-size: 1rem; /* Giảm font chữ giá mới */
-            color: #dc3545;
+            font-size: 1rem;
+            color: #dc2626;
             font-weight: bold;
         }
 
         .old-price {
-            font-size: 0.8rem; /* Giảm font chữ giá cũ */
-            color: #999;
+            font-size: 0.8rem;
+            color: #6b7280;
             text-decoration: line-through;
             margin-right: 0.5rem;
         }
 
         .discount {
-            font-size: 0.8rem; /* Giảm font chữ giảm giá */
-            color: #28a745;
+            font-size: 0.8rem;
+            color: #16a34a;
             font-weight: bold;
         }
 
         .info p {
-            font-size: 0.75rem; /* Giảm font chữ thông tin */
-            color: #666;
+            font-size: 0.75rem;
+            color: #4b5563;
             margin-bottom: 0.25rem;
         }
 
         .info i {
             margin-right: 0.5rem;
-            color: #007bff;
+            color: #2563eb;
         }
 
         .action-button {
@@ -290,13 +311,13 @@ $total_pages = ceil($total_products / $limit);
         }
 
         .action-button:hover {
-            background-color: #e9ecef;
+            background-color: #e5e7eb;
             transform: translateY(-1px);
         }
 
         .no-products {
             text-align: center;
-            color: #666;
+            color: #4b5563;
             font-size: 1rem;
             padding: 1rem;
         }
@@ -312,7 +333,7 @@ $total_pages = ceil($total_products / $limit);
 
         .btn-nav {
             padding: 0.5rem 1rem;
-            background: #007bff;
+            background: #2563eb;
             color: white;
             text-decoration: none;
             border-radius: 4px;
@@ -320,19 +341,19 @@ $total_pages = ceil($total_products / $limit);
         }
 
         .btn-nav:hover {
-            background: #0056b3;
+            background: #1e40af;
         }
 
         .pagination span {
             font-size: 0.9rem;
-            color: #333;
+            color: #1f2937;
         }
 
         /* Alerts */
         .alert {
             position: fixed;
             top: 100px;
-            right: 500px;
+            right: 20px;
             padding: 0.75rem;
             border-radius: 4px;
             z-index: 1000;
@@ -340,94 +361,40 @@ $total_pages = ceil($total_products / $limit);
         }
 
         .alert-success {
-            background: #28a745;
+            background: #16a34a;
             color: white;
         }
 
         .alert-error {
-            background: #dc3545;
+            background: #dc2626;
             color: white;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .product-card-body {
-                font-size: 0.7rem; /* Giảm font chữ trên mobile */
-            }
-
-            .category-menu {
+            .header-top {
                 flex-direction: column;
-                gap: 0.5rem;
+                align-items: flex-start;
             }
 
-            .dropdown-toggle {
+            .filter-group {
                 width: 100%;
-                justify-content: space-between;
+                flex-direction: column;
+                align-items: stretch;
             }
 
-            .dropdown:hover .dropdown-menu {
-                display: none;
+            .category-select {
+                width: 100%;
+                max-width: none;
             }
 
-            .dropdown.show .dropdown-menu {
-                display: block;
-                opacity: 1;
-                transform: translateY(0);
+            .price-filter input {
+                width: 100%;
             }
 
-            .container-fluid.collapsed .header-content {
-                display: none !important; /* Ẩn header-content khi collapsed trên mobile */
+            .product-card-body {
+                font-size: 0.7rem;
             }
-
-            .container-fluid.collapsed .category-menu {
-                display: none; /* Ẩn danh mục khi collapsed trên mobile */
-            }
-
-            header:hover .container-fluid .header-content {
-                display: none; /* Không hiện header-content khi hover trên mobile */
-            }
-
-            .container-fluid.collapsed:hover .category-menu {
-                display: none; /* Giữ danh mục ẩn khi collapsed trên mobile */
-            }
-        }
-
-        @media (min-width: 769px) {
-            .hamburger {
-                display: none; /* Ẩn hamburger trên desktop */
-            }
-
-            .container-fluid.collapsed .header-content {
-                display: none; /* Ẩn header-content mặc định trên desktop */
-            }
-
-            header:hover .container-fluid.collapsed .header-content {
-                display: block; /* Hiện header-content khi hover trên desktop */
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-            .container-fluid.collapsed .category-menu {
-                display: flex !important; /* Luôn hiển thị danh mục trên desktop */
-            }
-        }
-
-        .btnthem {
-            background-color: #ffffff;
-            color: #5b8be3;
-            border: 2px solid #ffffff;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .btnthem:hover {
-            background-color: #5b8be3;
-            color: #ffffff;
-            border-color: #ffffff;
         }
     </style>
 </head>
@@ -436,62 +403,55 @@ $total_pages = ceil($total_products / $limit);
     <div id="success-alert" class="alert alert-success"></div>
     <div id="error-alert" class="alert alert-error"></div>
 
-    <!-- Header with Dropdown Menus -->
+    <!-- Header -->
     <header>
-        <div class="container-fluid collapsed">
-            <button class="hamburger" aria-label="Toggle menu">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="header-content">
-                <h1 class="h4 mb-3">Hệ Thống Bán Hàng</h1>
-                <?php if ($_SESSION['user']['quyen'] != 1): ?>
-                    <button class="btnthem btn-primary btn-sm mb-3" onclick="themsanpham()" aria-label="Thêm sản phẩm">
-                        <i class="fas fa-plus-circle me-1"></i> Thêm Sản Phẩm
-                    </button>
-                <?php endif; ?>
-            </div>
-            <nav class="category-menu">
-                <?php
-                $categoryTree = [];
-                $selectedIddm = isset($_GET['iddm']) ? intval($_GET['iddm']) : 0;
-                foreach ($categories as $category) {
-                    if ($category['loaidm'] == 0) {
-                        $categoryTree[$category['iddm']] = $category;
-                        $categoryTree[$category['iddm']]['children'] = [];
-                    } else {
-                        $categoryTree[$category['loaidm']]['children'][] = $category;
-                    }
-                }
-                ?>
-                <?php foreach ($categoryTree as $parent): ?>
-                    <div class="dropdown">
-                        <button class="dropdown-toggle" type="button" aria-expanded="false">
-                            <i class="fas fa-folder"></i>
-                            <?= htmlspecialchars($parent['tendm']) ?>
-                        </button>
-                        <ul class="dropdown-menu">
+        <div class="container-fluid">
+            <div class="header-top">
+                <h1 class="header-title">Quản lý sản phẩm</h1>
+                <div class="filter-group">
+                    <select class="category-select" onchange="filterByCategory(this.value)" aria-label="Chọn danh mục">
+                        <option value="">Tất cả danh mục</option>
+                        <?php
+                        $categoryTree = [];
+                        foreach ($categories as $category) {
+                            if ($category['loaidm'] == 0) {
+                                $categoryTree[$category['iddm']] = $category;
+                                $categoryTree[$category['iddm']]['children'] = [];
+                            } else {
+                                $categoryTree[$category['loaidm']]['children'][] = $category;
+                            }
+                        }
+                        foreach ($categoryTree as $parent): ?>
+                            <option value="<?= $parent['iddm'] ?>" <?= $dm == $parent['iddm'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($parent['tendm']) ?>
+                            </option>
                             <?php foreach ($parent['children'] as $child): ?>
-                                <li>
-                                    <a 
-                                        class="dropdown-item <?= $selectedIddm == $child['iddm'] ? 'selected' : '' ?>" 
-                                        href="?iddm=<?= $child['iddm'] ?>" 
-                                        aria-label="Danh mục <?= htmlspecialchars($child['tendm']) ?>"
-                                    >
-                                        <?= htmlspecialchars($child['tendm']) ?>
-                                    </a>
-                                </li>
+                                <option value="<?= $child['iddm'] ?>" class="child" <?= $dm == $child['iddm'] ? 'selected' : '' ?>>
+                                    &nbsp;&nbsp;└ <?= htmlspecialchars($child['tendm']) ?>
+                                </option>
                             <?php endforeach; ?>
-                        </ul>
+                        <?php endforeach; ?>
+                    </select>
+                    <div class="price-filter">
+                        <input type="number" id="min-price" placeholder="Giá tối thiểu" value="<?= $min_price !== '' ? $min_price : '' ?>" aria-label="Giá tối thiểu">
+                        <input type="number" id="max-price" placeholder="Giá tối đa" value="<?= $max_price !== '' ? $max_price : '' ?>" aria-label="Giá tối đa">
+                        <button onclick="filterByPrice()">Lọc</button>
                     </div>
-                <?php endforeach; ?>
-            </nav>
+                    <button class="clear-filter" onclick="clearFilters()">Xóa lọc</button>
+                    <?php if ($_SESSION['user']['quyen'] != 1): ?>
+                        <button class="btnthem" onclick="themsanpham()" aria-label="Thêm sản phẩm">
+                            <i class="fas fa-plus-circle"></i> Thêm Sản Phẩm
+                        </button>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </header>
 
     <!-- Main Content -->
     <main>
         <div class="container-fluid">
-            <section class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3"> <!-- Tăng row-cols-lg-5 -->
+            <section class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
                 <?php if (empty($products)): ?>
                     <div class="col">
                         <div class="no-products">Không tìm thấy sản phẩm.</div>
@@ -572,11 +532,21 @@ $total_pages = ceil($total_products / $limit);
             <nav class="pagination">
                 <?php
                 $baseUrl = '?';
+                $urlParams = [];
                 if ($query !== '') {
-                    $baseUrl .= 'query=' . urlencode($query) . '&';
+                    $urlParams[] = 'query=' . urlencode($query);
                 }
                 if ($dm !== '') {
-                    $baseUrl .= 'iddm=' . urlencode($dm) . '&';
+                    $urlParams[] = 'iddm=' . urlencode($dm);
+                }
+                if ($min_price !== '') {
+                    $urlParams[] = 'min_price=' . urlencode($min_price);
+                }
+                if ($max_price !== '') {
+                    $urlParams[] = 'max_price=' . urlencode($max_price);
+                }
+                if (!empty($urlParams)) {
+                    $baseUrl .= implode('&', $urlParams) . '&';
                 }
                 ?>
                 <?php if ($page > 1): ?>
@@ -596,19 +566,44 @@ $total_pages = ceil($total_products / $limit);
             window.location.href = "themsanpham.php";
         }
 
-        // Toggle header content visibility on mobile
-        document.querySelector('.hamburger').addEventListener('click', function() {
-            const container = document.querySelector('.container-fluid');
-            container.classList.toggle('collapsed');
-            const categoryMenu = document.querySelector('.category-menu');
-            if (container.classList.contains('collapsed')) {
-                categoryMenu.style.display = 'none';
-                document.querySelector('.header-content').style.display = 'none';
+        function filterByCategory(iddm) {
+            const url = new URL(window.location);
+            if (iddm) {
+                url.searchParams.set('iddm', iddm);
             } else {
-                categoryMenu.style.display = 'flex';
-                document.querySelector('.header-content').style.display = 'block';
+                url.searchParams.delete('iddm');
             }
-        });
+            url.searchParams.delete('page'); // Reset to page 1
+            window.location.href = url.toString();
+        }
+
+        function filterByPrice() {
+            const minPrice = document.getElementById('min-price').value;
+            const maxPrice = document.getElementById('max-price').value;
+            const url = new URL(window.location);
+            
+            if (minPrice) {
+                url.searchParams.set('min_price', minPrice);
+            } else {
+                url.searchParams.delete('min_price');
+            }
+            if (maxPrice) {
+                url.searchParams.set('max_price', maxPrice);
+            } else {
+                url.searchParams.delete('max_price');
+            }
+            url.searchParams.delete('page'); // Reset to page 1
+            window.location.href = url.toString();
+        }
+
+        function clearFilters() {
+            const url = new URL(window.location);
+            url.searchParams.delete('iddm');
+            url.searchParams.delete('min_price');
+            url.searchParams.delete('max_price');
+            url.searchParams.delete('page');
+            window.location.href = url.toString();
+        }
     </script>
 </body>
 </html>

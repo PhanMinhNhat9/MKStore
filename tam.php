@@ -140,6 +140,7 @@ if ($iddh > 0) {
     </div>
     <?php
         $hoten=$row['hoten'];
+        echo $hoten;
     ?>
     <table>
         <thead>

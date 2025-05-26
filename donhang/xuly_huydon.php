@@ -1,7 +1,14 @@
 <?php
 require_once '../config.php';
-$pdo = connectDatabase();
 
+// Kết nối CSDL
+try {
+    $pdo = connectDatabase();
+} catch (PDOException $e) {
+    die("Lỗi kết nối CSDL: " . $e->getMessage());
+}
+
+// Kiểm tra phương thức POST và CSRF token
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $iddh = $_POST['iddh'] ?? '';
     $idkh = $_POST['idkh'] ?? '';
@@ -12,44 +19,66 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $lydoText = '';
     if (!empty($lydoArray)) {
         $lydoText = implode(', ', $lydoArray);
-        // Nếu có chọn "Khác", kèm thêm lý do khác
         if (in_array('Khác', $lydoArray) && !empty($lydoKhac)) {
             $lydoText .= ' - ' . $lydoKhac;
         }
     }
 
     try {
+        // Kiểm tra trạng thái đơn hàng
+        $stmt = $pdo->prepare("SELECT hientrang, trangthai FROM donhang WHERE iddh = :iddh AND sdt = :sdt");
+        $stmt->execute([':iddh' => $iddh, ':sdt' => $_SESSION['user']['sdt']]);
+        $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$order) {
+            throw new Exception("Đơn hàng không tồn tại hoặc không thuộc về bạn!");
+        }
+
+        if (!in_array($order['hientrang'], ['Chờ xác nhận', 'Đã xác nhận', 'Đang đóng gói'])) {
+            throw new Exception("Đơn hàng không thể hủy do trạng thái hiện tại là {$order['hientrang']}!");
+        }
+
+        if ($order['trangthai'] !== 'Chưa thanh toán') {
+            throw new Exception("Đơn hàng đã thanh toán, không thể hủy!");
+        }
+
+        // Bắt đầu transaction
+        $pdo->beginTransaction();
+
         // Insert vào bảng yeucaudonhang
-        $stmt = $pdo->prepare("INSERT INTO yeucaudonhang (idkh, iddh, lydo) VALUES (:idkh, :iddh, :lydo)");
+        $stmt = $pdo->prepare("INSERT INTO yeucaudonhang (idkh, iddh, lydo, trangthai) VALUES (:idkh, :iddh, :lydo, 'Đã hủy')");
         $stmt->execute([
             ':idkh' => $idkh,
             ':iddh' => $iddh,
             ':lydo' => $lydoText
         ]);
 
-        echo "<h3>Gửi yêu cầu hủy đơn thành công!</h3>";
+        // Cập nhật trạng thái đơn hàng thành Hủy đơn
+        $stmt = $pdo->prepare("UPDATE donhang SET trangthai = 'Hủy đơn' WHERE iddh = :iddh");
+        $stmt->execute([':iddh' => $iddh]);
 
-        // Lấy danh sách yêu cầu đã gửi
-        $stmt = $pdo->prepare("SELECT idkh, lydo, iddh FROM yeucaudonhang WHERE idkh = :idkh ORDER BY thoigian DESC LIMIT 1");
-        $stmt->execute([':idkh' => $_SESSION['user']['iduser']]);
-        $yeucauList = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        echo "<h4>Danh sách yêu cầu đã gửi:</h4>";
-        echo "<table border='1' cellpadding='8' cellspacing='0'>";
-        echo "<tr><th>ID Khách</th><th>ID Đơn</th><th>Lý do</th></tr>";
-        foreach ($yeucauList as $row) {
-            echo "<tr>";
-            echo "<td>" . htmlspecialchars($row['idkh']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['iddh']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['lydo']) . "</td>";
-            echo "</tr>";
+        // Commit transaction
+        $pdo->commit();
+        echo "<script>
+            
+            window.top.location.href = '../trangchu.php';
+        </script>";
+    } catch (Exception $e) {
+        // Rollback transaction nếu có lỗi
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
         }
-        echo "</table>";
-
-    } catch (PDOException $e) {
-        echo "Lỗi: " . $e->getMessage();
+        // Hiển thị thông báo lỗi
+        echo "<script>
+            alert('Lỗi: " . addslashes($e->getMessage()) . "');
+            window.top.location.href = '../trangchu.php';
+        </script>";
     }
 } else {
-    echo "Phương thức gửi không hợp lệ.";
+    // Hiển thị thông báo lỗi CSRF
+    echo "<script>
+        alert('Lỗi: Phương thức gửi không hợp lệ!');
+        window.top.location.href = '../trangchu.php';
+    </script>";
 }
 ?>

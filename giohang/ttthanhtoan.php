@@ -83,7 +83,7 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
         </div>
         <div class="checkbox">
           <input type="checkbox" id="printInvoice" checked>
-          <span>In hóa đơn</span>
+          <span>Hóa đơn</span>
         </div>
         <button onclick="processPayment()">Thanh Toán</button>
       </div>
@@ -136,6 +136,8 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
                 //printWindow.print();
               }, 5000);
             };
+          } else {
+            window.top.location.href = "../trangchu.php";
           }
         } else {
           alert('Lỗi: ' + data.message);

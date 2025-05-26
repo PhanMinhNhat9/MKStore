@@ -45,12 +45,11 @@ function loadPhanHoi() {
 }
 
 function loadThongBao() {
+    localStorage.setItem('loadthongbao', 'true');
     const badge = document.querySelector('#menu-tb span');
     if (badge) {
-        badge.style.display = 'none'; // chỉ ẩn, KHÔNG xoá khỏi DOM
+        badge.style.display = 'none';
     }
-    
-
     setTimeout(() => {
         const iframe = document.getElementById("Frame");
         iframe?.setAttribute('src', 'thongbao/hienthithongbao.php');
@@ -160,7 +159,7 @@ function xoasanpham(idsp) {
 
 function chat(iduser) {
     let encodedId = btoa(iduser);
-    window.top.location.href = "chat.php?id=" + encodeURIComponent(encodedId);
+    window.location.href = "chat.php?id=" + encodeURIComponent(encodedId);
 }
 
 
@@ -321,16 +320,11 @@ function goBack() {
 }
 
 function goBackHome() {
-    // Xóa trạng thái menu active trong localStorage
     localStorage.removeItem("activeMenu");
-
-    // Xóa lớp active khỏi tất cả menu items
     document.querySelectorAll(".menu-item").forEach(item => {
         item.classList.remove("active");
     });
     localStorage.removeItem('profileMenuClicked');
-    // Điều hướng về trang chủ (nếu cần)
-    //window.location.href = "trangchu.php";
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -338,7 +332,7 @@ function goBackHome() {
         } else {
             console.error("Không tìm thấy iframe có ID 'Frame'");
         }
-    }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+    }, 100);
 }
 
 function handleSessionTimeout(sessionTimeoutInSeconds) {
