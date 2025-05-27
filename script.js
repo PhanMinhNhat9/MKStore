@@ -33,7 +33,6 @@ function reloadCSS(file) {
 }
 
 function loadPhanHoi() {
-    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -44,12 +43,11 @@ function loadPhanHoi() {
     }, 100);
 }
 
-function xuatbaocao() {
-    localStorage.removeItem("homeButtonClicked");
+function loadBaoCao() {
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
-            iframe.src = "baocaotk/xuatbaocao.php";
+            iframe.src = "baocaotk/baocao.php";
         } else {
             console.error("Không tìm thấy iframe có ID 'Frame'");
         }
@@ -57,14 +55,13 @@ function xuatbaocao() {
 }
 
 function loadThongBao() {
-    localStorage.setItem('loadthongbao', 'true');
-    const badge = document.querySelector('#menu-tb span');
-    if (badge) {
-        badge.style.display = 'none';
-    }
     setTimeout(() => {
-        const iframe = document.getElementById("Frame");
-        iframe?.setAttribute('src', 'thongbao/hienthithongbao.php');
+        let iframe = document.getElementById("Frame");
+        if (iframe) {
+            iframe.src = "thongbao/hienthithongbao.php";
+        } else {
+            console.error("Không tìm thấy iframe có ID 'Frame'");
+        }
     }, 100);
 }
 
@@ -87,7 +84,6 @@ function xoanguoidung(iduser) {
 }
 
 function loadDLUser() {
-    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -98,7 +94,6 @@ function loadDLUser() {
     }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 }
 function loadDLSanpham() {
-    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -109,7 +104,6 @@ function loadDLSanpham() {
     }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 }
 function loadDLDanhmuc() {
-    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -120,7 +114,6 @@ function loadDLDanhmuc() {
     }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 }
 function loadDLDonhang() {
-    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -132,7 +125,6 @@ function loadDLDonhang() {
 }
 
 function loadDLMGG() {
-    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -143,7 +135,6 @@ function loadDLMGG() {
     }, 100); // Đợi 100ms để đảm bảo iframe đã được render
 }
 function loadTaiKhoanCN() {
-    localStorage.removeItem("homeButtonClicked");
     setTimeout(() => {
         let iframe = document.getElementById("Frame");
         if (iframe) {
@@ -294,6 +285,17 @@ function loadGH() {
 
 }
 
+function loadTTTrangChu() {
+    setTimeout(() => {
+        let iframe = document.getElementById("Frame");
+        if (iframe) {
+            iframe.src = "thongtintrangchu.php";
+        } else {
+            console.error("Không tìm thấy iframe có ID 'Frame'");
+        }
+    }, 100); // Đợi 100ms để đảm bảo iframe đã được render
+}
+
 function themmgg() {
     window.location.href = "themmgg.php";
 }
@@ -307,6 +309,7 @@ function xoamgg(idmgg) {
 }
 // Hàm đăng xuất
 function logout() {
+    document.querySelectorAll(".menu-item").forEach(item => item.classList.remove("active"));
     window.location.href = "auth/logout.php"; 
 }
 
@@ -329,22 +332,6 @@ function goBack() {
     } else {
        window.location.href = "../trangchu.php"; // Điều hướng thông thường
     }
-}
-
-function goBackHome() {
-    localStorage.removeItem("activeMenu");
-    document.querySelectorAll(".menu-item").forEach(item => {
-        item.classList.remove("active");
-    });
-    localStorage.removeItem('profileMenuClicked');
-    setTimeout(() => {
-        let iframe = document.getElementById("Frame");
-        if (iframe) {
-            iframe.src = "thongtintrangchu.php";
-        } else {
-            console.error("Không tìm thấy iframe có ID 'Frame'");
-        }
-    }, 100);
 }
 
 function handleSessionTimeout(sessionTimeoutInSeconds) {

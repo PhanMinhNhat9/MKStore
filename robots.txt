@@ -1,4 +1,0 @@
-User-agent: *
-Disallow:
-
-Sitemap: https://mkstore22004335.store/sitemap.xml

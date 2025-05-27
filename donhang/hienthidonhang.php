@@ -18,14 +18,12 @@ try {
     $sql = "SELECT iddh, sdt, tenkh, tongtien, trangthai, hientrang, phuongthuctt, thoigian FROM donhang";
     $hasWhere = false;
 
-    // Lọc theo quyền: nếu không phải admin thì giới hạn theo sdt
     if ($_SESSION['user']['quyen'] != 2589 && $_SESSION['user']['quyen'] != 0) {
         $sql .= " WHERE sdt = :sdt";
         $params['sdt'] = $_SESSION['user']['sdt'];
         $hasWhere = true;
     }
 
-    // Tìm kiếm theo mã đơn hàng hoặc tên khách hàng
     if ($query !== '') {
         $condition = "(tenkh LIKE :searchTerm OR iddh LIKE :searchTerm1)";
         $sql .= $hasWhere ? " AND $condition" : " WHERE $condition";
@@ -34,7 +32,6 @@ try {
         $hasWhere = true;
     }
 
-    // Lọc theo trạng thái
     if ($status !== 'all') {
         $sql .= $hasWhere ? " AND trangthai = :status" : " WHERE trangthai = :status";
         $params['status'] = $status;
@@ -42,12 +39,10 @@ try {
 
     $sql .= " ORDER BY thoigian DESC";
 
-    // Chuẩn bị và thực thi truy vấn
     $stmtOrders = $pdo->prepare($sql);
     $stmtOrders->execute($params);
     $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
 
-    // Kiểm tra trạng thái yêu cầu hủy cho mỗi đơn hàng
     $cancelRequests = [];
     $stmtCancel = $pdo->prepare("SELECT iddh FROM yeucaudonhang WHERE iddh = :iddh");
     foreach ($orders as $order) {
@@ -66,8 +61,9 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#2563eb">
     <title>Quản Lý Đơn Hàng - Hệ Thống Bán Hàng</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
         :root {
@@ -80,17 +76,21 @@ try {
             --text-color: #1e293b;
             --border-color: #e5e7eb;
             --hover-color: #eff6ff;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
-            font-size: 0.875rem;
             background-color: var(--background-color);
             color: var(--text-color);
             margin: 0;
-            padding-top: 60px;
-            overflow-x: auto;
-            line-height: 1.4;
+            padding-top: 70px;
+            padding-bottom: 4rem;
+            overflow-x: hidden;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
         }
 
         #navbar {
@@ -101,12 +101,12 @@ try {
             z-index: 1000;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
-            padding: 0.5rem 1rem;
+            box-shadow: var(--shadow-sm);
+            padding: 0.75rem 1rem;
         }
 
         .navbar-brand {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
@@ -114,45 +114,52 @@ try {
         .navbar-filter {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            max-width: 650px;
-            flex-wrap: nowrap;
+            gap: 0.75rem;
+            max-width: 100%;
+            flex-wrap: wrap;
+            padding: 0.5rem 0;
         }
 
         .navbar-filter .form-control {
-            border-radius: 6px;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
-            font-size: 0.875rem;
-            padding: 0.5rem 0.75rem;
-            max-width: 400px;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
             width: 100%;
-            min-width: 200px;
+            min-width: 150px;
+            max-width: 300px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .navbar-filter .form-select {
-            border-radius: 6px;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
-            font-size: 0.875rem;
-            padding: 0.5rem 0.75rem;
-            max-width: 200px;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
             width: 100%;
-            min-width: 150px;
+            min-width: 120px;
+            max-width: 200px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .navbar-filter .form-control:focus,
         .navbar-filter .form-select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.15rem rgba(59, 130, 246, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+            outline: none;
         }
 
         .navbar-filter .action-button {
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            min-height: 44px;
+            touch-action: manipulation;
         }
 
         .hamburger {
-            width: 24px;
-            height: 18px;
+            width: 30px;
+            height: 22px;
             position: relative;
             cursor: pointer;
             background: none;
@@ -163,118 +170,128 @@ try {
         .hamburger span {
             display: block;
             position: absolute;
-            height: 2px;
+            height: 3px;
             width: 100%;
             background: white;
-            border-radius: 2px;
+            border-radius: 3px;
             transition: all 0.3s ease;
         }
 
         .hamburger span:nth-child(1) { top: 0; }
-        .hamburger span:nth-child(2) { top: 7px; }
-        .hamburger span:nth-child(3) { top: 14px; }
+        .hamburger span:nth-child(2) { top: 9px; }
+        .hamburger span:nth-child(3) { top: 18px; }
 
         .hamburger.active span:nth-child(1) {
-            top: 7px;
+            top: 9px;
             transform: rotate(45deg);
         }
 
         .hamburger.active span:nth-child(2) {
             opacity: 0;
-            left: -50px;
+            transform: translateX(-50px);
         }
 
         .hamburger.active span:nth-child(3) {
-            top: 7px;
+            top: 9px;
             transform: rotate(-45deg);
         }
 
         main {
             padding: 1rem;
+            min-height: calc(100vh - 70px);
+            transition: margin-top 0.3s ease;
         }
 
         .order-container {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
-            margin-top: 0.75rem;
+            margin-top: 1rem;
         }
 
         .order-card {
             background: var(--card-background);
-            border-radius: 10px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
-            padding: 0.8rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            padding: 1rem;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            min-width: 200px;
             position: relative;
+            overflow: hidden;
         }
 
         .order-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .order-card h3 {
-            font-size: 0.95rem;
+            font-size: 1.1rem;
             font-weight: 600;
             margin: 0 0 0.75rem;
             color: var(--primary-color);
         }
 
         .order-card .order-info {
-            display: grid;
-            gap: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
         .order-card .order-info div {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            padding: 0.4rem 0;
+            padding: 0.5rem 0;
             border-bottom: 1px solid var(--border-color);
+            gap: 0.5rem;
         }
 
         .order-card .order-info label {
             font-weight: 500;
             color: var(--text-color);
-            font-size: 0.75rem;
+            font-size: 0.85rem;
+            min-width: 100px;
         }
 
         .order-card .order-info span,
         .order-card .order-info form {
             flex: 1;
             text-align: right;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
         }
 
         .order-card .order-info form {
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.5rem;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
         .action-button {
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
             border: none;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             font-weight: 500;
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.5rem;
             cursor: pointer;
+            min-width: 48px;
+            min-height: 48px;
+            touch-action: manipulation;
         }
 
         .action-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: scale(1.03);
+            box-shadow: var(--shadow-sm);
         }
 
         .action-button:active {
-            transform: scale(1);
+            transform: scale(0.98);
         }
 
         .btn-primary {
@@ -287,26 +304,25 @@ try {
             color: white;
         }
 
-        .btn-danger {
+        .btn-danger, .btn-kp {
             background-color: var(--danger-color);
             color: white;
         }
-        .btn-kp {
-            background-color: var(--accent-color);
-            color: white;
-        }
+
         .form-control-sm, .form-select-sm {
-            font-size: 0.75rem;
-            padding: 0.3rem 0.6rem;
-            border-radius: 5px;
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
             width: 100%;
             max-width: 200px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .form-control-sm:focus, .form-select-sm:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.15rem rgba(59, 130, 246, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+            outline: none;
         }
 
         .tooltip-custom {
@@ -321,57 +337,60 @@ try {
             transform: translateX(-50%);
             background-color: var(--primary-color);
             color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
             white-space: nowrap;
             z-index: 20;
-            margin-top: 0.4rem;
+            margin-top: 0.5rem;
         }
 
         .cancel-pending {
             position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
+            top: 0.75rem;
+            right: 0.75rem;
             background-color: var(--danger-color);
             color: white;
-            padding: 0.3rem 0.6rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.4rem;
         }
 
         .empty-state {
             text-align: center;
-            padding: 1.5rem;
+            padding: 2rem;
             background: var(--card-background);
-            border-radius: 10px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
-            margin-top: 0.75rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            margin-top: 1rem;
             grid-column: 1 / -1;
         }
 
         .empty-state i {
-            font-size: 1.5rem;
+            font-size: 2rem;
+            color: var(--text-color);
+            opacity: 0.6;
         }
 
         .empty-state p {
-            font-size: 0.875rem;
-        }
-
-        @media (max-width: 1200px) {
-            .order-container {
-                grid-template-columns: repeat(3, 1fr);
-            }
+            font-size: 1rem;
+            color: var(--text-color);
+            opacity: 0.8;
         }
 
         @media (max-width: 768px) {
             body {
-                padding-top: 50px;
-                padding-bottom: 6rem;
+                padding-top: 30px;
+                margin: 0;
+                font-size: 0.9rem;
+            }
+
+            #navbar {
+                padding: 0.5rem;
             }
 
             .navbar-brand {
@@ -379,24 +398,22 @@ try {
             }
 
             .navbar-filter {
-                max-width: 100%;
                 flex-direction: column;
                 align-items: stretch;
-                flex-wrap: wrap;
-                gap: 0.5rem;
+                gap: 0.75rem;
+                padding: 0.75rem 0;
             }
 
             .navbar-filter .form-control,
             .navbar-filter .form-select {
                 max-width: 100%;
                 font-size: 0.85rem;
-                padding: 0.4rem 0.6rem;
+                padding: 0.5rem 1rem;
             }
 
             .navbar-filter .action-button {
-                align-self: flex-end;
-                padding: 0.4rem 0.6rem;
-                font-size: 0.85rem;
+                width: 100%;
+                justify-content: center;
             }
 
             .order-container {
@@ -404,57 +421,74 @@ try {
             }
 
             .order-card {
-                padding: 0.6rem;
+                padding: 0.75rem;
             }
 
             .order-card h3 {
-                font-size: 0.9rem;
+                font-size: 1rem;
+            }
+
+            .order-card .order-info label,
+            .order-card .order-info span {
+                font-size: 0.8rem;
             }
 
             .order-card .order-info div {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 0.2rem;
+                gap: 0.5rem;
             }
 
-            .order-card .order-info label,
-            .order-card .order-info span {
-                font-size: 0.7rem;
+            .order-card .order-info form {
+                justify-content: flex-start;
+                width: 100%;
             }
 
             .form-control-sm, .form-select-sm {
-                font-size: 0.7rem;
                 max-width: 100%;
+                font-size: 0.8rem;
+                padding: 0.5rem 1rem;
             }
 
             .action-button {
-                padding: 0.3rem 0.6rem;
-                font-size: 0.7rem;
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+                min-height: 44px;
             }
 
             .cancel-pending {
-                font-size: 0.65rem;
-                padding: 0.25rem 0.5rem;
+                font-size: 0.7rem;
+                padding: 0.4rem 0.8rem;
             }
         }
 
         @media (max-width: 576px) {
-            .order-container {
-                grid-template-columns: 1fr;
+            .navbar-filter {
+                gap: 0.5rem;
             }
 
-            .order-card .order-info div {
-                font-size: 0.65rem;
+            .navbar-filter .form-control,
+            .navbar-filter .form-select {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
             }
 
             .action-button {
-                padding: 0.25rem 0.5rem;
-                font-size: 0.65rem;
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
             }
 
             .cancel-pending {
-                font-size: 0.6rem;
-                padding: 0.2rem 0.4rem;
+                font-size: 0.65rem;
+                padding: 0.3rem 0.6rem;
+            }
+
+            .order-card .order-info label {
+                min-width: 80px;
+            }
+
+            .order-container {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -470,9 +504,9 @@ try {
                 <span class="visually-hidden">Toggle Filter</span>
             </button>
             <div class="collapse navbar-collapse" id="navbarFilter">
-                <form id="filter-form" class="navbar-filter ms-auto" method="GET" action="" aria-label="Filter orders by status and search">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="d-flex align-items-center" style="gap: 0.5rem;">
+                <form id="filter-form" class="navbar-filter ms-auto" method="GET" action="" aria-label="Lọc đơn hàng theo trạng thái và tìm kiếm">
+                    <div class="d-flex flex-column flex-md-row align-items-center gap-2 w-100">
+                        <div class="d-flex align-items-center w-100" style="gap: 0.75rem;">
                             <input
                                 type="text"
                                 name="query"
@@ -480,7 +514,6 @@ try {
                                 class="form-control"
                                 placeholder="Tìm mã đơn/tên KH"
                                 aria-label="Tìm kiếm đơn hàng"
-                                style="width:500px"
                             >
                             <button type="submit" class="action-button btn-primary" aria-label="Tìm kiếm">
                                 <i class="fas fa-search"></i>
@@ -491,7 +524,6 @@ try {
                             name="status"
                             class="form-select"
                             aria-describedby="statusFilterDescription"
-                            style="width:500px"
                         >
                             <option value="all" <?= $status === 'all' ? 'selected' : '' ?>>Tất cả</option>
                             <option value="Chưa thanh toán" <?= $status === 'Chưa thanh toán' ? 'selected' : '' ?>>Chưa thanh toán</option>
@@ -507,8 +539,8 @@ try {
         <div class="container-fluid">
             <?php if (empty($orders)): ?>
                 <div class="empty-state">
-                    <i class="fas fa-exclamation-circle text-muted mb-2"></i>
-                    <p class="text-muted mb-0">Không có đơn hàng nào phù hợp.</p>
+                    <i class="fas fa-exclamation-circle mb-2"></i>
+                    <p class="mb-0">Không có đơn hàng nào phù hợp.</p>
                 </div>
             <?php else: ?>
                 <div class="order-container" aria-describedby="orderContainerDescription">
@@ -662,18 +694,18 @@ try {
                                     <label>Hủy Đơn:</label>
                                     <?php if (isset($cancelRequests[$order['iddh']])): ?>
                                         <form action="khoiphucdonhang.php" method="POST">
-                                                <input type="hidden" name="idkh" value="<?= htmlspecialchars($_SESSION['user']['iduser']) ?>">
-                                                <input type="hidden" name="iddh" value="<?= htmlspecialchars($order['iddh']) ?>">
-                                                <button
-                                                    type="submit"
-                                                    class="action-button btn-kp tooltip-custom"
-                                                    data-tooltip="Khôi phục đơn hàng"
-                                                    aria-label="Khôi phục đơn hàng"
-                                                    onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')"
-                                                >
-                                                    <i class="fas fa-times me-1"></i>Khôi phục
-                                                </button>
-                                            </form>
+                                            <input type="hidden" name="idkh" value="<?= htmlspecialchars($_SESSION['user']['iduser']) ?>">
+                                            <input type="hidden" name="iddh" value="<?= htmlspecialchars($order['iddh']) ?>">
+                                            <button
+                                                type="submit"
+                                                class="action-button btn-kp tooltip-custom"
+                                                data-tooltip="Khôi phục đơn hàng"
+                                                aria-label="Khôi phục đơn hàng"
+                                                onclick="return confirm('Bạn có chắc chắn muốn khôi phục đơn hàng này?')"
+                                            >
+                                                <i class="fas fa-undo me-1"></i>Khôi phục
+                                            </button>
+                                        </form>
                                     <?php else: ?>
                                         <?php if (in_array($order['hientrang'], ['Chờ xác nhận', 'Đã xác nhận', 'Đang đóng gói']) && in_array($order['trangthai'], ['Chưa thanh toán'])): ?>
                                             <form action="yeucauhuydon.php" method="POST">
@@ -684,7 +716,7 @@ try {
                                                     class="action-button btn-danger tooltip-custom"
                                                     data-tooltip="Hủy đơn hàng"
                                                     aria-label="Hủy đơn hàng"
-                                                    onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')"
+                                                    onclick="return confirm('Bạn có chắc muốn hủy đơn hàng này?')"
                                                 >
                                                     <i class="fas fa-times me-1"></i>Hủy
                                                 </button>
@@ -728,41 +760,78 @@ try {
         function toggleFilter() {
             const navbarFilter = document.getElementById('navbarFilter');
             const hamburger = document.querySelector('.hamburger');
+            const mainContent = document.getElementById('main-content');
             const isExpanded = navbarFilter.classList.contains('show');
 
-            if (!isExpanded) {
-                navbarFilter.classList.add('show');
-                hamburger.classList.add('active');
-            } else {
-                navbarFilter.classList.remove('show');
-                hamburger.classList.remove('active');
-            }
-
+            navbarFilter.classList.toggle('show');
+            hamburger.classList.toggle('active');
             hamburger.setAttribute('aria-expanded', !isExpanded);
             localStorage.setItem('filterState', !isExpanded ? 'expanded' : 'collapsed');
+
+            // Adjust main content margin-top on mobile
+            if (window.innerWidth <= 768) {
+                if (!isExpanded) {
+                    // Expanded: Push content down
+                    mainContent.style.marginTop = window.innerWidth <= 576 ? '120px' : '120px';
+                } else {
+                    // Collapsed: Reset to original position
+                    mainContent.style.marginTop = '';
+                }
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             const navbarFilter = document.getElementById('navbarFilter');
             const hamburger = document.querySelector('.hamburger');
+            const mainContent = document.getElementById('main-content');
             const savedState = localStorage.getItem('filterState');
 
-            if (savedState === 'expanded' && window.innerWidth < 768) {
+            if (savedState === 'expanded' && window.innerWidth <= 768) {
                 navbarFilter.classList.add('show');
                 hamburger.classList.add('active');
                 hamburger.setAttribute('aria-expanded', true);
-            } else {
-                navbarFilter.classList.remove('show');
-                hamburger.classList.remove('active');
-                hamburger.setAttribute('aria-expanded', false);
+                mainContent.style.marginTop = window.innerWidth <= 576 ? '120px' : '120px';
             }
 
             const filterForm = document.getElementById('filter-form');
             if (filterForm) {
-                document.getElementById('statusFilter').addEventListener('change', () => {
+                const statusFilter = document.getElementById('statusFilter');
+                statusFilter.addEventListener('change', () => {
                     filterForm.submit();
                 });
+
+                let isSubmitting = false;
+                filterForm.addEventListener('submit', (e) => {
+                    if (isSubmitting) {
+                        e.preventDefault();
+                    } else {
+                        isSubmitting = true;
+                        setTimeout(() => { isSubmitting = false; }, 1000);
+                    }
+                });
             }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            document.querySelectorAll('.action-button').forEach(button => {
+                button.addEventListener('touchstart', () => {
+                    button.classList.add('active');
+                });
+                button.addEventListener('touchend', () => {
+                    button.classList.remove('active');
+                });
+            });
+
+            // Reset margin-top on window resize if navbar is collapsed
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) {
+                    mainContent.style.marginTop = '';
+                } else if (!navbarFilter.classList.contains('show')) {
+                    mainContent.style.marginTop = '';
+                } else {
+                    mainContent.style.marginTop = window.innerWidth <= 576 ? '180px' : '160px';
+                }
+            });
         });
     </script>
 </body>

@@ -1,8 +1,7 @@
 <?php
 require "../config.php";
-$iduser = isset($_GET['id']) ? intval(base64_decode($_GET['id'])) : 0;
+$iduser = isset($_GET['iduser']) ? intval($_GET['iduser']) : 0;
 $user = getAllUsers($iduser);
-
 // Kiểm tra dữ liệu đầu vào phía server
 $errors = [];
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['capnhatnd'])) {

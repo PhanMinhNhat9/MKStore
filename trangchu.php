@@ -18,8 +18,7 @@
         echo "<script>alert('Tài khoản của bạn đã bị xóa và sẽ được xóa hoàn toàn sau 30 ngày!'); window.location.href = 'auth/logout.php';</script>";
     }
 
-    define('SESSION_TIMEOUT', 1800);
-
+    define('SESSION_TIMEOUT', 1000);
     if (isset($_SESSION['last_activity'])) {
         $inactive_time = time() - $_SESSION['last_activity'];
         error_log("Session inactive time: $inactive_time seconds");
@@ -33,7 +32,6 @@
     $stmt = $pdo->prepare("SELECT `hoten`, `anh`, `email`, `sdt` FROM `user` WHERE iduser = :iduser");
     $stmt->execute(['iduser' => $_SESSION['user']['iduser']]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
     $admin_name = htmlspecialchars($result['hoten'], ENT_QUOTES, 'UTF-8');
     $admin_email = htmlspecialchars($result['email'], ENT_QUOTES, 'UTF-8');
     $admin_phone = htmlspecialchars($result['sdt'], ENT_QUOTES, 'UTF-8');
@@ -56,7 +54,51 @@
     } catch (PDOException $e) {
         error_log("Error deleting users: " . $e->getMessage());
     }
+
+    $userId = $_SESSION['user']['iduser'];
+    try {
+        // Câu truy vấn 1: Kiểm tra xem bản ghi có tồn tại không
+        $stmt = $pdo->prepare("SELECT COUNT(*) AS count FROM trangthaidb WHERE iduser = :iduser");
+        $stmt->execute(['iduser' => $userId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $exists = $result['count'] > 0;
+
+        if (!$exists) {
+            // Câu truy vấn 2: Chèn bản ghi mới nếu chưa tồn tại
+            $stmt = $pdo->prepare("INSERT INTO trangthaidb (iduser, trangthai) VALUES (:iduser, 1)");
+            $stmt->execute(['iduser' => $userId]);
+        } else {
+            // Câu truy vấn 3: Cập nhật trạng thái nếu bản ghi đã tồn tại
+            $stmt = $pdo->prepare("UPDATE trangthaidb SET trangthai = 1 WHERE iduser = :iduser");
+            $stmt->execute(['iduser' => $userId]);
+        }
+    } catch (PDOException $e) {
+        error_log("Error deleting users: " . $e->getMessage());
+    }
 ?>
+
+<script>
+    function checkUserStatus() {
+        fetch('check_status.php', {
+            method: 'GET',
+            credentials: 'same-origin' // Đảm bảo gửi session cookies
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'inactive') {
+                window.location.href = 'auth/logout.php';
+                // console.log("Tài khoản: " + data.status);
+            } else if (data.status === 'active') {
+                // console.log("Tài khoản: " + data.status);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+    }
+// Gọi hàm checkUserStatus mỗi 10 giây
+setInterval(checkUserStatus, 10000); // 10000ms = 10 giây
+</script>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -92,6 +134,10 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+        }
+
+        body::-webkit-scrollbar {
+            display: none;
         }
 
         .dropdown-hidden {
@@ -326,7 +372,7 @@
         #home-icon-toggle {
             position: fixed;
             left: 16px;
-            top: 34px;
+            top: 25px;
             z-index: 1000;
             width: 40px;
             height: 40px;
@@ -559,7 +605,7 @@
     </button>
 
     <!-- Navbar -->
-    <nav class="bg-white px-4 py-4 shadow-sm">
+    <nav class="bg-white px-4 py-2 shadow-sm">
         <div class="flex flex-col md:flex-row items-center md:items-center md:justify-between">
             <div id="navbar-logo" class="logo-container">
                 <img src="picture/logoshop.png" alt="Logo Cửa Hàng" class="logoTD">
@@ -591,11 +637,11 @@
             </div>
             <div id="sidebar-menu">
                 <?php if ($_SESSION['user']['quyen'] != 1): ?>
-                    <div class="menu-item" onclick="clearLocalStorage()" aria-label="Xóa mô hình TensorFlow">
+                    <div class="menu-item" id="menu-model" onclick="clearLocalStorage()" aria-label="Xóa mô hình TensorFlow">
                         <i class="fas fa-eraser"></i> Model
                     </div>
                 <?php endif; ?>
-                <div class="menu-item" onclick="handleHomeClick()" aria-label="Quay về trang chủ">
+                <div class="menu-item" id="menu-trangchu" onclick="loadTTTrangChu()" aria-label="Quay về trang chủ">
                     <i class="fas fa-home"></i> Trang chủ
                 </div>
                 <?php
@@ -612,7 +658,7 @@
                             </span>
                         <?php endif; ?>
                     </div>
-                    <div class="menu-item" onclick="xuatbaocao()" aria-label="Quay về trang chủ">
+                    <div class="menu-item" id="menu-baocao" onclick="loadBaoCao()" aria-label="Quay về trang chủ">
                         <i class="fas fa-file-invoice"></i> Xuất báo cáo
                     </div>
                 <?php endif; ?>
@@ -669,7 +715,9 @@
                     </button>
                     <div id="adminDropdown" class="dropdowntk hidden">
                         <div class="p-4 border-b text-center">
-                            <img src="<?= $admin_avatar ?>" alt="Avatar admin" class="w-16 h-16 rounded-full mx-auto border-2 border-gray-200" id="menu-ttcn" onclick="taikhoancn()" aria-label="Xem thông tin cá nhân">
+                            <img src="<?= $admin_avatar ?>" alt="Avatar admin" 
+                            class="w-16 h-16 rounded-full mx-auto border-2 border-gray-200" 
+                            onclick="taikhoancn()" aria-label="Xem thông tin cá nhân">
                             <p class="font-semibold mt-2 text-gray-800"><?= $admin_name ?></p>
                             <p class="text-sm text-gray-600"><?= $admin_phone ?></p>
                             <p class="text-sm text-gray-600 italic"><?= $admin_email ?></p>
@@ -1085,10 +1133,14 @@
             handleMenuClick("menu-discount", loadDLMGG, false);
             handleMenuClick("menu-support", loadPhanHoi, false);
             handleMenuClick("menu-gh", loadGH, false);
+            handleMenuClick("menu-tb", loadThongBao, false);
+            handleMenuClick("menu-trangchu", loadTTTrangChu, false);
+            handleMenuClick("menu-baocao", loadBaoCao, false);
 
             // Lần load đầu tiên sau đăng nhập
             setTimeout(() => {
                 let id = getActiveMenu();
+                localStorage.removeItem('qltaikhoancanhan');
                 if (id === "menu-user") {
                     searchBox.style.display = 'none';
                     loadDLUser();
@@ -1110,29 +1162,25 @@
                 } else if (id === "menu-gh") {
                     searchBox.style.display = 'none';
                     loadGH();
+                } else if (id === "menu-tb") {
+                    searchBox.style.display = 'none';
+                    loadThongBao();
+                } else if (id === "menu-trangchu") {
+                    searchBox.style.display = 'none';
+                    loadTTTrangChu();
+                } else if (id == "menu-baocao") {
+                    searchBox.style.display = 'none';
+                    loadBaoCao();
+                } else {
+                    searchBox.style.display = 'none';
+                    loadTTTrangChu();
                 }
-                localStorage.removeItem('profileMenuClicked');
             }, 100);
         });                 
 
-
-        function handleHomeClick() {
-            goBackHome();
-            localStorage.setItem('homeButtonClicked', 'true');
-        }
-
-
-        document.addEventListener('DOMContentLoaded', (event) => {
-            if (localStorage.getItem('homeButtonClicked') === 'true') {
-                goBackHome();
-            }
-        });
-
         function taikhoancn() {
             loadTaiKhoanCN();
-            localStorage.setItem('profileMenuClicked', 'true');
-            localStorage.removeItem("activeMenu");
-            localStorage.removeItem("homeButtonClicked");
+            localStorage.setItem('qltaikhoancanhan', 'true');
             document.querySelectorAll(".menu-item").forEach(item => item.classList.remove("active"));
         }
 
