@@ -2,7 +2,7 @@
     require_once '../config.php';
     $pdo = connectDatabase();
 
-    $idmgg = isset($_GET['id']) ? intval(base64_decode($_GET['id'])) : 0;
+    $idmgg = isset($_GET['id']) ? intval($_GET['id']) : 0;
     $magiamgia = null;
 
     // Hàm tạo mã giảm giá ngẫu nhiên

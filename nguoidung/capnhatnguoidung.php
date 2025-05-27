@@ -156,8 +156,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['capnhatnd'])) {
             </div>
             <div class="input-group mt-2">
                 <select name="quyen" class="form-control">
-                    <option value="0" <?= $user[0]['quyen'] == '0' ? 'selected' : '' ?>>Admin</option>
-                    <option value="1" <?= $user[0]['quyen'] == '1' ? 'selected' : '' ?>>User</option>
+                    <option value="0" <?= $user[0]['quyen'] == '0' ? 'selected' : '' ?>>Nhân viên</option>
+                    <option value="1" <?= $user[0]['quyen'] == '1' ? 'selected' : '' ?>>Người dùng</option>
                 </select>
             </div>
             <div class="btn-container">

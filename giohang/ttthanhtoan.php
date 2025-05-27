@@ -83,7 +83,7 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
         </div>
         <div class="checkbox">
           <input type="checkbox" id="printInvoice" checked>
-          <span>In hóa đơn</span>
+          <span>Hóa đơn</span>
         </div>
         <button onclick="processPayment()">Thanh Toán</button>
       </div>
@@ -136,6 +136,8 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
                 //printWindow.print();
               }, 5000);
             };
+          } else {
+            window.top.location.href = "../trangchu.php";
           }
         } else {
           alert('Lỗi: ' + data.message);
@@ -202,6 +204,7 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
         qrImage.src = '../picture/macode.jpg';
       } else {
         // Không cần cập nhật QR code cho tiền mặt vì khung bị ẩn
+        
       }
 
       // Cập nhật mã đơn hàng trong thông tin ví
@@ -218,7 +221,7 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
       const info = walletInfo.querySelector('.info');
 
       // Cập nhật thông tin VNPay
-      qrImage.src = '../picture/vnpay_qr.jpg'; // Thay bằng QR thực tế của bạn
+      qrImage.src = '../picture/qrvnpay.png'; // Thay bằng QR thực tế của bạn
       walletLogo.src = '../picture/vnpay.png';
       info.innerHTML = `
         <p><strong>Ví điện tử:</strong> VNPay</p>

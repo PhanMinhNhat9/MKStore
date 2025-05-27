@@ -30,14 +30,47 @@ foreach ($categories as $cat) {
     }
 }
 
-// Lọc theo danh mục cha
+// Lọc theo danh mục cha và tìm kiếm
 $parentFilter = isset($_GET['parentFilter']) ? $_GET['parentFilter'] : 'all';
+$searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+// Debug: Ghi log để kiểm tra
+error_log("GET parentFilter: " . ($_GET['parentFilter'] ?? 'not set') . ", parentFilter: $parentFilter, categoryTree keys: " . implode(", ", array_keys($categoryTree)));
+
+// Kiểm tra giá trị parentFilter hợp lệ
+if ($parentFilter !== 'all' && !array_key_exists($parentFilter, $categoryTree)) {
+    error_log("Invalid parentFilter: $parentFilter, resetting to 'all'");
+    $parentFilter = 'all';
+}
+
 $filteredTree = $categoryTree;
+
 if ($parentFilter !== 'all') {
     $filteredTree = [];
     if (isset($categoryTree[$parentFilter])) {
         $filteredTree[$parentFilter] = $categoryTree[$parentFilter];
     }
+}
+
+if ($searchQuery !== '') {
+    $tempTree = [];
+    foreach ($filteredTree as $iddm => $parent) {
+        if (stripos($parent['tendm'], $searchQuery) !== false) {
+            $tempTree[$iddm] = $parent;
+        } else {
+            $filteredChildren = [];
+            foreach ($parent['children'] as $child) {
+                if (stripos($child['tendm'], $searchQuery) !== false) {
+                    $filteredChildren[] = $child;
+                }
+            }
+            if (!empty($filteredChildren)) {
+                $tempTree[$iddm] = $parent;
+                $tempTree[$iddm]['children'] = $filteredChildren;
+            }
+        }
+    }
+    $filteredTree = $tempTree;
 }
 ?>
 
@@ -57,106 +90,114 @@ if ($parentFilter !== 'all') {
         body {
             font-size: 0.9rem;
             background-color: #f4f6f9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
 
-        /* Sidebar */
-        #sidebar {
-            height: 100vh;
-            transition: width 0.3s ease;
-            background-color: #2d3748;
+        header {
+            background-color: #3b82f6;
             color: white;
-            position: fixed;
+            padding: 0.75rem 1rem;
+            position: sticky;
             top: 0;
-            left: 0;
-            z-index: 100;
-            background-color: rgba(30, 41, 59, 0.4); /* Nền có độ trong suốt */
-    backdrop-filter: blur(2px); /* Nền mờ */
-    -webkit-backdrop-filter: blur(2px);
-    color: white;
-    transition: width 0.3s ease;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2); /* Đổ bóng bên phải */
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .sidebar-expanded {
-            width: 220px;
+        .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .sidebar-collapsed {
-            width: 60px;
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
-        .sidebar-header {
-            padding: 1rem;
-            text-align: center;
-        }
-
-        .sidebar-header h1 {
-            font-size: 1.2rem;
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 600;
             margin: 0;
-            transition: opacity 0.3s ease;
         }
 
-        .hamburger {
-            width: 24px;
-            height: 18px;
-            position: relative;
-            cursor: pointer;
-            background: none;
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        .custom-select {
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            background-color: white;
+            font-size: 0.9rem;
+            max-width: 200px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .custom-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            outline: none;
+        }
+
+        .search-input {
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            font-size: 0.9rem;
+            max-width: 200px;
+        }
+
+        .search-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            outline: none;
+        }
+
+        .btn-search, .btn-add, .btn-clear {
+            background-color: #10b981;
+            color: white;
             border: none;
-            padding: 0;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s ease;
         }
 
-        .hamburger span {
-            display: block;
-            position: absolute;
-            height: 2px;
-            width: 100%;
-            background: white;
-            border-radius: 2px;
-            opacity: 1;
-            left: 0;
-            transition: all 0.3s ease;
+        .btn-search:hover, .btn-add:hover, .btn-clear:hover {
+            background-color: #059669;
         }
 
-        .hamburger span:nth-child(1) { top: 0px; }
-        .hamburger span:nth-child(2) { top: 8px; }
-        .hamburger span:nth-child(3) { top: 16px; }
-
-        .hamburger.active span:nth-child(1) {
-            top: 8px;
-            transform: rotate(45deg);
-        }
-
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-            left: -50px;
-        }
-
-        .hamburger.active span:nth-child(3) {
-            top: 8px;
-            transform: rotate(-45deg);
-        }
-
-        /* Main Content */
         main {
-            transition: margin-left 0.3s ease;
             padding: 1rem;
         }
-        main {
-            margin-left: 50px;
-        }
+
         .category-card {
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1rem;
             background-color: white;
+            margin-bottom: 1rem;
         }
 
         .category-card-header {
-            background-color: #e9ecef;
+            background-color: #f1f5f9;
             padding: 0.75rem;
             border-radius: 8px 8px 0 0;
             cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .category-card-body {
@@ -167,30 +208,29 @@ if ($parentFilter !== 'all') {
             margin-left: 1rem;
             border-left: 2px solid #d1d5db;
             padding-left: 0.5rem;
+            margin-top: 0.5rem;
         }
 
         .icon {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             object-fit: contain;
+            border-radius: 4px;
         }
 
-        /* Buttons */
         .action-button {
-            transition: all 0.2s ease;
             padding: 0.25rem 0.5rem;
             border-radius: 4px;
             border: none;
-            background: #ffffff;
+            background: transparent;
+            transition: background 0.2s ease, transform 0.2s ease;
         }
 
         .action-button:hover {
-            background-color:rgb(255, 255, 255);
+            background-color: #e5e7eb;
             transform: translateY(-1px);
-
         }
 
-        /* Tooltip */
         .tooltip-custom {
             position: relative;
         }
@@ -207,109 +247,105 @@ if ($parentFilter !== 'all') {
             border-radius: 4px;
             font-size: 0.8rem;
             white-space: nowrap;
-            z-index: 10;
+            z-index: 1000;
         }
 
-        /* Responsive */
+        .alert {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 0.75rem;
+            border-radius: 4px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .alert-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .alert-error {
+            background: #dc2626;
+            color: white;
+        }
+
         @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: center;
+            }
+
+            .custom-select, .search-input {
+                max-width: none;
+                width: 100%;
+            }
+
+            .btn-search, .btn-add, .btn-clear {
+                width: 100%;
+                justify-content: center;
+            }
+
             .category-card-header {
                 font-size: 0.85rem;
             }
+
             .category-card-body {
                 font-size: 0.8rem;
             }
-            main {
-            margin-left: 50px;
         }
-        }
-        .btn-add {
-    background-color: #3b82f6; /* xanh nổi bật */
-    color: #ffffff;
-    padding: 8px 14px; /* nhỏ hơn một chút */
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 13.5px;
-    box-shadow: 0 3px 10px rgba(59, 130, 246, 0.35); /* tinh chỉnh bóng */
-    transition: all 0.25s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.btn-add:hover {
-    background-color: #1d4ed8;
-    box-shadow: 0 5px 14px rgba(59, 130, 246, 0.5);
-    transform: translateY(-1px); /* nhẹ nhàng nổi lên */
-}
-
-.btn-add i {
-    font-size: 15px;
-}
-.custom-select-sm {
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    background-color: #ffffff;
-    color: #1e293b;
-    font-size: 14px;
-    font-weight: 500;
-    appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg fill='%231e293b' height='16' width='16' xmlns='http://www.w3.org/2000/svg'><polygon points='0,0 16,0 8,10'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 12px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.custom-select-sm:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
-    outline: none;
-    background-color: #ffffff;
-}
-
-
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar-collapsed">
-        <div class="sidebar-header">
-            <button class="hamburger float-end" aria-label="Toggle Sidebar" onclick="toggleSidebar()">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span class="visually-hidden">Toggle Sidebar</span>
-            </button>
-            <h1 id="sidebar-title" class="d-none">Hệ Thống Bán Hàng</h1>
-        </div>
-        <style>
-            .parentFilter {
-                color: #1e293b80;
-            }
+    <!-- Alerts -->
+    <div id="success-alert" class="alert alert-success"></div>
+    <div id="error-alert" class="alert alert-error"></div>
 
-        </style>
-        <form id="filter-form" class="filter-form px-3 d-none" method="GET" action="" aria-label="Filter categories by parent">
-            <label for="parentFilter" class="form-label text-white small">Lọc danh mục cha:</label>
-            <select id="parentFilter" name="parentFilter" class="form-select form-select-sm" aria-describedby="parentFilterDescription">
-                <option value="all" <?= $parentFilter === 'all' ? 'selected' : '' ?>>Tất cả</option>
-                <?php foreach ($categoryTree as $parent): ?>
-                    <option value="<?= htmlspecialchars($parent['iddm']) ?>" <?= $parentFilter === $parent['iddm'] ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($parent['tendm']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <span id="parentFilterDescription" class="visually-hidden">Chọn danh mục cha để lọc danh sách danh mục</span>
-        </form>
-        <button class="btn btn-add btn-sm btn-primary mx-3 mt-3 d-none" onclick="themdmcha(0)" aria-label="Thêm danh mục cha">
-            <i class="fas fa-plus-circle me-1"></i> Thêm Danh Mục Cha
-        </button>
-    </aside>
+    <!-- Header -->
+    <header>
+        <div class="container-fluid">
+            <div class="header-content">
+                <h1 class="header-title">Hệ Thống Bán Hàng</h1>
+                <form id="filter-form" class="filter-group" method="GET" action="" aria-label="Lọc danh mục">
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        name="search" 
+                        placeholder="Tìm kiếm danh mục..." 
+                        value="<?= htmlspecialchars($searchQuery) ?>" 
+                        aria-label="Tìm kiếm danh mục"
+                    >
+                    <button type="submit" class="btn btn-search" aria-label="Tìm kiếm">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                    <select id="parentFilter" name="parentFilter" class="custom-select" aria-describedby="parentFilterDescription">
+                        <option value="all" <?= $parentFilter === 'all' ? 'selected' : '' ?>>Tất cả danh mục cha</option>
+                        <?php foreach ($categoryTree as $parent): ?>
+                            <option value="<?= htmlspecialchars($parent['iddm']) ?>" <?= $parentFilter === (string)$parent['iddm'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($parent['tendm']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <button type="button" class="btn btn-add" onclick="themdmcha(0)" aria-label="Thêm danh mục cha">
+                        <i class="fas fa-plus-circle"></i> Thêm Danh Mục Cha
+                    </button>
+                    <button type="button" class="btn btn-clear" onclick="clearFilters()" aria-label="Xóa bộ lọc">
+                        <i class="fas fa-times-circle"></i> Xóa Bộ Lọc
+                    </button>
+                    <span id="parentFilterDescription" class="visually-hidden">Chọn danh mục cha để lọc danh sách danh mục</span>
+                </form>
+            </div>
+        </div>
+    </header>
 
     <!-- Main Content -->
-    <main id="main-content">
+    <main>
         <div class="container-fluid">
             <h2 class="h5 mb-3 fw-bold text-primary">Danh Mục Sản Phẩm</h2>
             <?php if (empty($filteredTree)): ?>
@@ -319,22 +355,22 @@ if ($parentFilter !== 'all') {
             <?php else: ?>
                 <?php foreach ($filteredTree as $parent): ?>
                     <div class="category-card">
-                        <div class="category-card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#parent-<?= htmlspecialchars($parent['iddm']) ?>">
+                        <div class="category-card-header" data-bs-toggle="collapse" data-bs-target="#parent-<?= htmlspecialchars($parent['iddm']) ?>">
                             <span class="fw-bold"><?= htmlspecialchars($parent['tendm']) ?> (ID: <?= htmlspecialchars($parent['iddm']) ?>)</span>
                             <div>
                                 <button 
-                                    onclick="themdmcon(<?= htmlspecialchars($parent['iddm']) ?>)"
+                                    onclick="event.stopPropagation(); themdmcon(<?= htmlspecialchars($parent['iddm']) ?>)"
                                     class="action-button text-success tooltip-custom me-2"
                                     data-tooltip="Thêm danh mục con"
-                                    aria-label="Thêm danh mục con"
+                                    aria-label="Thêm danh mục con cho <?= htmlspecialchars($parent['tendm']) ?>"
                                 >
                                     <i class="fas fa-plus-circle"></i>
                                 </button>
                                 <button 
-                                    onclick="capnhatdanhmuc(<?= htmlspecialchars($parent['iddm']) ?>)"
+                                    onclick="event.stopPropagation(); capnhatdanhmuc(<?= htmlspecialchars($parent['iddm']) ?>)"
                                     class="action-button text-primary tooltip-custom"
                                     data-tooltip="Cập nhật danh mục"
-                                    aria-label="Cập nhật danh mục"
+                                    aria-label="Cập nhật danh mục <?= htmlspecialchars($parent['tendm']) ?>"
                                 >
                                     <i class="fas fa-edit"></i>
                                 </button>
@@ -359,7 +395,7 @@ if ($parentFilter !== 'all') {
                                 </div>
                             </div>
                             <?php foreach ($parent['children'] as $child): ?>
-                                <div class="child-category mt-2">
+                                <div class="child-category">
                                     <div class="row g-2">
                                         <div class="col-md-2">
                                             <img 
@@ -389,84 +425,62 @@ if ($parentFilter !== 'all') {
 
     <!-- JavaScript -->
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            const title = document.getElementById('sidebar-title');
-            const filterForm = document.getElementById('filter-form');
-            const addButton = document.querySelector('.btn-add');
-            const hamburger = document.querySelector('.hamburger');
-
-            sidebar.classList.toggle('sidebar-collapsed');
-            sidebar.classList.toggle('sidebar-expanded');
-            const isExpanded = sidebar.classList.contains('sidebar-expanded');
-
-            if (isExpanded) {
-                title.classList.remove('d-none');
-                filterForm.classList.remove('d-none');
-                addButton.classList.remove('d-none');
-                hamburger.classList.add('active');
-            } else {
-                title.classList.add('d-none');
-                filterForm.classList.add('d-none');
-                addButton.classList.add('d-none');
-                hamburger.classList.remove('active');
-            }
-
-            hamburger.setAttribute('aria-expanded', isExpanded);
-            localStorage.setItem('sidebarState', isExpanded ? 'expanded' : 'collapsed');
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            const title = document.getElementById('sidebar-title');
             const filterForm = document.getElementById('filter-form');
-            const addButton = document.querySelector('.btn-add');
-            const hamburger = document.querySelector('.hamburger');
-            const savedState = localStorage.getItem('sidebarState');
+            const parentFilter = document.getElementById('parentFilter');
+            const searchInput = document.querySelector('.search-input');
 
-            if (savedState === 'expanded') {
-                sidebar.classList.remove('sidebar-collapsed');
-                sidebar.classList.add('sidebar-expanded');
-                title.classList.remove('d-none');
-                filterForm.classList.remove('d-none');
-                addButton.classList.remove('d-none');
-                hamburger.classList.add('active');
-            } else {
-                sidebar.classList.add('sidebar-collapsed');
-                sidebar.classList.remove('sidebar-expanded');
-                title.classList.add('d-none');
-                filterForm.classList.add('d-none');
-                addButton.classList.add('d-none');
-                hamburger.classList.remove('active');
+            // Debug: Log giá trị ban đầu của dropdown
+            console.log('Initial parentFilter value:', parentFilter.value);
+
+            if (filterForm && parentFilter) {
+                // Submit form on parent filter change
+                parentFilter.addEventListener('change', () => {
+                    console.log('Selected parentFilter:', parentFilter.value);
+                    filterForm.submit();
+                });
+
+                // Debounce search input
+                let searchTimeout;
+                searchInput.addEventListener('input', () => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        console.log('Search query:', searchInput.value);
+                        filterForm.submit();
+                    }, 500);
+                });
+
+                // Submit form on Enter key
+                searchInput.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        clearTimeout(searchTimeout);
+                        console.log('Search query:', searchInput.value);
+                        filterForm.submit();
+                    }
+                });
+
+                // Ép giá trị dropdown để đảm bảo đúng với PHP
+                parentFilter.value = <?= json_encode($parentFilter) ?>;
+                console.log('Forced parentFilter value:', parentFilter.value);
             }
-
-            hamburger.setAttribute('aria-expanded', savedState === 'expanded');
         });
 
-        document.addEventListener("DOMContentLoaded", function () {
-    const hamburger = document.querySelector(".hamburger");
-    const sidebar = document.getElementById("sidebar");
-
-    hamburger.addEventListener("mouseenter", function () {
-        if (sidebar.classList.contains("sidebar-collapsed")) {
-            toggleSidebar();
-        }
-    });
-
-    
-    sidebar.addEventListener("mouseleave", function () {
-        if (sidebar.classList.contains("sidebar-expanded")) {
-            toggleSidebar();
-        }
-    });
-});
-
-        const filterForm = document.getElementById('filter-form');
-        if (filterForm) {
-            document.getElementById('parentFilter').addEventListener('change', () => {
-                filterForm.submit();
+        function clearFilters() {
+            Swal.fire({
+                title: 'Xóa bộ lọc?',
+                text: 'Bạn có chắc chắn muốn xóa tất cả bộ lọc?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const url = new URL(window.location);
+                    url.searchParams.delete('parentFilter');
+                    url.searchParams.delete('search');
+                    window.location.href = url.toString();
+                }
             });
         }
 
@@ -474,11 +488,8 @@ if ($parentFilter !== 'all') {
             Swal.fire({
                 title: 'Thêm danh mục cha',
                 html: 'Chuyển hướng đến trang thêm danh mục cha...',
-                timer: 1500,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                timer: 1000,
+                timerProgressBar: true
             }).then(() => {
                 window.location.href = `themdm.php?id=${id}`;
             });
@@ -488,11 +499,8 @@ if ($parentFilter !== 'all') {
             Swal.fire({
                 title: 'Thêm danh mục con',
                 html: 'Chuyển hướng đến trang thêm danh mục con...',
-                timer: 1500,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                timer: 1000,
+                timerProgressBar: true
             }).then(() => {
                 window.location.href = `themdm.php?id=${id}`;
             });
@@ -502,11 +510,8 @@ if ($parentFilter !== 'all') {
             Swal.fire({
                 title: 'Cập nhật danh mục',
                 html: 'Chuyển hướng đến trang cập nhật danh mục...',
-                timer: 1500,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                timer: 1000,
+                timerProgressBar: true
             }).then(() => {
                 window.location.href = `capnhatdanhmuc.php?id=${id}`;
             });

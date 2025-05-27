@@ -19,7 +19,8 @@ if (isset($_GET['id'])) {
         $iddm = $sanpham['iddm'];
 
         $stmt = $pdo->prepare("SELECT `idmgg`, `code`, `phantram`, `ngayhieuluc`, `ngayketthuc`, 
-        `giaapdung`, `iddm`, `soluong`, `thoigian` FROM `magiamgia` WHERE iddm=:iddm");
+        `giaapdung`, `iddm`, `soluong`, `thoigian` FROM `magiamgia` WHERE iddm=:iddm 
+        AND CURDATE() BETWEEN `ngayhieuluc` AND `ngayketthuc`");
         $stmt->execute(['iddm' => $iddm]);
         $mgg = $stmt->fetch(PDO::FETCH_ASSOC);
         $giagiam = 0;

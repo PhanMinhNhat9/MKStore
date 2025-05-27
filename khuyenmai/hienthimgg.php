@@ -8,8 +8,9 @@ try {
     die("Lỗi kết nối CSDL: " . $e->getMessage());
 }
 
-// Lấy ngày hiện tại
-$currentDate = date('Y-m-d');
+// Lấy ngày và giờ hiện tại
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+$currentDate = date('Y-m-d H:i:s');
 
 // Khởi tạo bộ lọc trạng thái
 $status = isset($_GET['status']) ? $_GET['status'] : 'all';
@@ -17,7 +18,7 @@ $status = isset($_GET['status']) ? $_GET['status'] : 'all';
 // Xây dựng truy vấn SQL với bộ lọc trạng thái
 try {
     $sql = "SELECT mg.idmgg, mg.code, mg.phantram, mg.ngayhieuluc, mg.ngayketthuc, 
-                mg.giaapdung, mg.iddm, mg.soluong, mg.thoigian, dm.tendm 
+                mg.iddm, mg.thoigian, dm.tendm 
             FROM magiamgia mg
             LEFT JOIN danhmucsp dm ON mg.iddm = dm.iddm";
 
@@ -27,11 +28,11 @@ try {
     // Áp dụng bộ lọc trạng thái
     if ($status !== 'all') {
         if ($status === 'active') {
-            $conditions[] = "mg.ngayhieuluc <= :currentDate1 AND mg.ngayketthuc >= :currentDate2 AND mg.soluong > 0";
+            $conditions[] = "mg.ngayhieuluc <= :currentDate1 AND mg.ngayketthuc >= :currentDate2";
             $params[':currentDate1'] = $currentDate;
             $params[':currentDate2'] = $currentDate;
         } elseif ($status === 'expired') {
-            $conditions[] = "(mg.ngayketthuc < :currentDate OR mg.soluong <= 0)";
+            $conditions[] = "mg.ngayketthuc < :currentDate";
             $params[':currentDate'] = $currentDate;
         } elseif ($status === 'pending') {
             $conditions[] = "mg.ngayhieuluc > :currentDate";
@@ -81,12 +82,12 @@ try {
             top: 0;
             left: 0;
             z-index: 100;
-            background-color: rgba(30, 41, 59, 0.4); /* Nền có độ trong suốt */
-    backdrop-filter: blur(2px); /* Nền mờ */
-    -webkit-backdrop-filter: blur(2px);
-    color: white;
-    transition: width 0.3s ease;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2); /* Đổ bóng bên phải */
+            background-color: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            color: white;
+            transition: width 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
         }
 
         .sidebar-expanded {
@@ -153,8 +154,6 @@ try {
         main {
             transition: margin-left 0.3s ease;
             padding: 1rem;
-        }
-        main {
             margin-left: 50px;
         }
 
@@ -195,35 +194,34 @@ try {
         }
 
         /* Buttons */
-        .action-button {
-            transition: all 0.2s ease;
+        .action-buttons .btn {
             padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-        }
-
-        .action-button:hover {
-            background-color: #e9ecef;
-            transform: translateY(-1px);
-        }
-
-        /* Tooltip */
-        .tooltip-custom {
-            position: relative;
-        }
-
-        .tooltip-custom:hover:after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #1e3a8a;
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
             font-size: 0.8rem;
-            white-space: nowrap;
-            z-index: 10;
+            transition: all 0.2s ease;
+        }
+
+        .action-buttons .btn:hover {
+            transform: scale(1.1);
+        }
+
+        .action-buttons .btn-primary {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .action-buttons .btn-primary:hover {
+            background-color: #1d4ed8;
+            border-color: #1d4ed8;
+        }
+
+        .action-buttons .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .action-buttons .btn-danger:hover {
+            background-color: #b02a37;
+            border-color: #b02a37;
         }
 
         /* Scrollbar */
@@ -251,35 +249,42 @@ try {
             .coupon-card {
                 font-size: 0.8rem;
             }
-            main {
-            margin-left: 50px;
+            .coupon-card .row {
+                margin: 0;
+            }
+            .coupon-card .col-6 {
+                padding: 0 5px;
+            }
+            .action-buttons .btn {
+                width: 45%;
+                margin: 5px;
+            }
         }
-        }
+
         .btn-add {
-    background-color: #3b82f6; /* Hồng tươi nổi bật */
-    color: #ffffff;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 3px 10px rgba(59, 130, 246, 0.35); /* tinh chỉnh bóng */
-    transition: all 0.3s ease;
-}
+            background-color: #3b82f6;
+            color: #ffffff;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 10px rgba(59, 130, 246, 0.35);
+            transition: all 0.3s ease;
+        }
 
-.btn-add:hover {
-    background-color: #1d4ed8; /* đậm hơn khi hover */
-    box-shadow: 0 5px 14px rgba(59, 130, 246, 0.5);
-    transform: translateY(-1px);
-}
+        .btn-add:hover {
+            background-color: #1d4ed8;
+            box-shadow: 0 5px 14px rgba(59, 130, 246, 0.5);
+            transform: translateY(-1px);
+        }
 
-.btn-add i {
-    font-size: 15px;
-}
-
+        .btn-add i {
+            font-size: 15px;
+        }
     </style>
 </head>
 <body>
@@ -304,7 +309,7 @@ try {
             </select>
             <span id="statusFilterDescription" class="visually-hidden">Chọn trạng thái để lọc danh sách mã giảm giá</span>
         </form>
-        <button class="btn btn-add btn-sm btn-primary mx-3 mt-3 d-none" onclick="themmgg()" aria-label="Thêm mã giảm giá">
+        <button class="btn btn-add btn-sm mx-3 mt-3 d-none" onclick="themmgg()" aria-label="Thêm mã giảm giá">
             <i class="fas fa-plus-circle me-1"></i> Thêm Mã Giảm Giá
         </button>
     </aside>
@@ -327,19 +332,19 @@ try {
                         <div class="coupon-card m-2">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="fw-bold"><?= htmlspecialchars($coupon['code']) ?></span>
-                                <div>
+                                <div class="action-buttons">
                                     <button 
                                         onclick="capnhatmgg(<?= $coupon['idmgg'] ?>)"
-                                        class="action-button text-primary tooltip-custom me-2"
-                                        data-tooltip="Cập nhật mã giảm giá"
+                                        class="btn btn-primary btn-sm me-1"
+                                        title="Cập nhật mã giảm giá"
                                         aria-label="Cập nhật mã giảm giá"
                                     >
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <button 
                                         onclick="xoamgg(<?= $coupon['idmgg'] ?>)"
-                                        class="action-button text-danger tooltip-custom"
-                                        data-tooltip="Xóa mã giảm giá"
+                                        class="btn btn-danger btn-sm"
+                                        title="Xóa mã giảm giá"
                                         aria-label="Xóa mã giảm giá"
                                     >
                                         <i class="fas fa-trash-alt"></i>
@@ -351,16 +356,10 @@ try {
                                     <p class="mb-0 small"><strong>Giảm:</strong> <?= (int)$coupon['phantram'] ?>%</p>
                                 </div>
                                 <div class="col-6">
-                                    <p class="mb-0 small"><strong>Số lượng:</strong> <?= (int)$coupon['soluong'] ?></p>
-                                </div>
-                                <div class="col-6">
                                     <p class="mb-0 small"><strong>Hiệu lực:</strong> <?= date('d-m-Y', strtotime($coupon['ngayhieuluc'])) ?></p>
                                 </div>
                                 <div class="col-6">
                                     <p class="mb-0 small"><strong>Hết hạn:</strong> <?= date('d-m-Y', strtotime($coupon['ngayketthuc'])) ?></p>
-                                </div>
-                                <div class="col-6">
-                                    <p class="mb-0 small"><strong>Giá tối thiểu:</strong> <?= number_format($coupon['giaapdung'], 0, ',', '.') ?> VND</p>
                                 </div>
                                 <div class="col-6">
                                     <p class="mb-0 small"><strong>Danh mục:</strong> <?= !empty($coupon['tendm']) ? htmlspecialchars($coupon['tendm']) : '<em>Không có</em>' ?></p>
@@ -368,9 +367,10 @@ try {
                                 <div class="col-12">
                                     <p class="mb-0 small"><strong>Trạng thái:</strong> 
                                         <?php
+                                        error_log("Debug: Coupon {$coupon['code']}, NgayHieuLuc: {$coupon['ngayhieuluc']}, NgayKetThuc: {$coupon['ngayketthuc']}, CurrentDate: $currentDate");
                                         if ($coupon['ngayhieuluc'] > $currentDate) {
                                             echo '<span class="text-warning">Chưa hiệu lực</span>';
-                                        } elseif ($coupon['ngayketthuc'] < $currentDate || $coupon['soluong'] <= 0) {
+                                        } elseif ($coupon['ngayketthuc'] < $currentDate) {
                                             echo '<span class="text-danger">Hết hạn</span>';
                                         } else {
                                             echo '<span class="text-success">Còn hiệu lực</span>';
@@ -386,75 +386,73 @@ try {
             </div>
 
             <!-- Desktop View -->
-<div class="table-container d-none d-md-block rounded overflow-hidden border bg-white" style="max-height: 600px;">
-    <div class="table-responsive" style="max-height: 600px;">
-        <table class="coupon-table table mb-0" aria-describedby="couponTableDescription">
-            <thead class="table-light">
-                <tr>
-                    <th scope="col">Mã</th>
-                    <th scope="col">Giảm (%)</th>
-                    <th scope="col">Hiệu lực</th>
-                    <th scope="col">Hết hạn</th>
-                    <th scope="col">Giá tối thiểu</th>
-                    <th scope="col">Số lượng</th>
-                    <th scope="col">Danh mục</th>
-                    <th scope="col">Trạng thái</th>
-                    <th scope="col">Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($coupons)): ?>
-                    <tr>
-                        <td colspan="9" class="text-center text-muted">Không có mã giảm giá nào phù hợp.</td>
-                    </tr>
-                <?php else: ?>
-                    <?php foreach ($coupons as $coupon): ?>
-                        <tr>
-                            <td><strong><?= htmlspecialchars($coupon['code']) ?></strong></td>
-                            <td><?= (int)$coupon['phantram'] ?>%</td>
-                            <td><?= date('d-m-Y', strtotime($coupon['ngayhieuluc'])) ?></td>
-                            <td><?= date('d-m-Y', strtotime($coupon['ngayketthuc'])) ?></td>
-                            <td><?= number_format($coupon['giaapdung'], 0, ',', '.') ?> VND</td>
-                            <td><?= (int)$coupon['soluong'] ?></td>
-                            <td><?= !empty($coupon['tendm']) ? htmlspecialchars($coupon['tendm']) : '<em>Không có</em>' ?></td>
-                            <td>
-                                <?php
-                                if ($coupon['ngayhieuluc'] > $currentDate) {
-                                    echo '<span class="text-warning">Chưa hiệu lực</span>';
-                                } elseif ($coupon['ngayketthuc'] < $currentDate || $coupon['soluong'] <= 0) {
-                                    echo '<span class="text-danger">Hết hạn</span>';
-                                } else {
-                                    echo '<span class="text-success">Còn hiệu lực</span>';
-                                }
-                                ?>
-                            </td>
-                            <td>
-                                <button 
-                                    onclick="capnhatmgg(<?= $coupon['idmgg'] ?>)"
-                                    class="action-button text-primary tooltip-custom me-2"
-                                    data-tooltip="Cập nhật mã giảm giá"
-                                    aria-label="Cập nhật mã giảm giá"
-                                >
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button 
-                                    onclick="xoamgg(<?= $coupon['idmgg'] ?>)"
-                                    class="action-button text-danger tooltip-custom"
-                                    data-tooltip="Xóa mã giảm giá"
-                                    aria-label="Xóa mã giảm giá"
-                                >
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-    <span id="couponTableDescription" class="visually-hidden">Bảng hiển thị danh sách mã giảm giá...</span>
-</div>
-
+            <div class="table-container d-none d-md-block rounded overflow-hidden border bg-white" style="max-height: 600px;">
+                <div class="table-responsive" style="max-height: 600px;">
+                    <table class="coupon-table table mb-0" aria-describedby="couponTableDescription">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Mã</th>
+                                <th scope="col">Giảm (%)</th>
+                                <th scope="col">Hiệu lực</th>
+                                <th scope="col">Hết hạn</th>
+                                <th scope="col">Danh mục</th>
+                                <th scope="col">Trạng thái</th>
+                                <th scope="col">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($coupons)): ?>
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">Không có mã giảm giá nào phù hợp.</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($coupons as $coupon): ?>
+                                    <tr>
+                                        <td><strong><?= htmlspecialchars($coupon['code']) ?></strong></td>
+                                        <td><?= (int)$coupon['phantram'] ?>%</td>
+                                        <td><?= date('d-m-Y', strtotime($coupon['ngayhieuluc'])) ?></td>
+                                        <td><?= date('d-m-Y', strtotime($coupon['ngayketthuc'])) ?></td>
+                                        <td><?= !empty($coupon['tendm']) ? htmlspecialchars($coupon['tendm']) : '<em>Không có</em>' ?></td>
+                                        <td>
+                                            <?php
+                                            error_log("Debug: Coupon {$coupon['code']}, NgayHieuLuc: {$coupon['ngayhieuluc']}, NgayKetThuc: {$coupon['ngayketthuc']}, CurrentDate: $currentDate");
+                                            if ($coupon['ngayhieuluc'] > $currentDate) {
+                                                echo '<span class="text-warning">Chưa hiệu lực</span>';
+                                            } elseif ($coupon['ngayketthuc'] < $currentDate) {
+                                                echo '<span class="text-danger">Hết hạn</span>';
+                                            } else {
+                                                echo '<span class="text-success">Còn hiệu lực</span>';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <button 
+                                                    onclick="capnhatmgg(<?= $coupon['idmgg'] ?>)"
+                                                    class="btn btn-primary btn-sm me-1"
+                                                    title="Cập nhật mã giảm giá"
+                                                    aria-label="Cập nhật mã giảm giá"
+                                                >
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button 
+                                                    onclick="xoamgg(<?= $coupon['idmgg'] ?>)"
+                                                    class="btn btn-danger btn-sm"
+                                                    title="Xóa mã giảm giá"
+                                                    aria-label="Xóa mã giảm giá"
+                                                >
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <span id="couponTableDescription" class="visually-hidden">Bảng hiển thị danh sách mã giảm giá...</span>
+            </div>
         </div>
     </main>
 
@@ -516,23 +514,24 @@ try {
 
             hamburger.setAttribute('aria-expanded', savedState === 'expanded');
         });
+
         document.addEventListener("DOMContentLoaded", function () {
-    const hamburger = document.querySelector(".hamburger");
-    const sidebar = document.getElementById("sidebar");
+            const hamburger = document.querySelector(".hamburger");
+            const sidebar = document.getElementById("sidebar");
 
-    hamburger.addEventListener("mouseenter", function () {
-        if (sidebar.classList.contains("sidebar-collapsed")) {
-            toggleSidebar();
-        }
-    });
+            hamburger.addEventListener("mouseenter", function () {
+                if (sidebar.classList.contains("sidebar-collapsed")) {
+                    toggleSidebar();
+                }
+            });
 
-    
-    sidebar.addEventListener("mouseleave", function () {
-        if (sidebar.classList.contains("sidebar-expanded")) {
-            toggleSidebar();
-        }
-    });
-});
+            sidebar.addEventListener("mouseleave", function () {
+                if (sidebar.classList.contains("sidebar-expanded")) {
+                    toggleSidebar();
+                }
+            });
+        });
+
         const filterForm = document.getElementById('filter-form');
         if (filterForm) {
             document.getElementById('statusFilter').addEventListener('change', () => {

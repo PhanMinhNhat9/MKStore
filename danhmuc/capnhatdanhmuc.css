@@ -1,105 +1,121 @@
-/* Reset mặc định cho toàn bộ phần tử */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  /* Cài đặt chung cho body */
-  body {
-    background: #f4f7fa;
-    font-family: 'Arial', sans-serif;
-    line-height: 1.6;
-  }
-  
-  /* Container cho bảng */
-  .table-container {
-    max-height: 550px;
-    overflow-x: auto;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    margin: 20px;
-    border-radius: 10px;
-  }
-  
-  /* Ẩn thanh cuộn trên Chrome, Safari */
-  .table-container::-webkit-scrollbar {
-    display: none;
-  }
-  
-  /* Cài đặt cho bảng */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-  }
-  
-  /* Cài đặt cho th và td */
-  th,
-  td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: center;
-  }
-  
-  /* Cài đặt cho th */
-  th {
-    background: #007bff;
-    color: #fff;
-    position: sticky;
-    top: 0;
-    z-index: 1; /* Đảm bảo tiêu đề nằm trên nội dung khi cuộn */
-  }
-  
-  /* Cài đặt cho input và select */
-  input,
-  select {
-    width: 100%;
-    padding: 6px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    outline: none;
-    font-size: 14px;
-  }
-  
-  /* Hiệu ứng focus cho input và select */
-  input:focus,
-  select:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-  }
-  
-  /* Cài đặt cho hình ảnh xem trước */
-  .icon-preview {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-    display: block;
-    margin: 0 auto;
-    border-radius: 4px;
-  }
-  
-  /* Cài đặt cho nút lưu */
-  .btn-save {
-    background: #007bff;
-    color: #fff;
-    padding: 6px 12px;
+body {
+    background-color: #f4f6f9;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 1400px;
+}
+
+.card {
     border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.3s ease;
-  }
-  
-  /* Hiệu ứng hover cho nút lưu */
-  .btn-save:hover {
-    background: #0056b3;
-  }
-  
-  /* Cài đặt cho khu vực input file */
-  .file-input {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 15px;
-  }
+    border-radius: 10px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+    padding: 12px;
+}
+
+.table th {
+    font-size: 0.9rem;
+}
+
+.table td {
+    font-size: 0.85rem;
+}
+
+.form-control-sm, .form-select-sm {
+    font-size: 0.8rem;
+    padding: 6px;
+}
+
+.icon-preview {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+}
+
+.badge {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+}
+
+.table-responsive {
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .table {
+        display: block;
+        width: 100%;
+    }
+
+    .table thead {
+        display: none;
+    }
+
+    .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 15px;
+        border-bottom: 1px solid #dee2e6;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .table td {
+        position: relative;
+        padding: 10px;
+        text-align: left;
+        border: none;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #1e3a8a;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .table td[data-label="Hành động"] {
+        text-align: center;
+    }
+
+    .form-control-sm, .form-select-sm {
+        width: 100%;
+    }
+
+    .icon-preview {
+        margin: 10px auto;
+        display: block;
+    }
+
+    .btn-sm {
+        width: 45%;
+        margin: 5px;
+    }
+}

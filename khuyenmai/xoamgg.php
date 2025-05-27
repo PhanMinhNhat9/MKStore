@@ -5,7 +5,7 @@ require_once '../config.php';
 $pdo = connectDatabase();
 
 // Lấy id mã giảm giá từ GET
-$idmgg = isset($_GET['id']) ? intval(base64_decode($_GET['id'])) : 0;
+$idmgg = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($idmgg > 0) {
     try {

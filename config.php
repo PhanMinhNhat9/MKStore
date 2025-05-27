@@ -12,10 +12,14 @@
     }
 
     function connectDatabase(): PDO {
+        // $host = "localhost";  
+        // $dbname = "u797172436_qua"; 
+        // $username = "u797172436_qua";   
+        // $password = "Nhta@22004335";   
         $host = "localhost";  
         $dbname = "quanlybanpk"; 
         $username = "root";   
-        $password = "";    
+        $password = ""; 
         try {
             $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
             $options = [
@@ -72,7 +76,6 @@
                 'diachi' => $user['diachi'],
                 'quyen' => $user['quyen']
             ];
-            
             if (in_array($_SESSION['user']['quyen'], [0, 1, 2589])) {
                 header("Location: ../trangchu.php");
                 exit();
@@ -467,113 +470,126 @@
         }
     }
     
-    function themDMcon() {
-        $pdo = connectDatabase(); 
-        $tendm = trim($_POST['tendm'] ?? '');
-        $mota = trim($_POST['mota'] ?? '');
-        $loaidm = trim($_POST['loaidm'] ?? '');
-    
-        // Kiểm tra dữ liệu đầu vào
-        if (empty($tendm) || empty($loaidm)) {
-            return ['success' => false, 'message' => 'Tên danh mục và loại danh mục không được để trống!'];
-        }
-    
-        // Xử lý upload icon
-        $icon = '';
-        if (!empty($_FILES['icon']['name'])) {
-            $target_dir = "icon/";
-            $file_name = basename($_FILES["icon"]["name"]);
-            $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-            $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
-            if (!in_array($file_ext, $allowed_types)) {
-                return ['success' => false, 'message' => 'Chỉ chấp nhận các file JPG, JPEG, PNG, GIF!'];
-            }
-            $target_file = $target_dir . $file_name;
-            if (!move_uploaded_file($_FILES["icon"]["tmp_name"], $target_file)) {
-                return ['success' => false, 'message' => 'Lỗi khi tải lên tệp!'];
-            }
-            $icon = $target_file;
-        }
-    
+    function themDMcon($tendm, $loaidm, $mota, $icon) {
         try {
-            $stmt = $pdo->prepare("INSERT INTO danhmucsp (tendm, loaidm, icon, mota) VALUES (:tendm, :loaidm, :icon, :mota)");
-            $stmt->execute([
-                'tendm' => $tendm,
-                'loaidm' => $loaidm,
-                'icon' => $icon,
-                'mota' => $mota
-            ]);
-    
-            // Trả về thành công
-            return ['success' => true, 'message' => 'Thêm danh mục thành công!'];
+            // Kết nối cơ sở dữ liệu
+            $pdo = connectDatabase();
+            $icon = str_replace("../", "", $icon);
+
+            // Kiểm tra xem tên danh mục đã tồn tại trong cùng loaidm hay chưa
+            $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM danhmucsp WHERE tendm = :tendm AND loaidm = :loaidm");
+            $stmt_check->execute(['tendm' => $tendm, 'loaidm' => $loaidm]);
+            if ($stmt_check->fetchColumn() > 0) {
+                return [
+                    'success' => false,
+                    'message' => 'Tên danh mục đã tồn tại trong loại danh mục này.'
+                ];
+            }
+
+            // Chuẩn bị câu lệnh SQL để thêm danh mục con
+            $sql = "INSERT INTO danhmucsp (tendm, loaidm, mota, icon, thoigian) 
+                    VALUES (:tendm, :loaidm, :mota, :icon, NOW())";
+            $stmt = $pdo->prepare($sql);
+
+            // Gán giá trị cho các tham số
+            $stmt->bindValue(':tendm', $tendm, PDO::PARAM_STR);
+            $stmt->bindValue(':loaidm', $loaidm, PDO::PARAM_INT);
+            $stmt->bindValue(':mota', $mota ? $mota : null, PDO::PARAM_STR);
+            $stmt->bindValue(':icon', $icon ? $icon : null, PDO::PARAM_STR);
+
+            // Thực thi câu lệnh
+            $stmt->execute();
+
+            // Trả về kết quả thành công
+            return [
+                'success' => true,
+                'message' => 'Thêm danh mục con thành công.'
+            ];
         } catch (PDOException $e) {
-            // Trả về lỗi PDO
-            return ['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()];
+            // Xử lý lỗi nếu có
+            return [
+                'success' => false,
+                'message' => 'Lỗi khi thêm danh mục: ' . $e->getMessage()
+            ];
         }
     }
     
-    function capnhatDanhMuc() {
+    function capnhatDanhMuc($iddm, $tendm, $loaidm, $mota, $icon) {
+    try {
         $pdo = connectDatabase();
-        $iddm = $_POST['iddm'];
-        $tendm = $_POST['tendm'];
-        $loaidm = $_POST['loaidm'] ?? 0; 
-        $mota = $_POST['mota'];
-        $icon = $_POST['icon']; 
 
-        if (!empty($_FILES['icon_new']['name'])) {
-            $targetDir = "icon/";
-            $fileName = basename($_FILES["icon_new"]["name"]);
-            $targetFilePath = $targetDir . $fileName;
-            $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
-
-            // Chỉ cho phép các định dạng ảnh hợp lệ
-            $allowTypes = ['jpg', 'png', 'jpeg', 'gif'];
-            if (in_array($fileType, $allowTypes)) {
-                if (move_uploaded_file($_FILES["icon_new"]["tmp_name"], $targetFilePath)) {
-                    $icon = "icon/" . $fileName; // Lưu đường dẫn ảnh mới vào DB
-                }
-            }
+        // Kiểm tra tên danh mục trùng lặp
+        $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM danhmucsp WHERE tendm = :tendm AND loaidm = :loaidm AND iddm != :iddm");
+        $stmt_check->execute(['tendm' => $tendm, 'loaidm' => $loaidm, 'iddm' => $iddm]);
+        if ($stmt_check->fetchColumn() > 0) {
+            return [
+                'success' => false,
+                'message' => 'Tên danh mục đã tồn tại trong loại danh mục này.'
+            ];
         }
 
-        // Cập nhật dữ liệu vào cơ sở dữ liệu
-        $sql = "UPDATE danhmucsp SET tendm = :tendm, loaidm = :loaidm, icon = :icon, mota = :mota WHERE iddm = :iddm";
+        // Cập nhật danh mục
+        $sql = "UPDATE danhmucsp SET tendm = :tendm, loaidm = :loaidm, mota = :mota, icon = :icon WHERE iddm = :iddm";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':tendm', $tendm);
-        $stmt->bindParam(':loaidm', $loaidm);
-        $stmt->bindParam(':icon', $icon);
-        $stmt->bindParam(':mota', $mota);
-        $stmt->bindParam(':iddm', $iddm);
+        $stmt->bindValue(':tendm', $tendm, PDO::PARAM_STR);
+        $stmt->bindValue(':loaidm', $loaidm, PDO::PARAM_INT);
+        $stmt->bindValue(':mota', $mota ?: null, PDO::PARAM_STR);
+        $stmt->bindValue(':icon', $icon ?: null, PDO::PARAM_STR);
+        $stmt->bindValue(':iddm', $iddm, PDO::PARAM_INT);
+        $stmt->execute();
 
-        if ($stmt->execute()) {
-            return true;
-        } else {
-            return false;
-        }
+        return [
+            'success' => true,
+            'message' => 'Cập nhật danh mục thành công.'
+        ];
+    } catch (PDOException $e) {
+        return [
+            'success' => false,
+            'message' => 'Lỗi khi cập nhật danh mục: ' . $e->getMessage()
+        ];
     }
-    
-    function xoaDanhMuc() {
+}
+
+function xoaDanhMuc($iddm) {
+    try {
         $pdo = connectDatabase();
-    
-            $iddm = $_POST['iddm'];
-    
-            // Kiểm tra xem danh mục có danh mục con không
-            $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM danhmucsp WHERE loaidm = ?");
-            $stmtCheck->execute([$iddm]);
-            $count = $stmtCheck->fetchColumn();
-    
-            if ($count > 0) {
-                echo "<script>alert('Không thể xóa! Hãy xóa danh mục con trước.');</script>";
-                return;
-            }
-    
-            // Xóa danh mục
-            $stmt = $pdo->prepare("DELETE FROM danhmucsp WHERE iddm = ?");
-            if ($stmt->execute([$iddm])) {
-                return true;
-            } else {
-                return false;
-            }
+
+        // Kiểm tra xem danh mục có danh mục con hoặc sản phẩm liên quan không
+        $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM danhmucsp WHERE loaidm = :iddm");
+        $stmt_check->execute(['iddm' => $iddm]);
+        if ($stmt_check->fetchColumn() > 0) {
+            return [
+                'success' => false,
+                'message' => 'Không thể xóa danh mục vì có danh mục con liên quan.'
+            ];
         }
+
+        $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM sanpham WHERE iddm = :iddm");
+        $stmt_check->execute(['iddm' => $iddm]);
+        if ($stmt_check->fetchColumn() > 0) {
+            return [
+                'success' => false,
+                'message' => 'Không thể xóa danh mục vì có sản phẩm liên quan.'
+            ];
+        }
+
+        // Xóa danh mục
+        $sql = "DELETE FROM danhmucsp WHERE iddm = :iddm";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['iddm' => $iddm]);
+
+        return [
+            'success' => true,
+            'message' => 'Xóa danh mục thành công.'
+        ];
+    } catch (PDOException $e) {
+        return [
+            'success' => false,
+            'message' => 'Lỗi khi xóa danh mục: ' . $e->getMessage()
+        ];
+    }
+}
+
     function themMGG() {
         $pdo = connectDatabase();
         $code = trim($_POST['code']);

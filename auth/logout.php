@@ -1,10 +1,20 @@
 <?php
-    session_start();
-    session_unset(); 
-    session_destroy(); // Destroy the session
-    setcookie(session_name(), '', time() - 3600, '/'); // Xóa cookie session nếu có
-
-    // Chuyển hướng về trang đăng nhập với thông báo timeout
-    header("Location: ../huongdan.php");
-    exit();
+session_start();
+session_unset();
+session_destroy();
+setcookie(session_name(), '', time() - 3600, '/'); 
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Đăng xuất</title>
+    <script>
+        window.location.href = '../huongdan.php';
+    </script>
+</head>
+<body>
+</body>
+</html>
+<?php
+exit();
 ?>

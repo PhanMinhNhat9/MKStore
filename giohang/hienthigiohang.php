@@ -3,17 +3,20 @@
     $pdo = connectDatabase();
 
     // Lấy danh sách sản phẩm trong giỏ hàng, kết hợp với bảng magiamgia để lấy giá giảm
-    $stmt = $pdo->prepare("SELECT gh.idgh, sp.idsp, sp.tensp, sp.anh, gh.soluong, sp.giaban, gh.thanhtien, gh.giagiam,
-                                COALESCE(mg.phantram, 0) AS phantram
-                        FROM giohang gh 
-                        JOIN sanpham sp ON gh.idsp = sp.idsp
-                        LEFT JOIN (
-                            SELECT iddm, phantram
-                            FROM magiamgia
-                            GROUP BY iddm
-                        ) mg ON sp.iddm = mg.iddm
-                        GROUP BY gh.idgh, sp.idsp, sp.tensp, sp.anh, gh.soluong, sp.giaban, mg.phantram
-                        ORDER BY gh.thoigian DESC");
+    $stmt = $pdo->prepare("SELECT gh.idgh, sp.idsp, sp.tensp, sp.anh, gh.soluong, sp.giaban, gh.thanhtien,
+       COALESCE(mg.phantram, 0) AS phantram,
+       sp.giaban * (1 - COALESCE(mg.phantram, 0) / 100) AS giagiam
+FROM giohang gh 
+JOIN sanpham sp ON gh.idsp = sp.idsp
+LEFT JOIN magiamgia mg ON sp.iddm = mg.iddm 
+    AND CURDATE() BETWEEN mg.ngayhieuluc AND mg.ngayketthuc
+    AND mg.ngayhieuluc = (
+        SELECT MAX(ngayhieuluc)
+        FROM magiamgia m2
+        WHERE m2.iddm = mg.iddm
+        AND CURDATE() BETWEEN m2.ngayhieuluc AND m2.ngayketthuc
+    )
+ORDER BY gh.thoigian DESC");
     $stmt->execute();
     $giohang = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

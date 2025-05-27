@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Hóa đơn bán hàng</title>
+    <link rel="stylesheet" href="../sweetalert2/sweetalert2.min.css">
+    <script src="../sweetalert2/sweetalert2.min.js"></script>
+    <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
 
@@ -69,6 +73,25 @@
         .bold {
             font-weight: bold;
         }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0 0;
+        }
+        .back-button, .export-button {
+            padding: 8px 16px;
+            background-color: #0066cc;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover, .export-button:hover {
+            background-color: #005bb5;
+        }
     </style>
 </head>
 <body>
@@ -98,7 +121,7 @@ if ($iddh > 0) {
 
 <div class="receipt">
     <h2>MKStore</h2>
-    <div class="center">Địa chỉ:  Địa chỉ: 73 Nguyễn Huệ, phường 2, thành phố Vĩnh Long, tỉnh Vĩnh Long </div>
+    <div class="center">Địa chỉ: 73 Nguyễn Huệ, phường 2, thành phố Vĩnh Long, tỉnh Vĩnh Long </div>
     <div class="center">SĐT: 0702 804 594</div>
     <hr style="border: none; border-top: 1px dashed #a2c7f5; margin: 10px 0;">
 
@@ -113,9 +136,11 @@ if ($iddh > 0) {
         
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
         ?>
-        <div>👤 Thu ngân: <?= $row['hoten'] ?> </div>
+        <div>👤 Thu ngân: <?= htmlspecialchars($row['hoten']) ?> </div>
     </div>
-
+    <?php
+        $hoten=$row['hoten'];
+    ?>
     <table>
         <thead>
         <tr>
@@ -159,6 +184,11 @@ if ($iddh > 0) {
         --- Cảm ơn quý khách đã mua hàng tại MKStore ---<br>
         Giữ hóa đơn để đổi/trả hàng trong vòng 3 ngày.
     </div>
+
+    <div class="button-container">
+        <button class="back-button">Trở về</button>
+        <button class="export-button">Xuất hóa đơn</button>
+    </div>
 </div>
 <?php
 $idnv = $_SESSION['user']['iduser'] ?? null;
@@ -178,5 +208,261 @@ $idnv = $_SESSION['user']['iduser'] ?? null;
     }
 ?>
 
+<script>
+// Chuyển dữ liệu PHP sang JavaScript
+const invoiceData = {
+    iddh: <?= json_encode($iddh) ?>,
+    hoten: <?= json_encode($hoten ?? 'Không xác định') ?>,
+    ngay: <?= json_encode(date('d/m/Y H:i:s')) ?>,
+    tongtien: <?= json_encode(number_format($result['tongtien'] ?? 0, 0, ',', '.')) ?>,
+    tienmat: <?= json_encode(number_format($tienmat, 0, ',', '.')) ?>,
+    tienthoi: <?= json_encode(number_format($tienthoi, 0, ',', '.')) ?>,
+    items: [
+        <?php foreach ($data as $row) { ?>
+        {
+            tensp: <?= json_encode($row['tensp']) ?>,
+            soluong: <?= json_encode($row['soluong']) ?>,
+            giagoc: <?= json_encode(number_format($row['giagoc'], 0, ',', '.')) ?>,
+            giagiam: <?= json_encode(number_format($row['giagiam'], 0, ',', '.')) ?>,
+            gia: <?= json_encode(number_format($row['gia'], 0, ',', '.')) ?>
+        },
+        <?php } ?>
+    ]
+};
+
+// Gỡ lỗi: Kiểm tra dữ liệu invoiceData
+console.log('invoiceData:', invoiceData);
+
+// Xử lý nút Trở về
+document.querySelector('.back-button').addEventListener('click', function() {
+    Swal.fire({
+        title: 'Xác nhận',
+        text: 'Bạn có muốn quay về trang chủ không?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Hủy',
+        buttonsStyling: true,
+        customClass: {
+            confirmButton: 'btn btn-primary',
+            cancelButton: 'btn btn-secondary'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '../trangchu.php';
+        }
+    });
+});
+
+// Xử lý nút Xuất hóa đơn
+document.querySelector('.export-button').addEventListener('click', function() {
+    const { Document, Packer, Paragraph, Table, TableRow, TableCell, WidthType, TextRun, AlignmentType } = docx;
+
+    // Tạo tài liệu Word
+    const doc = new Document({
+        sections: [{
+            properties: {},
+            children: [
+                // Tiêu đề
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "MKStore",
+                            bold: true,
+                            size: 32,
+                            color: "0066CC"
+                        })
+                    ],
+                    alignment: AlignmentType.CENTER
+                }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "Địa chỉ: 73 Nguyễn Huệ, phường 2, thành phố Vĩnh Long, tỉnh Vĩnh Long",
+                            size: 24
+                        })
+                    ],
+                    alignment: AlignmentType.CENTER
+                }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "SĐT: 0702 804 594",
+                            size: 24
+                        })
+                    ],
+                    alignment: AlignmentType.CENTER
+                }),
+                new Paragraph({ text: "" }),
+
+                // Thông tin hóa đơn
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: `📅 Ngày: ${invoiceData.ngay}`,
+                            size: 24
+                        })
+                    ]
+                }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: `🧾 Mã ĐH: ${invoiceData.iddh}`,
+                            size: 24
+                        })
+                    ]
+                }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: `👤 Thu ngân: ${invoiceData.hoten || 'Không xác định'}`,
+                            size: 24
+                        })
+                    ]
+                }),
+                new Paragraph({ text: "" }),
+
+                // Bảng sản phẩm
+                new Table({
+                    width: {
+                        size: 100,
+                        type: WidthType.PERCENTAGE
+                    },
+                    rows: [
+                        new TableRow({
+                            children: [
+                                new TableCell({
+                                    children: [new Paragraph({ text: "Sản phẩm", bold: true })],
+                                    width: { size: 40, type: WidthType.PERCENTAGE }
+                                }),
+                                new TableCell({
+                                    children: [new Paragraph({ text: "SL", bold: true })],
+                                    width: { size: 10, type: WidthType.PERCENTAGE }
+                                }),
+                                new TableCell({
+                                    children: [new Paragraph({ text: "Giá gốc", bold: true, alignment: AlignmentType.RIGHT })],
+                                    width: { size: 15, type: WidthType.PERCENTAGE }
+                                }),
+                                new TableCell({
+                                    children: [new Paragraph({ text: "Giá giảm", bold: true, alignment: AlignmentType.RIGHT })],
+                                    width: { size: 15, type: WidthType.PERCENTAGE }
+                                }),
+                                new TableCell({
+                                    children: [new Paragraph({ text: "Thành tiền", bold: true, alignment: AlignmentType.RIGHT })],
+                                    width: { size: 20, type: WidthType.PERCENTAGE }
+                                })
+                            ]
+                        }),
+                        ...invoiceData.items.map(item => 
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        children: [new Paragraph({ text: item.tensp || '' })]
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ text: item.soluong.toString() })]
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ text: `${item.giagoc} VNĐ`, alignment: AlignmentType.RIGHT })]
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ text: `${item.giagiam} VNĐ`, alignment: AlignmentType.RIGHT })]
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ text: `${item.gia} VNĐ`, alignment: AlignmentType.RIGHT })]
+                                    })
+                                ]
+                            })
+                        )
+                    ]
+                }),
+
+                // Tổng tiền
+                new Paragraph({ text: "" }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "Tổng cộng: ",
+                            bold: true,
+                            size: 24
+                        }),
+                        new TextRun({
+                            text: `${invoiceData.tongtien} VNĐ`,
+                            size: 24
+                        })
+                    ],
+                    alignment: AlignmentType.RIGHT
+                }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "Tiền mặt: ",
+                            size: 24
+                        }),
+                        new TextRun({
+                            text: `${invoiceData.tienmat} VNĐ`,
+                            size: 24
+                        })
+                    ],
+                    alignment: AlignmentType.RIGHT
+                }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "Tiền thối: ",
+                            size: 24
+                        }),
+                        new TextRun({
+                            text: `${invoiceData.tienthoi} VNĐ`,
+                            size: 24
+                        })
+                    ],
+                    alignment: AlignmentType.RIGHT
+                }),
+
+                // Chân trang
+                new Paragraph({ text: "" }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "--- Cảm ơn quý khách đã mua hàng tại MKStore ---",
+                            size: 20
+                        })
+                    ],
+                    alignment: AlignmentType.CENTER
+                }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "Giữ hóa đơn để đổi/trả hàng trong vòng 3 ngày.",
+                            size: 20
+                        })
+                    ],
+                    alignment: AlignmentType.CENTER
+                })
+            ]
+        }]
+    });
+
+    // Tạo và tải file Word
+    Packer.toBlob(doc).then(blob => {
+        saveAs(blob, `HoaDon_MaDH_${invoiceData.iddh}.docx`);
+        Swal.fire({
+            title: 'Thành công',
+            text: 'Hóa đơn đã được xuất thành công!',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    }).catch(error => {
+        console.error('Lỗi khi xuất file Word:', error);
+        Swal.fire({
+            title: 'Lỗi',
+            text: 'Không thể xuất hóa đơn. Vui lòng thử lại!',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    });
+});
+</script>
 </body>
 </html>
