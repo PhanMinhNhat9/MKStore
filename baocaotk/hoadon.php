@@ -237,7 +237,7 @@ console.log('invoiceData:', invoiceData);
 document.querySelector('.back-button').addEventListener('click', function() {
     Swal.fire({
         title: 'Xác nhận',
-        text: 'Bạn có muốn quay về trang chủ không?',
+        text: 'Bạn có muốn quay về không?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'OK',
@@ -249,7 +249,7 @@ document.querySelector('.back-button').addEventListener('click', function() {
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            window.top.location.href = '../trangchu.php';
+            window.top.location.href = 'baocaodh.php';
         }
     });
 });

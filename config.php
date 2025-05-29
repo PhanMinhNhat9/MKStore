@@ -119,6 +119,37 @@
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\Exception;
     
+    function guimailthongbaoxoaTK($email, $tenkh) {
+        $mail = new PHPMailer(true);
+        $mail->isSMTP();
+        $mail->CharSet = 'UTF-8';
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'monkeystore.hotro.4335@gmail.com';
+        $mail->Password = 'ofkv yzxx ovkt jgqw';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        $mail->setFrom('monkeystore.hotro.4335@gmail.com', 'MonkeyStore Support');
+        $mail->addAddress($email, $tenkh);
+        $mail->addReplyTo('monkeystore.hotro.4335@gmail.com', 'MonkeyStore Support');
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Thông Báo Xóa Tài Khoản MonkeyStore';
+
+        $mail->Body = '
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+            <h2 style="color: #333; text-align: center;">Thông Báo Từ MonkeyStore</h2>
+            <p>Kính gửi <strong>' . htmlspecialchars($tenkh) . '</strong>,</p>
+            <p>Chúng tôi xin thông báo rằng tài khoản của bạn tại MonkeyStore đã được yêu cầu xóa. Theo chính sách của chúng tôi, tài khoản sẽ được xóa hoàn toàn sau <strong>30 ngày</strong> kể từ thời điểm này.</p>
+            <p>Nếu bạn không yêu cầu xóa tài khoản, vui lòng liên hệ với chúng tôi ngay lập tức qua email <a href="mailto:monkeystore.hotro.4335@gmail.com">monkeystore.hotro.4335@gmail.com</a> để khôi phục tài khoản.</p>
+            <p>Cảm ơn bạn đã sử dụng dịch vụ của MonkeyStore!</p>
+            <p style="color: #888; font-size: 12px; text-align: center;">Trân trọng,<br>Đội ngũ MonkeyStore</p>
+        </div>';
+
+        $mail->send();
+    }
+    
     function sendVerificationEmail($email, $verificationCode) {
         $mail = new PHPMailer(true);
         try {

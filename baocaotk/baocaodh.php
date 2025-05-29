@@ -173,12 +173,13 @@ if (isset($_GET['get_details']) && isset($_GET['iddh'])) {
                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase">Phương thức TT</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase">Thời gian</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase">Số lượng SP</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase">Hành động</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     <?php if (empty($orders)): ?>
                         <tr>
-                            <td colspan="9" class="px-6 py-4 text-center text-gray-500">Không có dữ liệu</td>
+                            <td colspan="10" class="px-6 py-4 text-center text-gray-500">Không có dữ liệu</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($orders as $order): ?>
@@ -196,6 +197,11 @@ if (isset($_GET['get_details']) && isset($_GET['iddh'])) {
                                 <td class="px-6 py-4 text-center"><?php echo htmlspecialchars($order['phuongthuctt']); ?></td>
                                 <td class="px-6 py-4 text-center"><?php echo htmlspecialchars($order['thoigian']); ?></td>
                                 <td class="px-6 py-4 text-center"><?php echo htmlspecialchars($order['so_luong_sp']); ?></td>
+                                <td class="px-6 py-4 text-center">
+                                    <a href="hoadon.php?iddh=<?php echo htmlspecialchars($order['iddh']); ?>" class="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm transition-colors">
+                                        Xem hóa đơn
+                                    </a>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -204,65 +210,64 @@ if (isset($_GET['get_details']) && isset($_GET['iddh'])) {
         </div>
 
         <!-- Modal chi tiết đơn hàng -->
-        <div>
-            <div id="orderModal" class="modal">
-                <div class="modal-content">
-                    <h2 class="text-lg font-semibold mb-4">Chi tiết đơn hàng</h2>
-                    <table class="w-full border-collapse">
-                        <thead>
-                            <tr class="bg-gray-100">
-                                <th class="border border-gray-300 p-2 text-sm font-medium">ID Sản phẩm</th>
-                                <th class="border border-gray-300 p-2 text-sm font-medium">Số lượng</th>
-                                <th class="border border-gray-300 p-2 text-sm font-medium">Giá bán</th>
-                                <th class="border border-gray-300 p-2 text-sm font-medium">Giá gốc</th>
-                                <th class="border border-gray-300 p-2 text-sm font-medium">Giá giảm</th>
-                                <th class="border border-gray-300 p-2 text-sm font-medium">Đánh giá</th>
-                            </tr>
-                        </thead>
-                        <tbody id="modalBody"></tbody>
-                    </table>
-                    <div class="mt-4 text-right">
-                        <button onclick="document.getElementById('orderModal').class='px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 text-sm">Đóng</button>
-                    </div>
+        <div id="orderModal" class="modal">
+            <div class="modal-content">
+                <h2 class="text-lg font-semibold mb-4">Chi tiết đơn hàng</h2>
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="border border-gray-300 p-2 text-sm font-medium">ID Sản phẩm</th>
+                            <th class="border border-gray-300 p-2 text-sm font-medium">Số lượng</th>
+                            <th class="border border-gray-300 p-2 text-sm font-medium">Giá bán</th>
+                            <th class="border border-gray-300 p-2 text-sm font-medium">Giá gốc</th>
+                            <th class="border border-gray-300 p-2 text-sm font-medium">Giá giảm</th>
+                            <th class="border border-gray-300 p-2 text-sm font-medium">Đánh giá</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalBody"></tbody>
+                </table>
+                <div class="mt-4 text-right">
+                    <button class="modal-close px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 text-sm">Đóng</button>
                 </div>
             </div>
         </div>
 
-<script>
-    document.querySelectorAll('.view-details').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const iddh = this.getAttribute('data-iddh');
-            fetch(`?get_details=1&iddh=${iddh}`)
-                .then(response => res.json())
-                .then(data => {
-                    if (data.error) {
-                        alert('Lỗi: ' + data.error);
-                        return;
-                    }
-                    const tbody = document.getElementById('modalBody');
-                    tbody.innerHTML = '';
-                    data.forEach(item => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td class="border border-gray-300 p-2 text-center">${item.idsp}</td>
-                            <td class="border border-gray-300 p-2 text-center">${item.soluong}</td>
-                            <td class="border border-gray-300 p-2 text-right">${item.gia.toLocaleString('vi-VN')} VNĐ</td>
-                            <td class="border border-gray-300 p-2 text-right">${item.giagoc.toLocaleString('vi-VN')} VNĐ</td>
-                            <td class="border border-gray-300 p-2 text-right">${item.giagiam ? item.giagiam.toLocaleString('vi-VN') : '0'} VNĐ</td>
-                            <td class="border border-gray-300 p-2 text-center">${item.danhgia || '-'}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                    document.getElementById('orderModal').classList.add('show');
-                })
-                .catch(error => alert('Lỗi khi tải chi tiết: ' + error));
-        });
-    });
+        <script>
+            document.querySelectorAll('.view-details').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const iddh = this.getAttribute('data-iddh');
+                    fetch(`?get_details=1&iddh=${iddh}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                alert('Lỗi: ' + data.error);
+                                return;
+                            }
+                            const tbody = document.getElementById('modalBody');
+                            tbody.innerHTML = '';
+                            data.forEach(item => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td class="border border-gray-300 p-2 text-center">${item.idsp}</td>
+                                    <td class="border border-gray-300 p-2 text-center">${item.soluong}</td>
+                                    <td class="border border-gray-300 p-2 text-right">${item.gia.toLocaleString('vi-VN')} VNĐ</td>
+                                    <td class="border border-gray-300 p-2 text-right">${item.giagoc.toLocaleString('vi-VN')} VNĐ</td>
+                                    <td class="border border-gray-300 p-2 text-right">${item.giagiam ? item.giagiam.toLocaleString('vi-VN') : '0'} VNĐ</td>
+                                    <td class="border border-gray-300 p-2 text-center">${item.danhgia || '-'}</td>
+                                `;
+                                tbody.appendChild(row);
+                            });
+                            document.getElementById('orderModal').classList.add('show');
+                        })
+                        .catch(error => alert('Lỗi khi tải chi tiết: ' + error));
+                });
+            });
 
-    document.querySelector('.modal-close').addEventListener('click', () => {
-        document.getElementById('orderModal').classList.remove('show');
-    });
-</script>
+            document.querySelector('.modal-close').addEventListener('click', () => {
+                document.getElementById('orderModal').classList.remove('show');
+            });
+        </script>
+    </div>
 </body>
 </html>

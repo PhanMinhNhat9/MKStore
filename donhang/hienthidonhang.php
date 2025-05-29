@@ -663,6 +663,7 @@ try {
                                             >
                                                 <option value="Chưa thanh toán" <?= $order['trangthai'] === 'Chưa thanh toán' ? 'selected' : '' ?>>🟠 Chưa thanh toán</option>
                                                 <option value="Đã thanh toán" <?= $order['trangthai'] === 'Đã thanh toán' ? 'selected' : '' ?>>🟢 Đã thanh toán</option>
+                                                <option value="Hủy đơn" <?= $order['trangthai'] === 'Hủy đơn' ? 'selected' : '' ?>>❌ Hủy đơn</option>
                                             </select>
                                         </form>
                                     <?php endif; ?>
@@ -693,19 +694,22 @@ try {
                                 <div>
                                     <label>Hủy Đơn:</label>
                                     <?php if (isset($cancelRequests[$order['iddh']])): ?>
-                                        <form action="khoiphucdonhang.php" method="POST">
-                                            <input type="hidden" name="idkh" value="<?= htmlspecialchars($_SESSION['user']['iduser']) ?>">
-                                            <input type="hidden" name="iddh" value="<?= htmlspecialchars($order['iddh']) ?>">
-                                            <button
-                                                type="submit"
-                                                class="action-button btn-kp tooltip-custom"
-                                                data-tooltip="Khôi phục đơn hàng"
-                                                aria-label="Khôi phục đơn hàng"
-                                                onclick="return confirm('Bạn có chắc chắn muốn khôi phục đơn hàng này?')"
-                                            >
-                                                <i class="fas fa-undo me-1"></i>Khôi phục
-                                            </button>
-                                        </form>
+                                        <?php if ($order['trangthai'] == "Hủy đơn" && $_SESSION['user']['quyen'] == 1): ?>
+                                        <?php else: ?>
+                                            <form action="khoiphucdonhang.php" method="POST">
+                                                <input type="hidden" name="idkh" value="<?= htmlspecialchars($_SESSION['user']['iduser']) ?>">
+                                                <input type="hidden" name="iddh" value="<?= htmlspecialchars($order['iddh']) ?>">
+                                                <button 
+                                                    type="submit"
+                                                    class="action-button btn-kp tooltip-custom"
+                                                    data-tooltip="Khôi phục đơn hàng"
+                                                    aria-label="Khôi phục đơn hàng"
+                                                    onclick="return confirm('Bạn có chắc chắn muốn khôi phục đơn hàng này?')"
+                                                >
+                                                    <i class="fas fa-undo me-1"></i>Khôi phục
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
                                     <?php else: ?>
                                         <?php if (in_array($order['hientrang'], ['Chờ xác nhận', 'Đã xác nhận', 'Đang đóng gói']) && in_array($order['trangthai'], ['Chưa thanh toán'])): ?>
                                             <form action="yeucauhuydon.php" method="POST">
