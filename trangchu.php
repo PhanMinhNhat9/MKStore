@@ -75,6 +75,8 @@
     } catch (PDOException $e) {
         error_log("Error deleting users: " . $e->getMessage());
     }
+
+    $quyen = isset($_SESSION['user']['quyen']) ? $_SESSION['user']['quyen'] : 0;
 ?>
 
 <script>
@@ -1070,6 +1072,9 @@ setInterval(checkUserStatus, 10000); // 10000ms = 10 giây
             localStorage.setItem('sidebarStateadmin', isExpanded ? 'collapsed' : 'expanded');
         }
 
+        // Truyền giá trị quyen từ PHP sang JavaScript
+        const userQuyen = <?php echo json_encode($quyen); ?>;
+
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
             const homeIconToggle = document.getElementById('home-icon-toggle');
@@ -1111,6 +1116,25 @@ setInterval(checkUserStatus, 10000); // 10000ms = 10 giây
                 homeIconToggle.classList.remove('sidebar-expanded');
                 homeIconToggle.setAttribute('aria-expanded', 'false');
             }
+
+            // Function to close sidebar
+            const closeSidebar = () => {
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('-translate-x-full');
+                navbarLogo.classList.remove('hidden');
+                sidebarLogo.classList.add('hidden');
+                mainContent.classList.remove('expanded');
+                homeIconToggle.classList.remove('sidebar-expanded');
+                homeIconToggle.setAttribute('aria-expanded', 'false');
+                localStorage.setItem('sidebarStateadmin', 'collapsed');
+            };
+
+    // Close sidebar on mouseleave
+    sidebar.addEventListener('mouseleave', () => {
+        if (sidebar.classList.contains('translate-x-0')) {
+            closeSidebar();
+        }
+    });
 
             homeIconToggle.addEventListener('click', toggleMenu);
             activateMenu();
@@ -1164,7 +1188,7 @@ setInterval(checkUserStatus, 10000); // 10000ms = 10 giây
                 } else if (id === "menu-gh") {
                     searchBox.style.display = 'none';
                     loadGH();
-                } else if (id === "menu-tb") {
+                } else if (id === "menu-tb" && userQuyen != 1) {
                     searchBox.style.display = 'none';
                     loadThongBao();
                 } else if (id === "menu-trangchu") {
